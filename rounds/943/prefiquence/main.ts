@@ -1,8 +1,9 @@
 import { type TestCase, run } from "../../utils";
+import { prefiquence } from "./prefiquence";
 
-export class Prefiquence implements TestCase {
-  a: string;
-  b: string;
+class Prefiquence implements TestCase<number> {
+  private readonly a: string;
+  private readonly b: string;
 
   constructor(lines: Array<string>) {
     const [x, y] = lines.shift()!.split(' ').map(Number);
@@ -15,14 +16,4 @@ export class Prefiquence implements TestCase {
   }
 }
 
-export function prefiquence(a: string, b: string): number {
-  let k = 0;
-  for (let j = 0; k < a.length && j < b.length; ++j) {
-    if (a[k] == b[j]) {
-      ++k;
-    }
-  }
-  return k;
-}
-
-run(Prefiquence);
+run(Prefiquence, (val) => console.log(val));

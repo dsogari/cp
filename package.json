@@ -7,6 +7,7 @@
     "vitest": "^1.5.3"
   },
   "scripts": {
-    "dist": "bun build rounds/943/prefiquence/main.ts --target node --outdir dist"
+    "dist": "bun build $PROBLEM/main.ts --target node --outdir dist",
+    "diff": "cat $PROBLEM/input.txt | bun $PROBLEM/main.ts | diff - $PROBLEM/ouput.txt"
   }
 }

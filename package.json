@@ -1,7 +1,12 @@
 {
+  "type": "module",
   "dependencies": {},
   "devDependencies": {
+    "@types/bun": "^1.1.1",
     "typescript": "^5.4.5",
     "vitest": "^1.5.3"
+  },
+  "scripts": {
+    "dist": "bun build rounds/943/*.ts --target node --outdir dist"
   }
 }

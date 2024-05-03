@@ -1,0 +1,60 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "ninja-gcc-debug",
+      "inherits": ["ninja", "gcc", "debug"],
+      "displayName": "GCC Debug Config",
+      "binaryDir": "${sourceDir}/build/debug"
+    },
+    {
+      "name": "ninja-gcc-release",
+      "inherits": ["ninja", "gcc", "release"],
+      "displayName": "GCC Release Config",
+      "binaryDir": "${sourceDir}/build/release"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "ninja-gcc-debug",
+      "configurePreset": "ninja-gcc-debug",
+      "displayName": "GCC Debug Build"
+    },
+    {
+      "name": "ninja-gcc-release",
+      "configurePreset": "ninja-gcc-release",
+      "displayName": "GCC Release Build"
+    }
+  ]
+}

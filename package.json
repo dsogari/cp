@@ -7,6 +7,6 @@
     "vitest": "^1.5.3"
   },
   "scripts": {
-    "dist": "bun build rounds/943/*.ts --target node --outdir dist"
+    "dist": "bun build rounds/943/prefiquence/main.ts --target node --outdir dist"
   }
 }

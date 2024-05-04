@@ -1,24 +1,22 @@
-#include <bits/stdc++.h>
+#include "utils.h"
 
-using namespace std;
-using i64 = int64_t;
+INPUT(__FILE__)
 
-void run()
+void run(int c)
 {
   int x;
-  cin >> x;
-  const auto f = [](int x)
+  input >> x;
+  const auto f = [x]()
   {
     return x - 1;
   };
-  cout << f(x) << endl;
+  cout << f() << endl;
 }
 
 int main()
 {
-  cin.tie(nullptr)->sync_with_stdio(false);
   int c;
-  cin >> c;
-  while (c--)
-    run();
+  input >> c;
+  for (int i = 1; i <= c; ++i)
+    run(i);
 }

@@ -1,15 +1,14 @@
-#include <bits/stdc++.h>
+#include "utils.h"
 
-using namespace std;
-using i64 = int64_t;
+INPUT(__FILE__)
 
-void run()
+void run(int c)
 {
   int n;
-  cin >> n;
+  input >> n;
   vector<int> x(n - 1);
   for (int i = 0; i < n - 1; ++i)
-    cin >> x[i];
+    input >> x[i];
   const auto f = [n, &x]()
   {
     vector<int> a(n);
@@ -25,9 +24,8 @@ void run()
 
 int main()
 {
-  cin.tie(nullptr)->sync_with_stdio(false);
   int c;
-  cin >> c;
-  while (c--)
-    run();
+  input >> c;
+  for (int i = 1; i <= c; ++i)
+    run(i);
 }

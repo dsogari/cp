@@ -1,17 +1,16 @@
-#include <bits/stdc++.h>
+#include "utils.h"
 
-using namespace std;
-using i64 = int64_t;
+INPUT(__FILE__)
 
-void run()
+void run(int c)
 {
   int n, k, pb, ps;
-  cin >> n >> k >> pb >> ps;
+  input >> n >> k >> pb >> ps;
   vector<int> p(n + 1), a(n + 1);
   for (int i = 1; i <= n; ++i)
-    cin >> p[i];
+    input >> p[i];
   for (int i = 1; i <= n; ++i)
-    cin >> a[i];
+    input >> a[i];
   const auto f = [&p, &a](int n, int k, int i)
   {
     i64 r = 0;
@@ -27,9 +26,8 @@ void run()
 
 int main()
 {
-  cin.tie(nullptr)->sync_with_stdio(false);
   int c;
-  cin >> c;
-  while (c--)
-    run();
+  input >> c;
+  for (int i = 1; i <= c; ++i)
+    run(i);
 }

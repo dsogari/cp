@@ -1,14 +1,12 @@
 #include "utils.h"
 
-INPUT(__FILE__)
-
-void run(int c)
+void run(istream &in, ostream &out, int t)
 {
   int n;
-  input >> n;
+  in >> n;
   vector<int> x(n - 1);
   for (int i = 0; i < n - 1; ++i)
-    input >> x[i];
+    in >> x[i];
   const auto f = [n, &x]()
   {
     vector<int> a(n);
@@ -18,14 +16,15 @@ void run(int c)
     return a;
   };
   for (const auto ai : f())
-    cout << ai << " ";
-  cout << endl;
+    out << ai << " ";
+  out << endl;
 }
 
 int main()
 {
+  INPUT(__FILE__);
   int c;
   input >> c;
   for (int i = 1; i <= c; ++i)
-    run(i);
+    run(input, cout, i);
 }

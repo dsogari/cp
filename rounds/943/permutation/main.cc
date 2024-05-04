@@ -1,16 +1,14 @@
 #include "utils.h"
 
-INPUT(__FILE__)
-
-void run(int c)
+void run(istream &in, ostream &out, int t)
 {
   int n, k, pb, ps;
-  input >> n >> k >> pb >> ps;
+  in >> n >> k >> pb >> ps;
   vector<int> p(n + 1), a(n + 1);
   for (int i = 1; i <= n; ++i)
-    input >> p[i];
+    in >> p[i];
   for (int i = 1; i <= n; ++i)
-    input >> a[i];
+    in >> a[i];
   const auto f = [&p, &a](int n, int k, int i)
   {
     i64 r = 0;
@@ -21,13 +19,14 @@ void run(int c)
   const auto fb = f(n, k, pb);
   const auto fs = f(n, k, ps);
   const auto winner = fb > fs ? "Bodya" : (fb < fs ? "Sasha" : "Draw");
-  cout << winner << endl;
+  out << winner << endl;
 }
 
 int main()
 {
+  INPUT(__FILE__);
   int c;
   input >> c;
   for (int i = 1; i <= c; ++i)
-    run(i);
+    run(input, cout, i);
 }

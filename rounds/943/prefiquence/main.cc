@@ -1,12 +1,10 @@
 #include "utils.h"
 
-INPUT(__FILE__)
-
-void run(int c)
+void run(istream &in, ostream &out, int t)
 {
   int x, y;
   string a, b;
-  input >> x >> y >> a >> b;
+  in >> x >> y >> a >> b;
   const auto f = [&a, &b]()
   {
     int k = 0;
@@ -17,13 +15,14 @@ void run(int c)
     }
     return k;
   };
-  cout << f() << endl;
+  out << f() << endl;
 }
 
 int main()
 {
+  INPUT(__FILE__);
   int c;
   input >> c;
   for (int i = 1; i <= c; ++i)
-    run(i);
+    run(input, cout, i);
 }

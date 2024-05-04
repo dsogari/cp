@@ -7,7 +7,11 @@ using i64 = int64_t;
 
 #ifdef DEBUG
 using filesystem::path;
-#define INPUT(file) auto input = ifstream(path(file).replace_filename("input.txt"))
+#define IO(file) \
+  auto in = ifstream(path(file).replace_filename("input.txt")); \
+  auto &out = cout << fixed << setprecision(20)
 #else
-#define INPUT(_) auto &input = (cin.tie(nullptr)->sync_with_stdio(false), cin)
+#define IO(_) \
+  auto &in = (cin.tie(nullptr)->sync_with_stdio(false), cin); \
+  auto &out = cout << fixed << setprecision(20)
 #endif

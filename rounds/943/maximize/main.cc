@@ -1,6 +1,8 @@
 #include "utils.h"
 
-void run(istream &in, ostream &out, int t)
+IO(__FILE__);
+
+void run(int t)
 {
   int x;
   in >> x;
@@ -13,9 +15,8 @@ void run(istream &in, ostream &out, int t)
 
 int main()
 {
-  INPUT(__FILE__);
-  int c;
-  input >> c;
-  for (int i = 1; i <= c; ++i)
-    run(input, cout, i);
+  int t;
+  in >> t;
+  for (int i = 1; i <= t; ++i)
+    run(i);
 }

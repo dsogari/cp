@@ -2,7 +2,7 @@
 
 IO(__FILE__);
 
-void run(int t)
+void solve(int t)
 {
   int n, q;
   in >> n >> q;
@@ -40,5 +40,5 @@ int main()
   int t;
   in >> t;
   for (int i = 1; i <= t; ++i)
-    run(i);
+    solve(i);
 }

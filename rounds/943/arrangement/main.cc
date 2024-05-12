@@ -7,7 +7,7 @@ struct Point
   int r, c;
 };
 
-void run(int t)
+void solve(int t)
 {
   int n;
   in >> n;
@@ -29,5 +29,5 @@ int main()
   int t;
   in >> t;
   for (int i = 1; i <= t; ++i)
-    run(i);
+    solve(i);
 }

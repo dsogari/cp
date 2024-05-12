@@ -4,13 +4,9 @@ IO(__FILE__);
 
 void solve(int t)
 {
-  int x;
-  in >> x;
-  const auto f = [x]()
-  {
-    return x - 1;
-  };
-  out << f() << endl;
+  int x, y;
+  in >> x >> y;
+  out << min(x, y) << ' ' << max(x, y) << endl;
 }
 
 int main()

@@ -2,7 +2,7 @@
 
 IO(__FILE__);
 
-void run(int t)
+void solve(int t)
 {
   int n, k, pb, ps;
   in >> n >> k >> pb >> ps;
@@ -29,5 +29,5 @@ int main()
   int t;
   in >> t;
   for (int i = 1; i <= t; ++i)
-    run(i);
+    solve(i);
 }

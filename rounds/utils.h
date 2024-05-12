@@ -15,3 +15,11 @@ using filesystem::path;
   auto &in = (cin.tie(nullptr)->sync_with_stdio(false), cin); \
   auto &out = cout << fixed << setprecision(20)
 #endif
+
+namespace std
+{
+  string to_string(const string &s)
+  {
+    return s;
+  }
+}

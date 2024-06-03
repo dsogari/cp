@@ -37,26 +37,40 @@ void redu(vector<string> &res, vector<T> &v16, vector<T> &v32, vector<T> &v64)
   v64.clear();
 }
 
+const auto l16 = ldexp(1, -15), u16 = ldexp(1, 0), uu16 = ldexp(1, 10);
+const auto l32 = ldexp(1, -126), u32 = ldexp(1, 14), uu32 = ldexp(1, 100);
+const auto m16 = (1L << (52 - 10)) - 1, m32 = (1L << (52 - 23)) - 1;
+
+inline bool is16(double x)
+{
+  return (x > l16 && x <= u16) || (x <= uu16 && *reinterpret_cast<i64 *>(&x) & m16 == 0);
+}
+
+inline bool is32(double x)
+{
+  return (x > l32 && x <= u32) || (x <= uu32 && *reinterpret_cast<i64 *>(&x) & m32 == 0);
+}
+
 int main()
 {
   int n;
   in >> n;
   vector<int> fp16, fp32, fp64;
   vector<string> bl16, bl32, bl64;
-  double s = 0, l16 = ldexp(1, -14), l32 = ldexp(1, -126), u32 = ldexp(1, 14);
+  double s = 0;
   for (int i = 1; i <= n; ++i)
   {
     double x;
     in >> x;
     s += x;
     const auto a = fabs(x);
-    auto &list = a > l16 && a <= 1 ? fp16 : (a > l32 && a < u32 ? fp32 : fp64);
+    auto &list = is16(a) ? fp16 : (is32(a) ? fp32 : fp64);
     list.push_back(i);
     if (i % 16 == 0 || i == n)
     {
       const auto b = fabs(s);
       s = 0;
-      auto &list = b > l16 && b <= 1 ? bl16 : (b > l32 && b < u32 ? bl32 : bl64);
+      auto &list = is16(b) ? bl16 : (is32(b) ? bl32 : bl64);
       redu(list, fp16, fp32, fp64);
     }
   }

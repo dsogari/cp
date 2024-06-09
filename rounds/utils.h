@@ -23,3 +23,13 @@ namespace std
     return s;
   }
 }
+
+constexpr int inc_mod(int a, int m)
+{
+  return (a + 1) % m;
+}
+
+constexpr int dec_mod(int a, int m)
+{
+  return (a ? a : m) - 1;
+}

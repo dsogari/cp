@@ -5,25 +5,45 @@ IO(__FILE__);
 void solve(int t)
 {
   int n;
-  in >> n;
-  vector<int> a(n), b(n - 1);
-  for (int i = 0; i < n; ++i)
-    in >> a[i];
-  for (int i = 0; i < n - 1; ++i)
-    b[i] = gcd(a[i], a[i + 1]);
-  bool ok = false;
-  for (int i = 0; i < n - 2; ++i)
+  vector<int> a(4), b(4);
+  in >> n >> a[0] >> a[1];
+  b[1] = gcd(a[0], a[1]);
+  for (int i = 2, j = 2, r = 0; i < n; ++i)
   {
-    if (b[i] > b[i + 1])
+    const auto k = dec_mod(j, 4), l = dec_mod(k, 4);
+    in >> a[j];
+    b[j] = gcd(a[k], a[j]);
+    if (b[k] > b[j])
     {
-      const auto g = gcd(a[i], a[i + 2]);
-      if (ok || (i > 0 && i < n - 3 && b[i - 1] > g))
+      if (r)
       {
         cout << "NO" << endl;
         return;
       }
-      b[i + 1] = g;
-      ok = true;
+      const auto mid = gcd(a[l], a[j]);
+      if (b[j] > mid && mid >= b[l])
+      {
+        a[k] = a[j]; // remove middle
+        b[k] = mid;
+      }
+      else
+      {
+        const auto m = dec_mod(l, 4);
+        const auto b0 = gcd(a[m], a[k]);
+
+        if (b[j] >= b[l])
+        {
+        }
+        a[l] = a[k]; // remove first
+        a[k] = a[j];
+        b[l] = b[j];
+        b[k] = b[j];
+      }
+      ++r;
+    }
+    else
+    {
+      j = inc_mod(j, 4);
     }
   }
   cout << "YES" << endl;

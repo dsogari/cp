@@ -6,17 +6,14 @@ void solve(int t)
 {
   int n;
   in >> n;
-  vector<int> v(n);
-  for (int i = 0; i < n; ++i)
-    in >> v[i];
-  i64 a = 0, b = 0;
-  for (int i = 0; i < n; ++i)
+  i64 sum = 0, res = 0;
+  for (int i = 0, a; i < n; ++i)
   {
-    const auto c = a + v[i], d = b + v[i];
-    a = min(c, d);
-    b = max(abs(c), abs(d));
+    in >> a;
+    sum += a;
+    res = max(abs(sum), abs(res + a));
   }
-  cout << max(abs(a), abs(b)) << endl;
+  cout << res << endl;
 }
 
 int main()

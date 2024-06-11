@@ -1,0 +1,7 @@
+add_executable(A A/main.cc)
+add_executable(B B/main.cc)
+add_executable(C C/main.cc)
+add_executable(D D/main.cc)
+add_executable(E E/main.cc)
+# add_executable(F F/main.cc)
+# add_executable(G G/main.cc)

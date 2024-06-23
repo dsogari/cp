@@ -1,47 +1,42 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using filesystem::path;
 using i64 = int64_t;
 
-#ifdef DEBUG
-auto in = ifstream(filesystem::path(__FILE__).replace_filename("input.txt"));
-auto &out = cout << fixed << setprecision(20);
-#else
-auto &in = (cin.tie(nullptr)->sync_with_stdio(false), cin);
-auto &out = cout << fixed << setprecision(20);
-#endif
-
-void solve(int t)
-{
+void solve(int t) {
   int n, k, q;
-  in >> n >> k >> q;
+  cin >> n >> k >> q;
   vector<int> a(k + 1), b(k + 1);
-  for (int i = 1; i <= k; ++i)
-    in >> a[i];
-  for (int i = 1; i <= k; ++i)
-    in >> b[i];
-  for (int i = 0; i < q; ++i)
-  {
+  for (int i = 1; i <= k; ++i) {
+    cin >> a[i];
+  }
+  for (int i = 1; i <= k; ++i) {
+    cin >> b[i];
+  }
+  for (int i = 0; i < q; ++i) {
     int q;
-    in >> q;
+    cin >> q;
     const auto j = prev(ranges::upper_bound(a, q)) - a.begin();
-    if (j < a.size() - 1)
-    {
-      const auto r = b[j] + (q - a[j]) * ((b[j + 1] - b[j]) / double(a[j + 1] - a[j]));
-      out << int(r) << ' ';
-    }
-    else
-    {
-      out << b.back() << ' ';
+    if (j < a.size() - 1) {
+      const auto r =
+          b[j] + (q - a[j]) * ((b[j + 1] - b[j]) / double(a[j + 1] - a[j]));
+      cout << int(r) << ' ';
+    } else {
+      cout << b.back() << ' ';
     }
   }
-  out << endl;
+  cout << endl;
 }
 
-int main()
-{
+int main() {
+#ifdef LOCAL
+  freopen(path(__FILE__).replace_filename("input.txt").c_str(), "r", stdin);
+#endif
+  cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
   int t;
-  in >> t;
-  for (int i = 1; i <= t; ++i)
+  cin >> t;
+  for (int i = 1; i <= t; ++i) {
     solve(i);
+  }
 }

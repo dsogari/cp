@@ -1,48 +1,40 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using filesystem::path;
 using i64 = int64_t;
 
-#ifdef DEBUG
-auto in = ifstream(filesystem::path(__FILE__).replace_filename("input.txt"));
-auto &out = cout << fixed << setprecision(20);
-#else
-auto &in = (cin.tie(nullptr)->sync_with_stdio(false), cin);
-auto &out = cout << fixed << setprecision(20);
-#endif
-
-void solve(int t)
-{
+void solve(int t) {
   i64 x;
-  in >> x;
-  if (x % 10 == 9)
-  {
+  cin >> x;
+  if (x % 10 == 9) {
     cout << "NO" << endl;
     return;
   }
   auto dn = 0;
-  while (x)
-  {
+  while (x) {
     dn = x;
     x /= 10;
-    if (x && x % 10 == 0)
-    {
+    if (x && x % 10 == 0) {
       cout << "NO" << endl;
       return;
     }
   }
-  if (dn != 1)
-  {
+  if (dn != 1) {
     cout << "NO" << endl;
     return;
   }
   cout << "YES" << endl;
 }
 
-int main()
-{
+int main() {
+#ifdef LOCAL
+  freopen(path(__FILE__).replace_filename("input.txt").c_str(), "r", stdin);
+#endif
+  cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
   int t;
-  in >> t;
-  for (int i = 1; i <= t; ++i)
+  cin >> t;
+  for (int i = 1; i <= t; ++i) {
     solve(i);
+  }
 }

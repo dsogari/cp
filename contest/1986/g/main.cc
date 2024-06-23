@@ -1,24 +1,19 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using filesystem::path;
 using i64 = int64_t;
 
-#ifdef DEBUG
-auto in = ifstream(filesystem::path(__FILE__).replace_filename("input.txt"));
-auto &out = cout << fixed << setprecision(20);
-#else
-auto &in = (cin.tie(nullptr)->sync_with_stdio(false), cin);
-auto &out = cout << fixed << setprecision(20);
+void solve(int t) {}
+
+int main() {
+#ifdef LOCAL
+  freopen(path(__FILE__).replace_filename("input.txt").c_str(), "r", stdin);
 #endif
-
-void solve(int t)
-{
-}
-
-int main()
-{
+  cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
   int t;
-  in >> t;
-  for (int i = 1; i <= t; ++i)
+  cin >> t;
+  for (int i = 1; i <= t; ++i) {
     solve(i);
+  }
 }

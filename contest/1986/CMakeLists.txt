@@ -1,0 +1,6 @@
+add_executable(1986_a a/main.cc)
+add_executable(1986_b b/main.cc)
+add_executable(1986_c c/main.cc)
+add_executable(1986_d d/main.cc)
+add_executable(1986_e e/main.cc)
+add_executable(1986_f f/main.cc)

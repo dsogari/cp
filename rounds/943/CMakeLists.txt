@@ -1,6 +1,0 @@
-add_executable(arrangement arrangement/main.cc)
-add_executable(assembly assembly/main.cc)
-add_executable(maximize maximize/main.cc)
-add_executable(permutation permutation/main.cc)
-add_executable(prefiquence prefiquence/main.cc)
-add_executable(segments segments/main.cc)

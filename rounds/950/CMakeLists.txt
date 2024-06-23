@@ -1,6 +1,0 @@
-add_executable(problem_generator problem_generator/main.cc)
-add_executable(choosing_cubes choosing_cubes/main.cc)
-add_executable(lost_operations lost_operations/main.cc)
-add_executable(gcd_sequence gcd_sequence/main.cc)
-# add_executable(p p/main.cc)
-# add_executable(p p/main.cc)

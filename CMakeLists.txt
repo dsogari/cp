@@ -7,5 +7,5 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 include_directories(.)
-subdirs(rounds)
-# subdirs(playground)
+subdirs(contest)
+subdirs(playground)

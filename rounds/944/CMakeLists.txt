@@ -1,5 +1,0 @@
-add_executable(sorting sorting/main.cc)
-add_executable(different different/main.cc)
-add_executable(clock_and_strings clock_and_strings/main.cc)
-add_executable(binary_cut binary_cut/main.cc)
-add_executable(find_the_car find_the_car/main.cc)

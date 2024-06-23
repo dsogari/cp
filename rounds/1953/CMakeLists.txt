@@ -1,1 +1,0 @@
-add_executable(A A/main.cc)

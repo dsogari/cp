@@ -1,7 +1,0 @@
-add_executable(strange_splitting strange_splitting/main.cc)
-add_executable(large_addition large_addition/main.cc)
-add_executable(magnitude_easy magnitude_easy/main.cc)
-add_executable(magnitude_hard magnitude_hard/main.cc)
-# add_executable(p p/main.cc)
-# add_executable(p p/main.cc)
-# add_executable(p p/main.cc)

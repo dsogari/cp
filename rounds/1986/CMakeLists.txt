@@ -1,0 +1,6 @@
+add_executable(a a/main.cc)
+add_executable(b b/main.cc)
+add_executable(c c/main.cc)
+add_executable(d d/main.cc)
+add_executable(e e/main.cc)
+add_executable(f f/main.cc)

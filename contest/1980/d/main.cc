@@ -1,6 +1,25 @@
-#include "utils.h"
+#include <bits/stdc++.h>
 
-IO(__FILE__);
+using namespace std;
+using i64 = int64_t;
+
+#ifdef DEBUG
+auto in = ifstream(filesystem::path(__FILE__).replace_filename("input.txt"));
+auto &out = cout << fixed << setprecision(20);
+#else
+auto &in = (cin.tie(nullptr)->sync_with_stdio(false), cin);
+auto &out = cout << fixed << setprecision(20);
+#endif
+
+constexpr int inc_mod(int a, int m)
+{
+  return (a + 1) % m;
+}
+
+constexpr int dec_mod(int a, int m)
+{
+  return (a ? a : m) - 1;
+}
 
 void solve(int t)
 {

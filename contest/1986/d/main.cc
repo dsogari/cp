@@ -8,35 +8,26 @@ void solve(int t) {
   int n;
   string s;
   cin >> n >> s;
-  if (n == 2) {
-    cout << stoi(s) << endl;
-    return;
-  }
-  if (n == 3) {
-    auto res = min(stoi(s.substr(0, 1)) * stoi(s.substr(1, 2)),
-                   stoi(s.substr(0, 2)) * stoi(s.substr(2, 1)));
-    cout << res << endl;
-    return;
-  }
-  if (s.find('0') != string::npos) {
-    cout << 0 << endl;
-    return;
-  }
-  int imin = 0;
-  for (int i = 1; i < n - 1; i++) {
-    if (s[i] <= s[imin] && s[i + 1] != '1' &&
-        (s[imin + 1] == '1' || s[i + 1] < s[imin + 1])) {
-      imin = i;
+  int res = INT_MAX;
+  for (int i = 0; i < n - 1; i++) {
+    int res1 = (s[i] - '0') * 10 + s[i + 1] - '0';
+    for (int j = 0; j < n; j++) {
+      if (j == i) {
+        j++;
+        continue;
+      }
+      if (s[j] == '0') {
+        cout << 0 << endl;
+        return;
+      }
+      if (s[j] != '1') {
+        if (res1 == 1) {
+          res1 = 0;
+        }
+        res1 += s[j] - '0';
+      }
     }
-  }
-  int res = 0;
-  for (int i = 0; i < n; i++) {
-    if (i == imin) {
-      res += stoi(s.substr(i, 2));
-      i++;
-    } else if (s[i] != '1') {
-      res += s[i] - '0';
-    }
+    res = min(res, res1);
   }
   cout << res << endl;
 }

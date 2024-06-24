@@ -7,31 +7,32 @@ using i64 = int64_t;
 void solve(int t) {
   int n, k;
   cin >> n >> k;
-  set<int> nums;
+  map<int, vector<int>> mods;
   for (int i = 0, a; i < n; i++) {
     cin >> a;
-    if (nums.contains(a)) {
-      nums.erase(a);
-    } else {
-      nums.insert(a);
-    }
+    mods[a % k].push_back(a);
   }
-  list<int> nums2(nums.begin(), nums.end());
-  int res = 0, bad = 0;
-  for (auto it1 = nums2.begin(); nums2.size() > 1 && it1 != nums2.end();) {
-    bool found = false;
-    for (auto it2 = next(it1); !found && it2 != nums2.end(); it2++) {
-      if ((*it2 - *it1) % k == 0) {
-        nums2.erase(it2);
-        res += (*it2 - *it1) / k;
-        found = true;
+  int res = 0, odd = 0;
+  for (auto &[_, b] : mods) {
+    ranges::sort(b);
+    if (b.size() % 2) {
+      if (odd++) {
+        res = -1;
+        break;
       }
-    }
-    if (found) {
-      it1 = nums2.erase(it1);
-    } else if (bad++) {
-      cout << -1 << endl;
-      return;
+      vector<vector<int>> sums = {{0}, {0}};
+      for (int i = 0; i < b.size() - 1; i++) {
+        sums[i % 2].push_back(sums[i % 2].back() + (b[i + 1] - b[i]) / k);
+      }
+      int best = INT_MAX;
+      for (int i = 0, j = 0; i < b.size(); i += 2, j++) {
+        best = min(best, sums[0][j] + sums[1].back() - sums[1][j]);
+      }
+      res += best;
+    } else {
+      for (int i = 0; i < b.size(); i += 2) {
+        res += (b[i + 1] - b[i]) / k;
+      }
     }
   }
   cout << res << endl;

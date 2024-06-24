@@ -9,8 +9,8 @@ void solve(int t) {
   string s, c;
   cin >> n >> m >> s;
   vector<int> ind(m);
-  for (int i = 0; i < m; i++) {
-    cin >> ind[i];
+  for (auto &ix : ind) {
+    cin >> ix;
   }
   cin >> c;
   ranges::sort(ind);

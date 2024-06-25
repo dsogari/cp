@@ -1,8 +1,12 @@
+/**
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, k, q;
@@ -14,17 +18,17 @@ void solve(int t) {
   for (int i = 1; i <= k; ++i) {
     cin >> b[i];
   }
-  for (int i = 0; i < q; ++i) {
-    int q;
-    cin >> q;
-    const auto j = prev(ranges::upper_bound(a, q)) - a.begin();
+  auto f = [&](int d) {
+    int j = prev(ranges::upper_bound(a, d)) - a.begin();
     if (j < a.size() - 1) {
-      const auto r =
-          b[j] + (q - a[j]) * ((b[j + 1] - b[j]) / double(a[j + 1] - a[j]));
-      cout << int(r) << ' ';
-    } else {
-      cout << b.back() << ' ';
+      int ans = b[j] + (d - a[j]) * ((b[j + 1] - b[j]) / f64(a[j + 1] - a[j]));
+      return ans;
     }
+    return b.back();
+  };
+  for (int i = 0, d; i < q; ++i) {
+    cin >> d;
+    cout << f(d) << ' ';
   }
   cout << endl;
 }

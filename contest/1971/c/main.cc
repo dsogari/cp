@@ -1,17 +1,31 @@
+/**
+ * https://codeforces.com/contest/1971/submission/267263832
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
-  int a, b, c, d;
-  cin >> a >> b >> c >> d;
-  const auto j = min(a, b);
-  const auto k = max(a, b);
-  const auto r1 = c > j && c < k && (d < j || d > k);
-  const auto r2 = d > j && d < k && (c < j || c > k);
-  cout << (r1 || r2 ? "YES" : "NO") << endl;
+  int n = 2;
+  map<int, int> lines;
+  for (int i = 1, a, b; i <= n; i++) {
+    cin >> a >> b;
+    lines[a] = lines[b] = i;
+  }
+  int prev = 0;
+  for (auto &&[_, line] : lines) {
+    if (line == prev) {
+      cout << "NO" << endl;
+      return;
+    }
+    prev = line;
+  }
+  cout << "YES" << endl;
 }
 
 int main() {

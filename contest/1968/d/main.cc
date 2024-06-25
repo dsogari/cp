@@ -8,6 +8,7 @@
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, k, pb, ps;

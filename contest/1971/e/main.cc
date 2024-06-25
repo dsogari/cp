@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/1971/submission/267267828
+ *
  * Copyright (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -21,7 +23,7 @@ void solve(int t) {
   auto f = [&](int d) {
     int j = prev(ranges::upper_bound(a, d)) - a.begin();
     if (j < a.size() - 1) {
-      int ans = b[j] + (d - a[j]) * ((b[j + 1] - b[j]) / f64(a[j + 1] - a[j]));
+      int ans = b[j] + i64(d - a[j]) * (b[j + 1] - b[j]) / (a[j + 1] - a[j]);
       return ans;
     }
     return b.back();

@@ -2,6 +2,11 @@
 
 #include <bits/stdc++.h>
 
+using namespace std;
+using filesystem::path;
+using i64 = int64_t;
+using f64 = double;
+
 namespace std {
 string to_string(const string &s) { return s; }
 } // namespace std

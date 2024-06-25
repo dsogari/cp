@@ -4,7 +4,16 @@ using namespace std;
 using filesystem::path;
 using i64 = int64_t;
 
-void solve(int t) {}
+void solve(int t) {
+  int n;
+  cin >> n;
+  int res = 0;
+  for (int i = 1, p; i <= n; i++) {
+    cin >> p;
+    res += max(0, p - i);
+  }
+  cout << (res ? res : n * (n - 1)) / 2 << endl;
+}
 
 int main() {
 #ifdef LOCAL

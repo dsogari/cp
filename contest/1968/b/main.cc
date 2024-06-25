@@ -1,3 +1,8 @@
+/**
+ * https://codeforces.com/contest/1968/submission/267254823
+ *
+ * Copyright (c) 2023 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -5,19 +10,16 @@ using filesystem::path;
 using i64 = int64_t;
 
 void solve(int t) {
-  int x, y;
+  int n, m;
   string a, b;
-  cin >> x >> y >> a >> b;
-  const auto f = [&a, &b]() {
-    int k = 0;
-    for (int j = 0; k < a.size() && j < b.size(); ++j) {
-      if (a[k] == b[j]) {
-        ++k;
-      }
+  cin >> n >> m >> a >> b;
+  int k = 0;
+  for (int i = 0; k < n && i < m; ++i) {
+    if (a[k] == b[i]) {
+      ++k;
     }
-    return k;
-  };
-  cout << f() << endl;
+  }
+  cout << k << endl;
 }
 
 int main() {

@@ -1,3 +1,8 @@
+/**
+ * https://codeforces.com/contest/1968/submission/267255425
+ *
+ * Copyright (c) 2023 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -7,22 +12,12 @@ using i64 = int64_t;
 void solve(int t) {
   int n;
   cin >> n;
-  vector<int> x(n - 1);
-  for (int i = 0; i < n - 1; ++i) {
-    cin >> x[i];
+  int a = 501;
+  for (int i = 0, x; i < n - 1; ++i, a += x) {
+    cout << a << ' ';
+    cin >> x;
   }
-  const auto f = [n, &x]() {
-    vector<int> a(n);
-    a[0] = 501;
-    for (int i = 0; i < n - 1; ++i) {
-      a[i + 1] = a[i] + x[i];
-    }
-    return a;
-  };
-  for (const auto ai : f()) {
-    cout << ai << " ";
-  }
-  cout << endl;
+  cout << a << endl;
 }
 
 int main() {

@@ -1,3 +1,8 @@
+/**
+ * https://codeforces.com/contest/1968/submission/267254363
+ *
+ * Copyright (c) 2023 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -7,8 +12,7 @@ using i64 = int64_t;
 void solve(int t) {
   int x;
   cin >> x;
-  const auto f = [x]() { return x - 1; };
-  cout << f() << endl;
+  cout << x - 1 << endl;
 }
 
 int main() {

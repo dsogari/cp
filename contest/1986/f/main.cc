@@ -4,7 +4,34 @@ using namespace std;
 using filesystem::path;
 using i64 = int64_t;
 
-void solve(int t) {}
+void solve(int t) {
+  int n, m;
+  cin >> n >> m;
+  map<int, vector<int>> adj;
+  for (int i = 0, u, v; i < m; i++) {
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  vector<int> visited(n + 1);
+  int mx = 1;
+  function<void(int, int, int)> f = [&](int u, int p, int c) {
+    if (!visited[u]) {
+      visited[u] = c;
+      for (auto &&v : adj[u]) {
+        if (v != p) {
+          f(v, u, c + 1);
+        }
+      }
+    } else {
+      mx = max(mx, c - visited[u]);
+    }
+  };
+  for (int u = 1; u <= n; u++) {
+    f(u, -1, 1);
+  }
+  cout << mx * (mx - 1) / 2 + (n - mx) * (n - mx - 1) / 2 << endl;
+}
 
 int main() {
 #ifdef LOCAL

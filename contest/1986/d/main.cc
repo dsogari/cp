@@ -1,16 +1,22 @@
+/**
+ * https://codeforces.com/contest/1986/submission/267295953
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n;
   string s;
   cin >> n >> s;
-  int res = INT_MAX;
+  int ans = INT_MAX;
   for (int i = 0; i < n - 1; i++) {
-    int res1 = (s[i] - '0') * 10 + s[i + 1] - '0';
+    int sum = (s[i] - '0') * 10 + s[i + 1] - '0';
     for (int j = 0; j < n; j++) {
       if (j == i) {
         j++;
@@ -21,15 +27,15 @@ void solve(int t) {
         return;
       }
       if (s[j] != '1') {
-        if (res1 == 1) {
-          res1 = 0;
+        if (sum == 1) {
+          sum = 0;
         }
-        res1 += s[j] - '0';
+        sum += s[j] - '0';
       }
     }
-    res = min(res, res1);
+    ans = min(ans, sum);
   }
-  cout << res << endl;
+  cout << ans << endl;
 }
 
 int main() {

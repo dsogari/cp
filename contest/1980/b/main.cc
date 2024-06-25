@@ -1,23 +1,30 @@
+/**
+ * https://codeforces.com/contest/1980/submission/267273941
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, f, k;
   cin >> n >> f >> k;
-  vector<int> v(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> v[i];
+  vector<int> a(n + 1);
+  for (int i = 1; i <= n; ++i) {
+    cin >> a[i];
   }
-  const auto val = v[f - 1];
-  const auto cmp = greater<int>();
-  ranges::sort(v, cmp);
-  const auto l = ranges::lower_bound(v, val, cmp) - v.begin();
-  const auto r = ranges::lower_bound(v, val - 1, cmp) - v.begin();
-  const auto res = k >= r ? "YES" : (k > l ? "MAYBE" : "NO");
-  cout << res << endl;
+  if (k == n) {
+    cout << "YES" << endl;
+    return;
+  }
+  auto x = a[f];
+  ranges::sort(a, greater<int>());
+  auto ans = a[k - 1] > x ? "NO" : (a[k] < x ? "YES" : "MAYBE");
+  cout << ans << endl;
 }
 
 int main() {

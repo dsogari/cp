@@ -1,32 +1,43 @@
+/**
+ * https://codeforces.com/contest/1984/submission/267284912
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
-vector<int> p2(3e5 + 1);
+template <int N> struct Mint {
+  int x;
+  Mint(int a = 0) : x(a) {}
+  operator int() { return x; }
+  Mint &operator+=(int rhs) {
+    if ((x += rhs) >= N) {
+      x -= N;
+    }
+    return *this;
+  }
+};
 
-const auto mod = 998244353;
+using Int = Mint<998244353>;
 
 void solve(int t) {
   int n;
   cin >> n;
-  i64 sum = 0, min = 0;
-  int res = p2[n];
-  for (int i = 0, c = 0, a; i < n; ++i) {
+  map<i64, Int> dp = {{0, 1}};
+  for (int i = 0, a; i < n; ++i) {
     cin >> a;
-    sum += a;
-    if (sum >= 0)
-      ++c;
-    else if (sum < min) {
-      min = sum;
-      res = 0;
+    map<i64, Int> dp1;
+    for (auto &&[c, u] : dp) {
+      dp1[c + a] += u;
+      dp1[abs(c + a)] += u;
     }
-    if (sum && sum == min) {
-      res = (res + p2[c + n - i - 1]) % mod;
-    }
+    dp = {*dp1.begin(), *dp1.rbegin()};
   }
-  cout << res << endl;
+  cout << dp.rbegin()->second << endl;
 }
 
 int main() {
@@ -34,10 +45,6 @@ int main() {
   freopen(path(__FILE__).replace_filename("input.txt").c_str(), "r", stdin);
 #endif
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
-  p2[0] = 1;
-  for (int i = 1; i < p2.size(); ++i) {
-    p2[i] = (i64(p2[i - 1]) << 1) % mod;
-  }
   int t;
   cin >> t;
   for (int i = 1; i <= t; ++i) {

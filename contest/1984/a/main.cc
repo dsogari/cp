@@ -1,25 +1,29 @@
+/**
+ * https://codeforces.com/contest/1984/submission/267276625
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n;
   cin >> n;
-  vector<int> v(n);
+  vector<int> a(n);
   for (int i = 0; i < n; ++i) {
-    cin >> v[i];
+    cin >> a[i];
   }
-  if (v[0] == v[n - 1]) {
+  if (a.front() == a.back()) {
     cout << "NO" << endl;
     return;
   }
-  cout << "YES" << endl;
-  for (int i = 0; i < n; ++i) {
-    cout << (i == 1 ? "R" : "B");
-  }
-  cout << endl;
+  string s(n, 'B');
+  s[1] = 'R';
+  cout << "YES" << endl << s << endl;
 }
 
 int main() {

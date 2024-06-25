@@ -1,8 +1,14 @@
+/**
+ * https://codeforces.com/contest/1980/submission/267275233
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, m;
@@ -16,24 +22,25 @@ void solve(int t) {
   }
   cin >> m;
   map<int, int> count;
-  int di;
+  int d;
   for (int i = 0; i < m; ++i) {
-    cin >> di;
-    count[di]++;
+    cin >> d;
+    count[d]++;
   }
-  bool ok = false;
+  bool ans = false;
   for (int i = 0; i < n; ++i) {
     if (a[i] != b[i]) {
-      if (!(count[b[i]]--)) {
+      auto c = count[b[i]]--;
+      if (!c) {
         cout << "NO" << endl;
         return;
       }
     }
-    if (b[i] == di) {
-      ok = true;
+    if (b[i] == d) {
+      ans = true;
     }
   }
-  cout << (ok ? "YES" : "NO") << endl;
+  cout << (ans ? "YES" : "NO") << endl;
 }
 
 int main() {

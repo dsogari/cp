@@ -1,14 +1,20 @@
+/**
+ * https://codeforces.com/contest/1985/submission/267285295
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   string a, b;
   cin >> a >> b;
   swap(a[0], b[0]);
-  cout << a << " " << b << endl;
+  cout << a << ' ' << b << endl;
 }
 
 int main() {

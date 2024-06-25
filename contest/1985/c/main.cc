@@ -1,24 +1,29 @@
+/**
+ * https://codeforces.com/contest/1985/submission/267287839
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n;
   cin >> n;
-  set<i64> sums = {0};
-  int res = 0;
+  int ans = 0;
   i64 sum = 0;
-  for (int i = 0, a; i < n; ++i) {
+  for (int i = 0, a, mx = 0; i < n; ++i) {
     cin >> a;
     sum += a;
-    sums.insert(2 * a);
-    if (sums.count(sum)) {
-      ++res;
+    mx = max(mx, a);
+    if (sum == 2 * mx) {
+      ++ans;
     }
   }
-  cout << res << endl;
+  cout << ans << endl;
 }
 
 int main() {

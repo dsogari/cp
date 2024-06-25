@@ -7,11 +7,39 @@ using filesystem::path;
 using i64 = int64_t;
 using f64 = double;
 
+template <int N> struct Mint {
+  int x;
+  Mint(int a = 0) : x(a) {}
+  operator int() { return x; }
+  Mint &operator+=(int rhs) {
+    if ((x += rhs) >= N) {
+      x -= N;
+    }
+    return *this;
+  }
+  Mint &operator-=(int rhs) {
+    if ((x -= rhs) < 0) {
+      x += N;
+    }
+    return *this;
+  }
+};
+
+vector<int> factor(int x) {
+  vector<int> ans;
+  for (; x && x & 1 == 0; x >>= 1) {
+    ans.push_back(2);
+  }
+  for (int i = 3; x > 1; i += 2) {
+    for (int r = x / i; r * i == x; x = r, r /= i) {
+      ans.push_back(i);
+    }
+  }
+  return ans;
+}
+
 namespace std {
 string to_string(const string &s) { return s; }
 } // namespace std
-
-constexpr int inc_mod(int a, int m) { return (a + 1) % m; }
-constexpr int dec_mod(int a, int m) { return (a ? a : m) - 1; }
 
 // cout << fixed << setprecision(20);

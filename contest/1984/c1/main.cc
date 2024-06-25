@@ -1,19 +1,25 @@
+/**
+ * https://codeforces.com/contest/1984/submission/267277536
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n;
   cin >> n;
-  i64 sum = 0, res = 0;
+  i64 ans = 0, sum = 0;
   for (int i = 0, a; i < n; ++i) {
     cin >> a;
     sum += a;
-    res = max(abs(sum), abs(res + a));
+    ans = max(abs(sum), abs(ans + a));
   }
-  cout << res << endl;
+  cout << ans << endl;
 }
 
 int main() {

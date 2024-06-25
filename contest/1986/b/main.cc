@@ -1,8 +1,14 @@
+/**
+ * https://codeforces.com/contest/1986/submission/267295180
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, m;
@@ -15,19 +21,16 @@ void solve(int t) {
   }
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      auto a = i > 0 ? matrix[i - 1][j] : 0;
-      auto b = j > 0 ? matrix[i][j - 1] : 0;
-      auto c = i < n - 1 ? matrix[i + 1][j] : 0;
-      auto d = j < m - 1 ? matrix[i][j + 1] : 0;
-      auto e = max(a, max(b, max(c, d)));
-      if (matrix[i][j] > e) {
-        matrix[i][j] = e;
+      auto u = i > 0 ? matrix[i - 1][j] : 0;
+      auto l = j > 0 ? matrix[i][j - 1] : 0;
+      auto d = i < n - 1 ? matrix[i + 1][j] : 0;
+      auto r = j < m - 1 ? matrix[i][j + 1] : 0;
+      auto mx = max(u, max(l, max(d, r)));
+      auto &cell = matrix[i][j];
+      if (cell > mx) {
+        cell = mx;
       }
-    }
-  }
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < m; j++) {
-      cout << matrix[i][j] << ' ';
+      cout << cell << ' ';
     }
     cout << endl;
   }

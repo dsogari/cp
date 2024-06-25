@@ -1,35 +1,32 @@
+/**
+ * https://codeforces.com/contest/1985/submission/267290240
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, m;
   cin >> n >> m;
-  int h = 0, k = 0;
-  bool end = false;
+  int h1 = 0, h2 = 0, k = 0;
   for (int i = 0; i < n; ++i) {
     string row;
     cin >> row;
-    if (!k) {
-      const auto pos = row.find('#');
-      if (pos != string::npos) {
+    auto pos = row.find('#');
+    if (pos != string::npos) {
+      if (!k) {
         k = pos + 1;
-        h = i + 1;
+        h1 = i + 1;
       }
-    } else if (!end) {
-      const auto pos = row.find('#');
-      if (pos == string::npos) {
-        h = ((i + 1) + h) / 2;
-        end = true;
-      }
+      h2 = i + 1;
     }
   }
-  if (!end) {
-    h = (n + h) / 2;
-  }
-  cout << h << " " << k << endl;
+  cout << (h1 + h2) / 2 << ' ' << k << endl;
 }
 
 int main() {

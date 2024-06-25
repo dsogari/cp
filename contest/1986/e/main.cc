@@ -1,8 +1,14 @@
+/**
+ * https://codeforces.com/contest/1986/submission/267296317
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n, k;
@@ -12,30 +18,30 @@ void solve(int t) {
     cin >> a;
     mods[a % k].push_back(a);
   }
-  int res = 0, odd = 0;
+  int ans = 0, odd = 0;
   for (auto &[_, b] : mods) {
     ranges::sort(b);
     if (b.size() % 2) {
       if (odd++) {
-        res = -1;
+        ans = -1;
         break;
       }
       vector<vector<int>> sums = {{0}, {0}};
       for (int i = 0; i < b.size() - 1; i++) {
         sums[i % 2].push_back(sums[i % 2].back() + (b[i + 1] - b[i]) / k);
       }
-      int best = INT_MAX;
+      int mn = INT_MAX;
       for (int i = 0, j = 0; i < b.size(); i += 2, j++) {
-        best = min(best, sums[0][j] + sums[1].back() - sums[1][j]);
+        mn = min(mn, sums[0][j] + sums[1].back() - sums[1][j]);
       }
-      res += best;
+      ans += mn;
     } else {
       for (int i = 0; i < b.size(); i += 2) {
-        res += (b[i + 1] - b[i]) / k;
+        ans += (b[i + 1] - b[i]) / k;
       }
     }
   }
-  cout << res << endl;
+  cout << ans << endl;
 }
 
 int main() {

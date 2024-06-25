@@ -1,17 +1,20 @@
+/**
+ * https://codeforces.com/contest/1986/submission/267294638
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
-  int x1, x2, x3;
-  cin >> x1 >> x2 >> x3;
-  auto d1 = abs(x2 - x3);
-  auto d2 = abs(x1 - x3);
-  auto d3 = abs(x1 - x2);
-  auto res = min(min(d1 + d2, d2 + d3), d1 + d3);
-  cout << res << endl;
+  vector<int> x(3);
+  cin >> x[0] >> x[1] >> x[2];
+  ranges::sort(x);
+  cout << x.back() - x.front() << endl;
 }
 
 int main() {

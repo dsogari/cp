@@ -1,11 +1,14 @@
+/**
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 constexpr int inc_mod(int a, int m) { return (a + 1) % m; }
-
 constexpr int dec_mod(int a, int m) { return (a ? a : m) - 1; }
 
 void solve(int t) {

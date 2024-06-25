@@ -1,28 +1,27 @@
+/**
+ * https://codeforces.com/contest/1984/submission/267277074
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
-  i64 x;
+  string x;
   cin >> x;
-  if (x % 10 == 9) {
+  if (x.front() != '1' || x.back() == '9') {
     cout << "NO" << endl;
     return;
   }
-  auto dn = 0;
-  while (x) {
-    dn = x;
-    x /= 10;
-    if (x && x % 10 == 0) {
+  for (int i = 1; i < x.size() - 1; i++) {
+    if (x[i] == '0') {
       cout << "NO" << endl;
       return;
     }
-  }
-  if (dn != 1) {
-    cout << "NO" << endl;
-    return;
   }
   cout << "YES" << endl;
 }

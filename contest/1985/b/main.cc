@@ -1,21 +1,19 @@
+/**
+ * https://codeforces.com/contest/1985/submission/267286563
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
+using f64 = double;
 
 void solve(int t) {
   int n;
   cin >> n;
-  int best = 0;
-  for (int x = 2, mx = 0; x <= n; ++x) {
-    const auto k = n / x, sum = x * k * (k + 1) / 2;
-    if (sum > mx) {
-      mx = sum;
-      best = x;
-    }
-  }
-  cout << best << endl;
+  cout << (n == 3 ? 3 : 2) << endl;
 }
 
 int main() {

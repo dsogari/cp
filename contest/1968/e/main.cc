@@ -1,26 +1,20 @@
+/**
+ * https://codeforces.com/contest/1968/submission/267257970
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
 using filesystem::path;
 using i64 = int64_t;
 
-struct Point {
-  int r, c;
-};
-
 void solve(int t) {
   int n;
   cin >> n;
-  const auto f = [n]() {
-    vector<Point> h(n);
-    for (int i = 0; i < n; ++i) {
-      h[i] = {i + 1, i + 1};
-    }
-    h[1].c = 1;
-    return h;
-  };
-  for (const auto p : f()) {
-    cout << p.r << " " << p.c << endl;
+  for (int i = 1; i <= n; ++i) {
+    auto row = i, col = i == 2 ? 1 : i;
+    cout << row << ' ' << col << endl;
   }
   cout << endl;
 }

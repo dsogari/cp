@@ -1,3 +1,8 @@
+/**
+ * https://codeforces.com/contest/1968/submission/267257471
+ *
+ * Copyright (c) 2024 Diego Sogari
+ */
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -14,17 +19,17 @@ void solve(int t) {
   for (int i = 1; i <= n; ++i) {
     cin >> a[i];
   }
-  const auto f = [&p, &a](int n, int k, int i) {
-    i64 r = 0;
-    for (i64 s = 0; k && n; --k, --n, s += a[i], i = p[i]) {
-      r = max(r, s + i64(k) * a[i]);
+  auto f = [&](int k, int n, int i) {
+    i64 mx = 0;
+    for (i64 sum = 0; k && n; --k, --n, sum += a[i], i = p[i]) {
+      mx = max(mx, sum + i64(k) * a[i]);
     }
-    return r;
+    return mx;
   };
-  const auto fb = f(n, k, pb);
-  const auto fs = f(n, k, ps);
-  const auto winner = fb > fs ? "Bodya" : (fb < fs ? "Sasha" : "Draw");
-  cout << winner << endl;
+  auto fb = f(k, n, pb);
+  auto fs = f(k, n, ps);
+  auto wn = fb > fs ? "Bodya" : (fb < fs ? "Sasha" : "Draw");
+  cout << wn << endl;
 }
 
 int main() {

@@ -25,6 +25,19 @@ template <int N> struct Mint {
   }
 };
 
+vector<int> zfunc(const string &s) {
+  const int n = s.size();
+  vector<int> z(n);
+  for (int i = 1, j = 1; i < n; i++) {
+    if (i < j + z[j]) {
+      z[i] = min(j + z[j] - i, z[i - j]);
+    }
+    for (; i + z[i] < n && s[i + z[i]] == s[z[i]]; z[i]++, j = i)
+      ;
+  }
+  return z;
+}
+
 vector<int> factor(int x) {
   vector<int> ans;
   for (; x && x & 1 == 0; x >>= 1) {

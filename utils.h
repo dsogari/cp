@@ -6,6 +6,8 @@ using namespace std;
 using filesystem::path;
 using i64 = int64_t;
 using f64 = double;
+using MaxHeap = priority_queue<int>;
+using MinHeap = priority_queue<int, vector<int>, greater<int>>;
 
 template <int N> struct Mint {
   int x;

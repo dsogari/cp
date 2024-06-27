@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/1971/submission/267622975
+ *
  * Copyright (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -8,7 +10,15 @@ using filesystem::path;
 using i64 = int64_t;
 using f64 = double;
 
-void solve(int t) {}
+void solve(int t) {
+  int r;
+  cin >> r;
+  int ans = 0;
+  for (i64 i = 1, a = i64(r) * r, b = i64(r + 1) * (r + 1); i <= r; i++) {
+    ans += ceil(sqrt(b - i * i)) - ceil(sqrt(a - i * i));
+  }
+  cout << ans * 4 << endl;
+}
 
 int main() {
 #ifdef LOCAL

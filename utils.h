@@ -6,9 +6,14 @@
 #include <bits/stdc++.h>
 
 /**
- * Common types
+ * Common namespaces
  */
 using namespace std;
+using namespace placeholders;
+
+/**
+ * Common types
+ */
 using i64 = int64_t;
 using f64 = double;
 using str = const string &;
@@ -18,20 +23,44 @@ using MinHeap = priority_queue<int, vector<int>, greater<int>>;
 /**
  * Common constants
  */
-constexpr int _mod = 1000000007; // 998244353
+constexpr int _mod = 1000000007;
+// constexpr int _mod = 998244353;
 
 /**
  * Input number
  */
-template <typename T = int> struct Num {
+template <typename T> struct Num {
   T x;
   Num() { cin >> x; }
   Num(T a) : x(a) {}
   operator T &() { return x; }
+  operator T() const { return x; }
 };
 
+/**
+ * Common input types
+ */
+using Int = Num<int>;
+using Chr = Num<char>;
+using I64 = Num<i64>;
+using F64 = Num<f64>;
+
+/**
+ * Input string
+ */
 struct Str : string {
   Str() { cin >> *this; }
+};
+
+/**
+ * Matrix (2-D Vector)
+ */
+template <typename T> struct Mat : vector<vector<T>> {
+  Mat(int n, int m) : vector<vector<T>>(n) {
+    for (auto &&row : *this) {
+      row.resize(m);
+    }
+  }
 };
 
 /**
@@ -39,26 +68,26 @@ struct Str : string {
  */
 struct Mod {
   int x, m;
-  Mod(i64 x, int m = _mod) : x(x % m), m(m) {}
-  operator int() { return x; }
+  Mod(i64 x = 0, int m = _mod) : x(x % m), m(m) {}
+  operator int() const { return x; }
   Mod &operator+=(int rhs) { return x = operator+(rhs), *this; }
   Mod &operator-=(int rhs) { return x = operator-(rhs), *this; }
   Mod &operator*=(int rhs) { return x = operator*(rhs), *this; }
-  Mod operator+(int rhs) {
+  Mod operator+(int rhs) const {
     return rhs < 0 ? operator-(-rhs) : Mod((x + rhs >= m ? x - m : x) + rhs, m);
   }
-  Mod operator-(int rhs) {
+  Mod operator-(int rhs) const {
     return rhs < 0 ? operator+(-rhs) : Mod((x - rhs < 0 ? x + m : x) - rhs, m);
   }
-  Mod operator*(int rhs) { return Mod(i64(x) * rhs, m); }
-  Mod pow(int y) {
+  Mod operator*(int rhs) const { return Mod(i64(x) * rhs, m); }
+  Mod pow(int y) const {
     Mod b(x, m), ans(!!x, m);
     for (; b && y; y >>= 1, b *= b) {
       ans *= (y & 1) ? b.x : 1;
     }
     return ans;
   }
-  Mod inv() { return pow(m - 2); }
+  Mod inv() const { return pow(m - 2); }
 };
 
 /**
@@ -75,7 +104,7 @@ struct Bin {
       den[i - 1] = den[i] * i;
     }
   }
-  Mod operator()(int n, int k) {
+  Mod operator()(int n, int k) const {
     return k < 0 || k > n ? num[0] * 0 : num[n] * (den[k] * den[n - k]);
   }
 };
@@ -84,7 +113,7 @@ struct Bin {
  * (Undirected) Graph
  */
 struct Graph : vector<vector<int>> {
-  vector<array<Num<>, 2>> e;
+  vector<array<Int, 2>> e;
   Graph(int n, int m = 0) : vector<vector<int>>(n), e(m) {
     for (auto &[u, v] : e) {
       add(u, v);
@@ -100,7 +129,7 @@ struct Graph : vector<vector<int>> {
  * (Undirected) Weighed Graph
  */
 struct WGraph : vector<vector<array<int, 2>>> {
-  vector<array<Num<>, 3>> e;
+  vector<array<Int, 3>> e;
   WGraph(int n, int m = 0) : vector<vector<array<int, 2>>>(n), e(m) {
     for (auto &[u, v, w] : e) {
       add(u, v, w);
@@ -116,7 +145,7 @@ struct WGraph : vector<vector<array<int, 2>>> {
  * Directed Graph
  */
 struct DGraph : vector<vector<int>> {
-  vector<array<Num<>, 2>> e;
+  vector<array<Int, 2>> e;
   DGraph(int n, int m = 0) : vector<vector<int>>(n), e(m) {
     for (auto &[u, v] : e) {
       add(u, v);
@@ -129,7 +158,7 @@ struct DGraph : vector<vector<int>> {
  * Weighed Directed Graph
  */
 struct WDGraph : vector<vector<array<int, 2>>> {
-  vector<array<Num<>, 3>> e;
+  vector<array<Int, 3>> e;
   WDGraph(int n, int m = 0) : vector<vector<array<int, 2>>>(n), e(m) {
     for (auto &[u, v, w] : e) {
       add(u, v, w);
@@ -174,7 +203,7 @@ private:
 };
 
 /**
- * Strongly-connected components (of directed graph0
+ * Strongly-connected components (of directed graph)
  */
 struct SCC : vector<int> {
   int count = 0;
@@ -348,8 +377,8 @@ struct Pref2D {
  * Z-function
  */
 struct Zfn : vector<int> {
-  Zfn(auto &a, int s = 0) : Zfn(a, s, a.size()) {}
-  Zfn(auto &a, int s, int e) : vector<int>(e - s) {
+  Zfn(const auto &a, int s = 0) : Zfn(a, s, a.size()) {}
+  Zfn(const auto &a, int s, int e) : vector<int>(e - s) {
     auto &z = *this;
     for (int i = 1, j = 1; i + s < e; i++) {
       auto &c = z[i] = max(0, min(j + z[j] - i, z[i - j]));
@@ -360,10 +389,10 @@ struct Zfn : vector<int> {
 };
 
 /**
- * Precomputed integer factors (divisors)
+ * Precomputed integer factors (Divisors)
  */
-struct Fac : vector<vector<int>> {
-  Fac(int n) : vector<vector<int>>(n + 1) {
+struct Div : vector<vector<int>> {
+  Div(int n) : vector<vector<int>>(n + 1) {
     for (int i = 1; i <= n; i++) {
       for (int j = i; j <= n; j += i) {
         (*this)[j].push_back(i);
@@ -375,7 +404,7 @@ struct Fac : vector<vector<int>> {
 /**
  * Inversion count and cyclic shift (of sorted array)
  */
-pair<int, int> invshift(auto &a, int sa = 0, int sp = 1) {
+pair<int, int> invshift(const auto &a, int sa = 0, int sp = 1) {
   int inv = 0, shift = a[sa] - sp, n = a.size();
   for (int i = sa, sum = 0; i < n; i++) {
     for (int j = i + 1; j < n; j++) {
@@ -400,10 +429,10 @@ const less<int> lt1;
 const greater<int> gt1;
 const less<array<int, 2>> lt2;
 const greater<array<int, 2>> gt2;
-const auto lta2 = [](auto &lhs, auto &rhs) {
+const auto lta2 = [](const auto &lhs, const auto &rhs) {
   return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
 };
-const auto gta2 = [](auto &lhs, auto &rhs) {
+const auto gta2 = [](const auto &lhs, const auto &rhs) {
   return lhs[0] > rhs[0] || (lhs[0] == rhs[0] && lhs[1] > rhs[1]);
 };
 
@@ -413,16 +442,87 @@ const auto gta2 = [](auto &lhs, auto &rhs) {
 int binsearch(const auto &f, int s, int e) {
   while (s < e) {
     auto m = (s + e + 1) / 2;
-    f(m) ? s = m + 1 : e = m - 1;
+    f(m) ? s = m : e = m - 1;
   }
   return e;
 }
 
 /**
+ * Choices satisfying inequality x + y <= c, for x <= a and y <= b
+ */
+i64 choices(int a, int b, int c) {
+  i64 ans = 0;
+  for (int i = 0; i <= a; i++) {
+    ans += max(0, 1 + min(b, c - i));
+  }
+  return ans;
+}
+
+/**
+ * Geometry utilities
+ */
+auto sign(auto x) { return (x > 0) - (x < 0); }
+
+template <typename T = int> struct Point {
+  T x, y;
+  Point &operator+=(const Point<T> &p) { return x += p.x, y += p.y, *this; }
+  Point &operator-=(const Point<T> &p) { return x -= p.x, y -= p.y, *this; }
+  Point &operator*=(T scale) { return x *= scale, y *= scale, *this; }
+  Point &operator/=(T scale) { return x /= scale, y /= scale, *this; }
+  Point operator+(const Point<T> &p) const { return {x + p.x, y + p.y}; }
+  Point operator-(const Point<T> &p) const { return {x - p.x, y - p.y}; }
+  Point operator*(T scale) const { return {x * scale, y * scale}; }
+  Point operator/(T scale) const { return {x / scale, y / scale}; }
+  bool operator<(const Point<T> &p) const {
+    return x < p.x || (x == p.x && y < p.y);
+  }
+  auto cross(const Point<T> &p) const { return x * p.y - y * p.x; }
+  auto dot(const Point<T> &p) const { return x * p.x + y * p.y; }
+  auto side(const Point<T> &p) const { return sign(cross(p)); }
+  auto norm2() const { return dot(*this); }
+  auto norm() const { return sqrt(norm2()); }
+};
+
+template <typename T = int> struct Circle {
+  T r;
+  Point<T> c;
+  auto area() const { return M_PI * r * r; }
+  auto perim() const { return M_PI * r * 2; }
+  auto side(const Point<T> &p) const { return sign(r * r - (p - c).norm2()); }
+};
+
+template <typename T = int> struct Triangle {
+  Point<T> a, b, c;
+  auto area() const {
+    return abs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2.0;
+  }
+  auto perim() const {
+    return (a - b).norm() + (b - c).norm() + (c - a).norm();
+  }
+  auto side(const Point<T> &p) const {
+    auto s1 = (a - b).side(p - b);
+    auto s2 = (b - c).side(p - c);
+    auto s3 = (c - a).side(p - a);
+    auto sum = abs(s1 + s2 + s3);
+    return sum >= 2 ? sum - 2 : -!!(s1 * s2 * s3);
+  }
+  auto circum() const {
+    auto v1 = b - a, v2 = c - a;
+    auto n1 = v1.norm2(), n2 = v2.norm2();
+    auto ux = v2.y * n1 - v1.y * n2;
+    auto uy = v1.x * n2 - v2.x * n1;
+    auto u = Point<T>(ux, uy) / (2 * v1.cross(v2));
+    return Circle<T>(u.norm(), u + a);
+  }
+};
+
+template <typename T = int> struct Polygon : vector<Point<T>> {};
+
+/**
  * Debugging utilities
  */
 void debugn(int n) { cout << n << ';'; }
-void debuga(auto &a) {
+void debuga(const auto &a) {
   for (auto &ai : a) {
     cout << ai << ',';
   }
@@ -432,7 +532,7 @@ void debuga(auto &a) {
 /**
  * Test case function
  */
-void solve(int t) { Num n; }
+void solve(int t) { Int n; }
 
 /**
  * Main function
@@ -443,7 +543,7 @@ int main() {
   freopen(path(__FILE__).replace_filename("input").c_str(), "r", stdin);
 #endif
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
-  Num t;
+  Int t;
   for (int i = 1; i <= t; ++i) {
     solve(i);
   }

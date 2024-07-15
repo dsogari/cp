@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1985/submission/270398747
+ * https://codeforces.com/contest/1985/submission/270608504
  *
  * Copyright (c) 2024 Diego Sogari
  */
@@ -20,41 +20,93 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-struct Pref2D {
+template <typename T> struct Mat : vector<vector<T>> {
   int n, m;
-  vector<vector<int>> sum;
-  Pref2D(int n, int m) : sum(n + 1), n(n), m(m) {
-    for (auto &&row : sum) {
-      row.resize(m + 1);
+  Mat(int n, int m) : vector<vector<T>>(n), n(n), m(m) {
+    for (auto &&row : *this) {
+      row.resize(m);
     }
   }
-  void rect(int x, const array<int, 4> &range) {
+  static Mat ident(int n) {
+    Mat ans(n, n);
+    for (int i = 0; i < n; i++) {
+      ans[i][i] = 1;
+    }
+    return ans;
+  }
+  Mat trans() const {
+    Mat ans(m, n);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < m; j++) {
+        ans[j][i] = (*this)[i][j];
+      }
+    }
+    return ans;
+  }
+  Mat pow(int rhs) const {
+    auto base = *this, ans = ident(n);
+    for (; rhs; rhs >>= 1, base *= base) {
+      if (rhs & 1) {
+        ans *= base;
+      }
+    }
+    return ans;
+  }
+  template <typename U> vector<U> operator*(const vector<U> &rhs) const {
+    assert(m == rhs.size());
+    vector<U> ans(n);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < m; j++) {
+        ans[i] += (*this)[i][j] * rhs[i];
+      }
+    }
+    return ans;
+  }
+  template <typename U> Mat<U> operator*(const Mat<U> &rhs) const {
+    assert(m == rhs.n);
+    Mat<U> ans(n, rhs.m);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < rhs.m; j++) {
+        for (int k = 0; k < m; k++) {
+          ans[i][j] += (*this)[i][k] * rhs[k][j];
+        }
+      }
+    }
+    return ans;
+  }
+  Mat &operator*=(const Mat &rhs) { return *this = operator*(rhs); }
+};
+
+template <typename T> struct Pref2D {
+  Mat<T> sum;
+  Pref2D(int n, int m) : sum(n + 1, m + 1) {}
+  void rect(T x, const array<int, 4> &range) {
     auto [r1, c1, r2, c2] = range;
     sum[r1][c1] += x;
     sum[r2 + 1][c1] -= x;
     sum[r1][c2 + 1] -= x;
     sum[r2 + 1][c2 + 1] += x;
   }
-  void rows(int x, const array<int, 2> &range) {
+  void rows(T x, const array<int, 2> &range) {
     auto [r1, r2] = range;
     sum[r1][0] += x;
     sum[r2 + 1][0] -= x;
   }
-  void cols(int x, const array<int, 2> &range) {
+  void cols(T x, const array<int, 2> &range) {
     auto [c1, c2] = range;
     sum[0][c1] += x;
     sum[0][c2 + 1] -= x;
   }
-  void cross(int x, const array<int, 4> &range) {
+  void cross(T x, const array<int, 4> &range) {
     auto [r1, c1, r2, c2] = range;
     rows(x, {r1, r2});
     cols(x, {c1, c2});
     rect(-x, range);
   }
   void visit(const auto &f) {
-    vector<int> cur(m + 1);
-    for (int i = 0; i < n; i++) {
-      for (int j = 0, prev = 0; j < m; j++) {
+    vector<T> cur(sum.m);
+    for (int i = 0; i < sum.n - 1; i++) {
+      for (int j = 0, prev = 0; j < sum.m - 1; j++) {
         int saved = cur[j + 1];
         cur[j + 1] += sum[i][j] + cur[j] - prev;
         prev = saved;
@@ -84,7 +136,7 @@ void solve(int t) {
     self(self, i, j + 1); // right
   };
   vector<int> rows(n), cols(m);
-  Pref2D prefsum(n, m);
+  Pref2D<int> prefsum(n, m);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
       if (g[i][j] == '#') {

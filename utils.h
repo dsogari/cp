@@ -53,43 +53,34 @@ struct Str : string {
 };
 
 /**
- * Matrix (2-D Vector)
- */
-template <typename T> struct Mat : vector<vector<T>> {
-  Mat(int n, int m) : vector<vector<T>>(n) {
-    for (auto &&row : *this) {
-      row.resize(m);
-    }
-  }
-};
-
-/**
  * Modular integer
  */
 struct Mod {
   int x, m;
   Mod(i64 x = 0, int m = _mod) : x(x % m), m(m) {}
   operator int() const { return x; }
-  Mod &operator+=(int rhs) { return x = operator+(rhs), *this; }
-  Mod &operator-=(int rhs) { return x = operator-(rhs), *this; }
-  Mod &operator*=(int rhs) { return x = operator*(rhs), *this; }
-  Mod &operator/=(int rhs) { return x = operator/(rhs), *this; }
-  Mod operator+(int rhs) const {
-    return rhs < 0 ? operator-(-rhs) : Mod((x + rhs >= m ? x - m : x) + rhs, m);
+  Mod operator+(int rhs) const { return Mod(x, m) += rhs; }
+  Mod operator-(int rhs) const { return Mod(x, m) -= rhs; }
+  Mod operator*(int rhs) const { return Mod(x, m) *= rhs; }
+  Mod operator/(int rhs) const { return Mod(x, m) /= rhs; }
+  Mod &operator+=(int rhs) {
+    return rhs < 0 ? operator-=(-rhs) : ((x += rhs) >= m ? x -= m : x, *this);
   }
-  Mod operator-(int rhs) const {
-    return rhs < 0 ? operator+(-rhs) : Mod((x - rhs < 0 ? x + m : x) - rhs, m);
+  Mod &operator-=(int rhs) {
+    return rhs < 0 ? operator+=(-rhs) : ((x -= rhs) < 0 ? x += m : x, *this);
   }
-  Mod operator*(int rhs) const { return Mod(i64(x) * rhs, m); }
-  Mod operator/(int rhs) const { return operator*(Mod(rhs, m).inv()); }
-  Mod pow(int y) const {
-    Mod b(x, m), ans(!!x, m);
-    for (; b && y; y >>= 1, b *= b) {
-      ans *= (y & 1) ? b.x : 1;
+  Mod &operator*=(int rhs) { return x = (i64(x) * rhs) % m, *this; }
+  Mod &operator/=(int rhs) { return operator*=(Mod(rhs, m).inv()); }
+  Mod inv() const { return pow(m - 2); } // inv of zero gives zero
+  Mod pow(int rhs) const {
+    Mod base(x, m), ans(!!x, m);
+    for (; base && rhs; rhs >>= 1, base *= base) {
+      if (rhs & 1) {
+        ans *= base;
+      }
     }
     return ans;
   }
-  Mod inv() const { return pow(m - 2); } // inv of zero gives zero
 };
 
 /**
@@ -162,9 +153,9 @@ struct WGraph : vector<vector<array<int, 2>>> {
 /**
  * Directed Graph
  */
-struct DGraph : vector<vector<int>> {
+struct Digraph : vector<vector<int>> {
   vector<array<Int, 2>> e;
-  DGraph(int n, int m = 0) : vector<vector<int>>(n), e(m) {
+  Digraph(int n, int m = 0) : vector<vector<int>>(n), e(m) {
     for (auto &[u, v] : e) {
       add(u, v);
     }
@@ -175,9 +166,9 @@ struct DGraph : vector<vector<int>> {
 /**
  * Weighed Directed Graph
  */
-struct WDGraph : vector<vector<array<int, 2>>> {
+struct WDigraph : vector<vector<array<int, 2>>> {
   vector<array<Int, 3>> e;
-  WDGraph(int n, int m = 0) : vector<vector<array<int, 2>>>(n), e(m) {
+  WDigraph(int n, int m = 0) : vector<vector<array<int, 2>>>(n), e(m) {
     for (auto &[u, v, w] : e) {
       add(u, v, w);
     }
@@ -225,7 +216,7 @@ private:
  */
 struct SCC : vector<int> {
   int count = 0;
-  SCC(DGraph g) : vector<int>(g.size()), low(g.size()) {
+  SCC(Digraph g) : vector<int>(g.size()), low(g.size()) {
     for (int i = 0, t = 1; i < g.size(); i++) {
       if (low[i] == 0) {
         dfs(g, i, t);
@@ -234,7 +225,7 @@ struct SCC : vector<int> {
   }
 
 private:
-  void dfs(DGraph &g, int u, int &t) {
+  void dfs(Digraph &g, int u, int &t) {
     auto tx = low[u] = t++;
     visited.push_back(u);
     for (auto v : g[u]) {
@@ -345,43 +336,98 @@ struct Fen {
 };
 
 /**
- * 2-D prefix sums
+ * Matrix (2-D Vector)
  */
-struct Pref2D {
+template <typename T> struct Mat : vector<vector<T>> {
   int n, m;
-  vector<vector<int>> sum;
-  Pref2D(int n, int m) : sum(n + 1), n(n), m(m) {
-    for (auto &&row : sum) {
-      row.resize(m + 1);
+  Mat(int n, int m) : vector<vector<T>>(n), n(n), m(m) {
+    for (auto &&row : *this) {
+      row.resize(m);
     }
   }
-  void rect(int x, const array<int, 4> &range) {
+  static Mat ident(int n) {
+    Mat ans(n, n);
+    for (int i = 0; i < n; i++) {
+      ans[i][i] = 1;
+    }
+    return ans;
+  }
+  Mat trans() const {
+    Mat ans(m, n);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < m; j++) {
+        ans[j][i] = (*this)[i][j];
+      }
+    }
+    return ans;
+  }
+  Mat pow(int rhs) const {
+    auto base = *this, ans = ident(n);
+    for (; rhs; rhs >>= 1, base *= base) {
+      if (rhs & 1) {
+        ans *= base;
+      }
+    }
+    return ans;
+  }
+  template <typename U> vector<U> operator*(const vector<U> &rhs) const {
+    assert(m == rhs.size());
+    vector<U> ans(n);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < m; j++) {
+        ans[i] += (*this)[i][j] * rhs[i];
+      }
+    }
+    return ans;
+  }
+  template <typename U> Mat<U> operator*(const Mat<U> &rhs) const {
+    assert(m == rhs.n);
+    Mat<U> ans(n, rhs.m);
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < rhs.m; j++) {
+        for (int k = 0; k < m; k++) {
+          ans[i][j] += (*this)[i][k] * rhs[k][j];
+        }
+      }
+    }
+    return ans;
+  }
+  Mat &operator*=(const Mat &rhs) { return *this = operator*(rhs); }
+};
+
+/**
+ * 2-D prefix sums
+ */
+template <typename T> struct Pref2D {
+  Mat<T> sum;
+  Pref2D(int n, int m) : sum(n + 1, m + 1) {}
+  void rect(T x, const array<int, 4> &range) {
     auto [r1, c1, r2, c2] = range;
     sum[r1][c1] += x;
     sum[r2 + 1][c1] -= x;
     sum[r1][c2 + 1] -= x;
     sum[r2 + 1][c2 + 1] += x;
   }
-  void rows(int x, const array<int, 2> &range) {
+  void rows(T x, const array<int, 2> &range) {
     auto [r1, r2] = range;
     sum[r1][0] += x;
     sum[r2 + 1][0] -= x;
   }
-  void cols(int x, const array<int, 2> &range) {
+  void cols(T x, const array<int, 2> &range) {
     auto [c1, c2] = range;
     sum[0][c1] += x;
     sum[0][c2 + 1] -= x;
   }
-  void cross(int x, const array<int, 4> &range) {
+  void cross(T x, const array<int, 4> &range) {
     auto [r1, c1, r2, c2] = range;
     rows(x, {r1, r2});
     cols(x, {c1, c2});
     rect(-x, range);
   }
   void visit(const auto &f) {
-    vector<int> cur(m + 1);
-    for (int i = 0; i < n; i++) {
-      for (int j = 0, prev = 0; j < m; j++) {
+    vector<T> cur(sum.m);
+    for (int i = 0; i < sum.n - 1; i++) {
+      for (int j = 0, prev = 0; j < sum.m - 1; j++) {
         int saved = cur[j + 1];
         cur[j + 1] += sum[i][j] + cur[j] - prev;
         prev = saved;
@@ -481,14 +527,14 @@ i64 choices(int a, int b, int c) {
  */
 template <typename T = int> struct Point {
   T x, y;
-  Point &operator+=(const Point<T> &p) { return x += p.x, y += p.y, *this; }
-  Point &operator-=(const Point<T> &p) { return x -= p.x, y -= p.y, *this; }
+  Point &operator+=(const Point &p) { return x += p.x, y += p.y, *this; }
+  Point &operator-=(const Point &p) { return x -= p.x, y -= p.y, *this; }
   Point &operator*=(T scale) { return x *= scale, y *= scale, *this; }
   Point &operator/=(T scale) { return x /= scale, y /= scale, *this; }
-  Point operator+(const Point<T> &p) const { return {x + p.x, y + p.y}; }
-  Point operator-(const Point<T> &p) const { return {x - p.x, y - p.y}; }
-  Point operator*(T scale) const { return {x * scale, y * scale}; }
-  Point operator/(T scale) const { return {x / scale, y / scale}; }
+  Point operator+(const Point &p) const { return Point(x, y) += p; }
+  Point operator-(const Point &p) const { return Point(x, y) -= p; }
+  Point operator*(T scale) const { return Point(x, y) *= scale; }
+  Point operator/(T scale) const { return Point(x, y) /= scale; }
   Point operator-() const { return {-x, -y}; } // reflect about y=-x
   Point reflect() const { return {y, x}; }     // reflect about y=x
   Point rotate() const { return {-y, x}; }     // rotate 90 degrees
@@ -504,10 +550,10 @@ template <typename T = int> struct Point {
   auto norm() const { return sqrt(norm2()); }
   auto slope() const { return y / f64(x); }
   auto angle() const { return atan2(y, x); }
-  auto operator<=>(const Point<T> &p) const {
-    return tie(x, y) <=> tie(p.x, p.y);
-  }
+  auto operator<=>(const Point &p) const { return tie(x, y) <=> tie(p.x, p.y); }
 };
+
+int sign(auto x) { return (x > 0) - (x < 0); };
 
 /**
  * Circle
@@ -518,7 +564,7 @@ template <typename T = int> struct Circle {
   auto area() const { return numbers::pi * r * r; }
   auto perim() const { return numbers::pi * r * 2; }
   auto dist(const Point<T> &p) const { return r - (p - c).norm(); }
-  auto dist2(const Point<T> &p) const { return r * r - (p - c).norm2(); }
+  auto side(const Point<T> &p) const { return sign(r * r - (p - c).norm2()); }
 };
 
 /**
@@ -532,21 +578,28 @@ template <typename T = int> struct Triangle {
   auto perim() const {
     return (a - b).norm() + (b - c).norm() + (c - a).norm();
   }
+  auto orient() const { return (b - a).cross(c - a); }
   auto side(const Point<T> &p) const {
-    auto sign = [](T x) { return (x > 0) - (x < 0); };
     auto s1 = sign((a - b).cross(p - b));
     auto s2 = sign((b - c).cross(p - c));
     auto s3 = sign((c - a).cross(p - a));
     auto sum = abs(s1 + s2 + s3);
     return sum >= 2 ? sum - 2 : -!!(s1 * s2 * s3);
   }
-  auto circum() const {
+  auto circle() const {
     auto v1 = b - a, v2 = c - a;
-    f64 n1 = v1.norm2(), n2 = v2.norm2();
-    f64 ux = v2.y * n1 - v1.y * n2; // use float, as it may be huge
-    f64 uy = v1.x * n2 - v2.x * n1;
+    i64 n1 = v1.norm2(), n2 = v2.norm2();
+    auto ux = v2.y * n1 - v1.y * n2;
+    auto uy = v1.x * n2 - v2.x * n1;
     auto u = Point<f64>(ux, uy) / (2.0 * v1.cross(v2));
     return Circle<f64>(u.norm(), u + Point<f64>(a.x, a.y));
+  }
+  bool circum(const Point<T> &p) const {
+    auto a1 = a - p, b1 = b - p, c1 = c - p;
+    auto x = (i64)a1.norm2() * b1.cross(c1);
+    auto y = (i64)b1.norm2() * c1.cross(a1);
+    auto z = (i64)c1.norm2() * a1.cross(b1);
+    return (x + y + z) * sign(orient()) >= 0;
   }
 };
 
@@ -554,26 +607,23 @@ template <typename T = int> struct Triangle {
  * Convex Hull
  */
 struct Hull : vector<int> {
-  template <typename T> Hull(const vector<Point<T>> &p) {
-    auto cmp1 = [&](const auto &a, const auto &b) {
-      return a.reflect() < b.reflect();
-    };
-    auto it = min_element(p.begin(), p.end(), cmp1);
+  template <typename T>
+  Hull(const vector<Point<T>> &p) : vector<int>(p.size()) {
+    assert(size() > 2);
+    auto cmp1 = [&](int i, int j) { return p[i].reflect() < p[j].reflect(); };
     auto cmp2 = [&](int i, int j) {
-      auto r = (p[i] - *it).cross(p[j] - *it);
+      auto r = (p[i] - p[front()]).cross(p[j] - p[front()]);
       return r > 0 || (r == 0 && p[i].x < p[j].x);
     };
-    auto &h = *this;
-    resize(p.size());
     iota(begin(), end(), 0);
-    ::swap(front(), h[it - p.begin()]);
+    ::swap(front(), *min_element(begin(), end(), cmp1));
     sort(begin() + 1, end(), cmp2);
-    int i = 3;
-    for (int j = i; j < size(); h[i++] = h[j++]) {
-      for (; (p[h[i - 1]] - p[h[i - 2]]).cross(p[h[j]] - p[h[i - 2]]) < 0; i--)
+    auto i = begin() + 3;
+    for (auto j = i; j != end(); *i++ = *j++) {
+      for (; (p[*(i - 1)] - p[*(i - 2)]).cross(p[*j] - p[*(i - 2)]) < 0; i--)
         ;
     }
-    resize(i);
+    resize(i - begin());
   }
 };
 

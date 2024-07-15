@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/270595837
+ * https://codeforces.com/contest/1984/submission/271011898
  *
  * Copyright (c) 2024 Diego Sogari
  */
@@ -24,38 +24,40 @@ struct Mod {
   int x, m;
   Mod(i64 x = 0, int m = _mod) : x(x % m), m(m) {}
   operator int() const { return x; }
-  Mod &operator+=(int rhs) { return x = operator+(rhs), *this; }
-  Mod &operator-=(int rhs) { return x = operator-(rhs), *this; }
-  Mod &operator*=(int rhs) { return x = operator*(rhs), *this; }
-  Mod &operator/=(int rhs) { return x = operator/(rhs), *this; }
-  Mod operator+(int rhs) const {
-    return rhs < 0 ? operator-(-rhs) : Mod((x + rhs >= m ? x - m : x) + rhs, m);
+  Mod operator+(int rhs) const { return Mod(x, m) += rhs; }
+  Mod operator-(int rhs) const { return Mod(x, m) -= rhs; }
+  Mod operator*(int rhs) const { return Mod(x, m) *= rhs; }
+  Mod operator/(int rhs) const { return Mod(x, m) /= rhs; }
+  Mod &operator+=(int rhs) {
+    return rhs < 0 ? operator-=(-rhs) : ((x += rhs) >= m ? x -= m : x, *this);
   }
-  Mod operator-(int rhs) const {
-    return rhs < 0 ? operator+(-rhs) : Mod((x - rhs < 0 ? x + m : x) - rhs, m);
+  Mod &operator-=(int rhs) {
+    return rhs < 0 ? operator+=(-rhs) : ((x -= rhs) < 0 ? x += m : x, *this);
   }
-  Mod operator*(int rhs) const { return Mod(i64(x) * rhs, m); }
-  Mod operator/(int rhs) const { return operator*(Mod(rhs, m).inv()); }
-  Mod pow(int y) const {
-    Mod b(x, m), ans(!!x, m);
-    for (; b && y; y >>= 1, b *= b) {
-      ans *= (y & 1) ? b.x : 1;
+  Mod &operator*=(int rhs) { return x = (i64(x) * rhs) % m, *this; }
+  Mod &operator/=(int rhs) { return operator*=(Mod(rhs, m).inv()); }
+  Mod inv() const { return pow(m - 2); } // inv of zero gives zero
+  Mod pow(int rhs) const {
+    Mod base(x, m), ans(!!x, m);
+    for (; base && rhs; rhs >>= 1, base *= base) {
+      if (rhs & 1) {
+        ans *= base;
+      }
     }
     return ans;
   }
-  Mod inv() const { return pow(m - 2); } // inv of zero gives zero
 };
 
 template <typename T = int> struct Point {
   T x, y;
-  Point &operator+=(const Point<T> &p) { return x += p.x, y += p.y, *this; }
-  Point &operator-=(const Point<T> &p) { return x -= p.x, y -= p.y, *this; }
+  Point &operator+=(const Point &p) { return x += p.x, y += p.y, *this; }
+  Point &operator-=(const Point &p) { return x -= p.x, y -= p.y, *this; }
   Point &operator*=(T scale) { return x *= scale, y *= scale, *this; }
   Point &operator/=(T scale) { return x /= scale, y /= scale, *this; }
-  Point operator+(const Point<T> &p) const { return {x + p.x, y + p.y}; }
-  Point operator-(const Point<T> &p) const { return {x - p.x, y - p.y}; }
-  Point operator*(T scale) const { return {x * scale, y * scale}; }
-  Point operator/(T scale) const { return {x / scale, y / scale}; }
+  Point operator+(const Point &p) const { return Point(x, y) += p; }
+  Point operator-(const Point &p) const { return Point(x, y) -= p; }
+  Point operator*(T scale) const { return Point(x, y) *= scale; }
+  Point operator/(T scale) const { return Point(x, y) /= scale; }
   Point operator-() const { return {-x, -y}; } // reflect about y=-x
   Point reflect() const { return {y, x}; }     // reflect about y=x
   Point rotate() const { return {-y, x}; }     // rotate 90 degrees
@@ -71,10 +73,10 @@ template <typename T = int> struct Point {
   auto norm() const { return sqrt(norm2()); }
   auto slope() const { return y / f64(x); }
   auto angle() const { return atan2(y, x); }
-  auto operator<=>(const Point<T> &p) const {
-    return tie(x, y) <=> tie(p.x, p.y);
-  }
+  auto operator<=>(const Point &p) const { return tie(x, y) <=> tie(p.x, p.y); }
 };
+
+int sign(auto x) { return (x > 0) - (x < 0); };
 
 template <typename T = int> struct Circle {
   T r;
@@ -82,42 +84,60 @@ template <typename T = int> struct Circle {
   auto area() const { return numbers::pi * r * r; }
   auto perim() const { return numbers::pi * r * 2; }
   auto dist(const Point<T> &p) const { return r - (p - c).norm(); }
-  auto dist2(const Point<T> &p) const { return r * r - (p - c).norm2(); }
+  auto side(const Point<T> &p) const { return sign(r * r - (p - c).norm2()); }
 };
 
 template <typename T = int> struct Triangle {
   Point<T> a, b, c;
-  auto circum() const {
+  auto area() const {
+    return abs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2.0;
+  }
+  auto perim() const {
+    return (a - b).norm() + (b - c).norm() + (c - a).norm();
+  }
+  auto orient() const { return (b - a).cross(c - a); }
+  auto side(const Point<T> &p) const {
+    auto s1 = sign((a - b).cross(p - b));
+    auto s2 = sign((b - c).cross(p - c));
+    auto s3 = sign((c - a).cross(p - a));
+    auto sum = abs(s1 + s2 + s3);
+    return sum >= 2 ? sum - 2 : -!!(s1 * s2 * s3);
+  }
+  auto circle() const {
     auto v1 = b - a, v2 = c - a;
-    f64 n1 = v1.norm2(), n2 = v2.norm2();
-    f64 ux = v2.y * n1 - v1.y * n2;
-    f64 uy = v1.x * n2 - v2.x * n1;
+    i64 n1 = v1.norm2(), n2 = v2.norm2();
+    auto ux = v2.y * n1 - v1.y * n2;
+    auto uy = v1.x * n2 - v2.x * n1;
     auto u = Point<f64>(ux, uy) / (2.0 * v1.cross(v2));
     return Circle<f64>(u.norm(), u + Point<f64>(a.x, a.y));
+  }
+  bool circum(const Point<T> &p) const {
+    auto a1 = a - p, b1 = b - p, c1 = c - p;
+    auto x = (i64)a1.norm2() * b1.cross(c1);
+    auto y = (i64)b1.norm2() * c1.cross(a1);
+    auto z = (i64)c1.norm2() * a1.cross(b1);
+    return (x + y + z) * sign(orient()) >= 0;
   }
 };
 
 struct Hull : vector<int> {
-  template <typename T> Hull(const vector<Point<T>> &p) {
-    auto cmp1 = [&](const auto &a, const auto &b) {
-      return a.reflect() < b.reflect();
-    };
-    auto it = min_element(p.begin(), p.end(), cmp1);
+  template <typename T>
+  Hull(const vector<Point<T>> &p) : vector<int>(p.size()) {
+    assert(size() > 2);
+    auto cmp1 = [&](int i, int j) { return p[i].reflect() < p[j].reflect(); };
     auto cmp2 = [&](int i, int j) {
-      auto r = (p[i] - *it).cross(p[j] - *it);
+      auto r = (p[i] - p[front()]).cross(p[j] - p[front()]);
       return r > 0 || (r == 0 && p[i].x < p[j].x);
     };
-    auto &h = *this;
-    resize(p.size());
     iota(begin(), end(), 0);
-    ::swap(front(), h[it - p.begin()]);
+    ::swap(front(), *min_element(begin(), end(), cmp1));
     sort(begin() + 1, end(), cmp2);
-    int i = 3;
-    for (int j = i; j < size(); h[i++] = h[j++]) {
-      for (; (p[h[i - 1]] - p[h[i - 2]]).cross(p[h[j]] - p[h[i - 2]]) < 0; i--)
+    auto i = begin() + 3;
+    for (auto j = i; j != end(); *i++ = *j++) {
+      for (; (p[*(i - 1)] - p[*(i - 2)]).cross(p[*j] - p[*(i - 2)]) < 0; i--)
         ;
     }
-    resize(i);
+    resize(i - begin());
   }
 };
 
@@ -134,50 +154,43 @@ struct Fac : vector<Mod> {
 void solve(int t) {
   Int n;
   vector<Point<Int>> p(n);
-  Hull hull(p);       // O(n*log n)
-  ranges::sort(hull); // O(n*log n)
-  if (hull[1] != 1) {
+  Hull hull(p); // O(n*log n)
+  int m = hull.size();
+  int p0 = ranges::find(hull, 0) - hull.begin();
+  int p1 = ranges::find(hull, 1) - hull.begin();
+  if (p0 == m || p1 == m) {
     cout << 0 << endl;
     return;
   }
-  int m = hull.size();
   auto check = [&](int i, int j, int k) {
     auto &a = p[hull[i]];
     auto &b = p[hull[j]];
     auto &c = p[hull[k]];
     Triangle tri(a, b, c);
-    auto circle = tri.circum();
     for (int l = 0; l < m; l++) {
       if (l != i && l != j && l != k) {
-        auto &d = p[hull[l]];
-        if (circle.dist2(Point<f64>(d.x, d.y)) < 0) {
+        if (!tri.circum(p[hull[l]])) {
           return false;
         }
       }
     }
     return true;
   };
-  vector<int> sizes(m);
-  auto f = [&](auto &self, int i, int j, int k) -> void {
-    if (!sizes[k] && check(i, j, k)) {
-      sizes[k] = 1; // visited
-      for (int l = 2; l < m; l++) {
-        if (!sizes[l]) {
-          self(self, i, k, l);
-          self(self, j, k, l);
-          sizes[k] += sizes[l];
-        }
+  Mod ans = 1;
+  auto f = [&](auto &self, int i, int j) -> int { // O(n*log n)/O(n^2)
+    for (Mod k = {i + 1, m}; k != j; k += 1) {
+      if (check(i, j, k)) {
+        auto l = self(self, i, k);
+        auto r = self(self, k, j);
+        auto s = 1 + l + r;
+        return ans *= s, s;
       }
     }
+    return 0;
   };
-  for (int k = 2; k < m; k++) {
-    f(f, 0, 1, k);
-  }
-  Mod ans = fac[m - 2];
-  for (int i = 2; i < m; i++) {
-    ans /= sizes[i];
-  }
-  cout << ans << endl;
+  auto s0 = f(f, p0, p1);
+  auto s1 = f(f, p1, p0);
+  cout << (s0 || s1 ? fac[m - 2] / ans : Mod{0, m}) << endl;
 }
 
 int main() {

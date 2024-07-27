@@ -1,17 +1,19 @@
 /**
+ * https://codeforces.com/contest/1995/submission/273051789
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
-#ifdef LOCAL
-#define debug println
-#else
+#ifdef ONLINE_JUDGE
 #define debug
+#else
+#include "debug.h"
+init(__FILE__);
 #endif
-
-void println(const auto &...args) { ((cout << args << ' '), ...) << endl; }
 
 template <typename T, size_t N>
 ostream &operator<<(ostream &os, const array<T, N> &a) {
@@ -20,6 +22,7 @@ ostream &operator<<(ostream &os, const array<T, N> &a) {
 template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
   return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
 }
+void println(const auto &...args) { ((cout << args << ' '), ...) << endl; }
 
 template <typename T> struct Num {
   T x;
@@ -31,7 +34,8 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 struct Digraph : vector<vector<int>> {
-  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1) {
+  int n, m;
+  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
     for (auto &[u, v] : vector<array<Int, 2>>(m)) {
       add(u, v);
     }
@@ -41,6 +45,7 @@ struct Digraph : vector<vector<int>> {
 
 struct SCC : vector<int> {
   int count = 0;
+  vector<int> low, vis;
   SCC(const Digraph &g) : vector<int>(g.size()), low(g.size()) {
     for (int i = 0, t = 1; i < g.size(); i++) {
       if (low[i] == 0) {
@@ -48,8 +53,6 @@ struct SCC : vector<int> {
       }
     }
   }
-
-private:
   void dfs(const Digraph &g, int u, int &t) {
     auto tx = low[u] = t++;
     vis.push_back(u);
@@ -61,14 +64,15 @@ private:
     }
     if (low[u] == tx) { // component root
       count++;
-      for (int v = -1; v != u; vis.pop_back()) {
-        v = vis.back();
+      int i = vis.size();
+      do {
+        auto v = vis[--i];
         low[v] = g.size();
         (*this)[v] = count;
-      }
+      } while (vis[i] != u);
+      vis.resize(i);
     }
   }
-  vector<int> low, vis;
 };
 
 struct TwoSat {
@@ -89,8 +93,8 @@ struct TwoSat {
   }
   bool operator()() const {
     SCC scc(g);
-    for (int i = 0; i < n; i++) {
-      if (scc[i] == scc[2 * n - i]) {
+    for (int i = 1; i <= n; i++) {
+      if (scc[n + i] == scc[n - i]) {
         return false;
       }
     }
@@ -121,20 +125,35 @@ void solve(int t) {
     println(mx - mn);
     return;
   }
-  vector<array<int, 3>> edges;
-  vector<array<array<bool, 2>, 2>> desks(n);
-  auto add = [&](int i, int j) { edges.push_back({a[i] + a[j], i, j}); };
-  auto cmp = [](auto &e1, auto &e2) { return e1[0] < e2[0]; };
-  auto use = [&](int k, bool val) {
-    auto [_, i, j] = edges[k];
-    desks[i % n][i < n][j < n] = val;
+  vector<int> sums;
+  vector<array<array<int, 2>, 2>> desks(n);
+  auto add = [&](int i, int j) {
+    sums.push_back(a[i] + a[j]);
+    desks[i % n][i % 2 == 0][j % 2] = a[i] + a[j];
   };
+  i64 total = 0;
+  for (int i = 0; i < 2 * n; i++) {
+    add(i, (i + 1) % (2 * n));
+    add(i, (i + n + 1) % (2 * n));
+    total += a[i];
+  }
+  ranges::sort(sums);
+  debug(sums);
   auto chk = [&](int l, int r) {
+    if (sums[l] * i64(n) > total || sums[r] * i64(n) < total) {
+      return false;
+    }
     TwoSat sat(n);
+    array<array<bool, 2>, 2> good;
     for (int i = 0; i < n; i++) {
-      auto [u, v] = desks[i];
-      auto a = i % n + 1, b = (i + 1) % n + 1; // a/b are the students
-      switch (u[0] + u[1] + v[0] + v[1]) { // v/1 is original, u/0 is swapped
+      for (auto a : {0, 1}) {
+        for (auto b : {0, 1}) {
+          good[a][b] = desks[i][a][b] >= sums[l] && desks[i][a][b] <= sums[r];
+        }
+      }
+      auto [u, v] = good;                      // v is original, u is swapped
+      auto a = i % n + 1, b = (i + 1) % n + 1; // a and b are the students
+      switch (u[0] + u[1] + v[0] + v[1]) {     // 1 is original, 0 is swapped
       case 0:
         return false; // desk would be empty
       case 1:
@@ -152,7 +171,7 @@ void solve(int t) {
           sat.set(-b);
         } else if (v[1] && u[0]) {
           sat.equal(a, b);
-        } else /* v[0] && u[1] */ {
+        } else /* (v[0] && u[1]) */ {
           sat.notequal(a, b);
         }
         break;
@@ -163,35 +182,23 @@ void solve(int t) {
     }
     return sat();
   };
-  int ans = INT_MAX, total = 0;
-  for (int i = 0; i < 2 * n; i++) {
-    add(i, (i + 1) % (2 * n));
-    add(i, (i + n + 1) % (2 * n));
-    total += a[i];
-  }
-  ranges::sort(edges, cmp);
-  debug(edges);
-  for (int l = 0, r = 0, e = edges.size(); r < e; l++) {
-    for (; r < e; r++) {
-      use(r, true);
-      if (r - l + 1 >= n && edges[r][0] * n >= total && chk(l, r)) {
-        ans = min(ans, edges[r][0] - edges[l][0]);
-        break;
-      }
+  int ans = INT_MAX;
+  int e = ranges::unique(sums).begin() - sums.begin();
+  for (int l = 0, r = 0; l <= r && r < e; l++) {
+    while (r < e && sums[r] - sums[l] < ans && !chk(l, r)) {
+      r++;
     }
-    use(l, false);
+    if (r < e) {
+      ans = min(ans, sums[r] - sums[l]);
+    }
   }
   println(ans);
 }
 
 int main() {
-#ifdef LOCAL
-  using filesystem::path;
-  freopen(path(__FILE__).replace_filename("input").c_str(), "r", stdin);
-#endif
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
   Int t;
-  for (int i = 1; i <= t; ++i) {
+  for (int i = 1; i <= t; i++) {
     solve(i);
   }
 }

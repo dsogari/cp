@@ -7,7 +7,7 @@
  * Common compilation flags
  */
 #pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,popcnt")
+#pragma GCC target("avx2,popcnt,lzcnt")
 
 /**
  * Common namespaces
@@ -318,21 +318,22 @@ struct TwoSat {
 /**
  * Trie (N-ary prefix or suffix tree)
  */
-template <typename T, size_t N> struct Trie : vector<pair<T, array<int, N>>> {
-  Trie(int cap = 1) : vector<pair<T, array<int, N>>>(1) { this->reserve(cap); }
+template <typename T, size_t N> struct Trie {
+  vector<pair<T, array<int, N>>> nodes;
+  Trie(int cap = 1) : nodes(1) { nodes.reserve(cap); }
   void visit(const auto &f, const auto &x) {
     for (int i = 0, j = 0;; j++) {
-      int k = f((*this)[i], j, x);
+      int k = f(nodes[i], j, x);
       if (k < 0) {
         break;
       }
       assert(k < N);
-      auto &child = (*this)[i].second[k];
+      auto &child = nodes[i].second[k];
       if (!child) {
-        child = this->size();
-        this->emplace_back(); // might invalidate references
+        child = nodes.size();
+        nodes.emplace_back(); // might invalidate references
       }
-      i = (*this)[i].second[k];
+      i = nodes[i].second[k];
     }
   }
 };
@@ -390,58 +391,100 @@ struct DSU {
 struct Fen {
   vector<int> nodes;
   Fen(int n) : nodes(n + 1) {}
-  void query(int y, const auto &f) {
-    for (; y > 0; y -= y & -y) {
-      f(y, nodes[y]);
+  void query(int i, const auto &f) { // O(log n)
+    for (; i > 0; i -= i & -i) {
+      f(nodes[i]);
     }
   }
-  void update(int x, const auto &f) {
-    assert(x > 0);
-    for (; x < nodes.size(); x += x & -x) {
-      f(x, nodes[x]);
-    }
-  }
-};
-
-/**
- * Matrix (2-D Vector)
- */
-template <typename T> struct Mat : vector<vector<T>> {
-  int n, m;
-  Mat(int n, int m) : vector<vector<T>>(n), n(n), m(m) {
-    for (auto &row : *this) {
-      row.resize(m);
+  void update(int i, const auto &f) { // O(log n)
+    assert(i > 0);
+    for (; i < nodes.size(); i += i & -i) {
+      f(nodes[i]);
     }
   }
 };
 
 /**
- * Matrix-vector multiplication
+ * Vector Multiply-and-add
  */
-template <typename T, typename U>
-vector<U> operator*(const Mat<T> &mat, const vector<U> &rhs) {
-  assert(mat.m == rhs.size());
-  vector<U> ans(n);
-  for (int i = 0; i < mat.n; i++) {
-    for (int j = 0; j < mat.m; j++) {
-      ans[i] += (*this)[i][j] * rhs[i];
+void madd(auto &lhs, const auto &rhs, const auto &c) {
+  for (int i = 0; i < lhs.size(); i++) {
+    lhs[i] += rhs[i] * c;
+  }
+}
+
+/**
+ * Static Matrix (2-D Array)
+ */
+template <typename T, size_t N, size_t M = N>
+using SMat = array<array<T, M>, N>;
+
+/**
+ * Static Matrix-array multiplication
+ */
+template <typename T, size_t N, size_t M, typename U>
+array<U, M> operator*(const SMat<T, N, M> &lhs, const array<U, M> &rhs) {
+  array<U, M> ans = {};
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < M; j++) {
+      ans[i] += lhs[i][j] * rhs[j];
     }
   }
   return ans;
 }
 
 /**
- * Matrix multiplication
+ * Static Matrix multiplication
+ */
+template <typename T, size_t N, size_t M1, typename U, size_t M2>
+SMat<U, N, M2> operator*(const SMat<T, N, M1> &lhs,
+                         const SMat<U, M1, M2> &rhs) {
+  SMat<U, N, M2> ans = {};
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < M1; j++) {
+      madd(ans[i], rhs[j], lhs[i][j]);
+    }
+  }
+  return ans;
+}
+
+/**
+ * Dynamic Matrix (2-D Vector)
+ */
+template <typename T> struct Mat : vector<vector<T>> {
+  int n, m;
+  Mat(int n, int m, T s = {}) : vector<vector<T>>(n), n(n), m(m) {
+    for (auto &row : *this) {
+      row.assign(m, s);
+    }
+  }
+};
+
+/**
+ * Dynamic Matrix-vector multiplication
  */
 template <typename T, typename U>
-Mat<U> operator*(const Mat<T> &mat, const Mat<U> &rhs) {
-  assert(mat.m == rhs.n);
-  Mat<U> ans(mat.n, rhs.m);
-  for (int i = 0; i < mat.n; i++) {
-    for (int j = 0; j < rhs.m; j++) {
-      for (int k = 0; k < mat.m; k++) {
-        ans[i][j] += mat[i][k] * rhs[k][j];
-      }
+vector<U> operator*(const Mat<T> &lhs, const vector<U> &rhs) {
+  assert(lhs.m == rhs.size());
+  vector<U> ans(lhs.n);
+  for (int i = 0; i < lhs.n; i++) {
+    for (int j = 0; j < lhs.m; j++) {
+      ans[i] += lhs[i][j] * rhs[j];
+    }
+  }
+  return ans;
+}
+
+/**
+ * Dynamic Matrix multiplication
+ */
+template <typename T, typename U>
+Mat<U> operator*(const Mat<T> &lhs, const Mat<U> &rhs) {
+  assert(lhs.m == rhs.n);
+  Mat<U> ans(lhs.n, rhs.m);
+  for (int i = 0; i < lhs.n; i++) {
+    for (int j = 0; j < lhs.m; j++) {
+      madd(ans[i], rhs[j], lhs[i][j]);
     }
   }
   return ans;
@@ -724,6 +767,49 @@ struct Hull : vector<int> {
         ;
     }
     resize(i - begin());
+  }
+};
+
+/**
+ * Most/least significant set bits
+ */
+constexpr int lssb(unsigned x) { return countr_zero(x); }
+constexpr int mssb(unsigned x) { return 31 - countl_zero(x); }
+
+/**
+ * Segment Tree
+ */
+template <typename T> struct Seg {
+  int n;
+  vector<T> nodes;
+  Seg(int n) : n(n), nodes(2 * n) {}
+  Seg(int n, bool sorted) : Seg(sorted ? 1 << (1 + mssb(n - 1)) : n) {}
+  const T &full() const { return nodes[1]; }    // O(1)
+  T &operator[](int i) { return nodes[i + n]; } // O(1)
+  void copy(const vector<T> &a) { ranges::copy(a, nodes.begin() + n); }
+  void update(const auto &f) { // O(n)
+    for (int i = n - 1; i > 0; i--) {
+      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
+    }
+  }
+  void update(int i, const auto &f) { // O(log n)
+    for (i = (i + n) / 2; i > 0; i /= 2) {
+      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
+    }
+  }
+  void query(int i, int j, const auto &f) const { // O(log n)
+    i += n - 1, j += n;
+    int mask = (1 << mssb(i ^ j)) - 1;
+    for (int v = ~i & mask; v != 0; v &= v - 1) {
+      if (!f(nodes[(i >> lssb(v)) + 1])) {
+        return; // early return
+      }
+    }
+    for (int v = j & mask; v != 0; v ^= 1 << mssb(v)) {
+      if (!f(nodes[(j >> mssb(v)) - 1])) {
+        return; // early return
+      }
+    }
   }
 };
 

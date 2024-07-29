@@ -1,33 +1,17 @@
 /**
- * https://codeforces.com/contest/1984/submission/273047580
- *
  * (c) 2024 Diego Sogari
  */
-#include <bits/stdc++.h>
+#include "utils.h"
 
-using namespace std;
-using i64 = int64_t;
+/**
+ * Common constants
+ */
+constexpr int _mod = 1000000007;
+// constexpr int _mod = 998244353;
 
-#ifdef ONLINE_JUDGE
-#define debug
-#else
-#include "debug.h"
-init(__FILE__);
-#endif
-
-void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
-
-constexpr int _mod = 998244353;
-
-template <typename T> struct Num {
-  T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
-  operator T &() { return x; }
-  operator T() const { return x; }
-};
-using Int = Num<int>;
-
+/**
+ * Modular integer
+ */
 struct Mod {
   int x, m;
   Mod(i64 x = 0, int m = _mod) : x(x % m), m(m) {}
@@ -56,25 +40,37 @@ struct Mod {
   }
 };
 
-void solve(int t) {
-  Int n;
-  vector<Int> a(n);
-  map<i64, Mod> dp = {{0, 1}};
-  for (auto &&ai : a) {
-    map<i64, Mod> dp1;
-    for (auto &&[c, u] : dp) {
-      dp1[c + ai] += u;
-      dp1[abs(c + ai)] += u;
+/**
+ * (Modular) Factorial
+ */
+struct Fac : vector<Mod> {
+  Fac(int m = _mod) : vector<Mod>(1, {1, m}) {}
+  Mod operator[](int n) {
+    while (size() <= n) {
+      push_back(back() * (int)size());
     }
-    dp = {*dp1.begin(), *dp1.rbegin()};
+    return vector<Mod>::operator[](n);
   }
-  println(dp.rbegin()->second);
-}
+};
 
-int main() {
-  cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
-  Int t;
-  for (int i = 1; i <= t; i++) {
-    solve(i);
+/**
+ * (Modular) Binomial coefficient
+ */
+struct Bin : Fac {
+  vector<Mod> inv;
+  Mod operator()(int n, int k) {
+    if (k < 0 || k > n) {
+      return front() * 0;
+    }
+    auto ans = (*this)[n];
+    if (inv.size() <= n) {
+      int s = inv.size();
+      inv.resize(n + 1);
+      inv[n] = ans.inv();
+      for (int i = n; i > s; i--) {
+        inv[i - 1] = inv[i] * i;
+      }
+    }
+    return ans * inv[k] * inv[n - k];
   }
-}
+};

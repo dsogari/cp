@@ -1,11 +1,12 @@
 /**
- * https://codeforces.com/contest/1996/submission/273276195
+ * https://codeforces.com/contest/1996/submission/273631563
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using namespace placeholders;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -14,7 +15,7 @@ using namespace std;
 init(__FILE__);
 #endif
 
-void println(const auto &...args) { ((cout << args << ' '), ...) << endl; }
+void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
 template <typename T> struct Num {
   T x;
@@ -29,21 +30,31 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-struct Fen {
-  vector<int> nodes;
-  Fen(int n) : nodes(n + 1) {}
-  void query(int i, const auto &f) {
-    for (; i > 0; i -= i & -i) {
-      f(nodes[i]);
+template <typename T, T unit = T{}> struct Fen {
+  vector<T> nodes;
+  Fen(int n) : nodes(n + 1, unit) {}
+  T &operator[](int i) { return nodes[i + 1]; } // O(1)
+  T query(int i, auto &&f) const {              // O(log n)
+    T ans = unit;
+    for (i++; i > 0; i -= i & -i) {
+      ans = f(ans, nodes[i]);
+    }
+    return ans;
+  }
+  void update(int i, auto &&f, const T &val) { // O(log n)
+    assert(i >= 0);
+    for (i++; i < nodes.size(); i += i & -i) {
+      nodes[i] = f(nodes[i], val);
     }
   }
-  void update(int i, const auto &f) {
-    assert(i > 0);
-    for (; i < nodes.size(); i += i & -i) {
-      f(nodes[i]);
+  void update(auto &&f) { // O(n)
+    for (int i = 1, j = 2; j < nodes.size(); i++, j = i + (i & -i)) {
+      nodes[j] = f(nodes[j], nodes[i]);
     }
   }
 };
+
+auto tadd = [](auto &a, auto &b) { return a + b; };
 
 constexpr int c = 'z' - 'a' + 1;
 
@@ -51,23 +62,22 @@ void solve(int t) {
   Int n, q;
   Str a, b;
   vector<array<Int, 2>> qs(q);
-  vector<Fen> ca(c, Fen(n)), cb(c, Fen(n));
-  auto inc = [&](auto &node) { node++; };
+  vector<Fen<int>> ca(c, {n}), cb(c, {n});
   for (int i = 0; i < n; i++) {
-    ca[a[i] - 'a'].update(i + 1, inc);
-    cb[b[i] - 'a'].update(i + 1, inc);
+    ca[a[i] - 'a'].update(i, tadd, 1);
+    cb[b[i] - 'a'].update(i, tadd, 1);
   }
+  auto f = [&](int j, int l, int r) {
+    int sum = ca[j].query(r - 1, tadd);
+    sum -= ca[j].query(l - 2, tadd);
+    sum -= cb[j].query(r - 1, tadd);
+    sum += cb[j].query(l - 2, tadd);
+    return max(0, sum);
+  };
   for (auto &[l, r] : qs) {
-    int ans = 0, sum = 0;
-    auto acc = [&](auto &node) { sum += node; };
-    auto dec = [&](auto &node) { sum -= node; };
-    for (int j = 0; j < c; j++, sum = 0) {
-      cb[j].query(r, acc);
-      cb[j].query(l - 1, dec);
-      sum = -sum;
-      ca[j].query(r, acc);
-      ca[j].query(l - 1, dec);
-      ans += max(0, sum);
+    int ans = 0;
+    for (int j = 0; j < c; j++) {
+      ans += f(j, l, r);
     }
     println(ans);
   }

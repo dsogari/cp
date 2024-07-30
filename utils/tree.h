@@ -51,10 +51,12 @@ struct DSU {
  * Fenwick Tree (Binary indexed tree)
  */
 template <typename T, T unit = T{}> struct Fen {
+  const int n;
   vector<T> nodes;
-  Fen(int n) : nodes(n + 1, unit) {}
+  Fen(int n) : n(n), nodes(n + 1, unit) {}
   T &operator[](int i) { return nodes[i + 1]; } // O(1)
   T query(int i, auto &&f) const {              // O(log n)
+    assert(i < n);
     T ans = unit;
     for (i++; i > 0; i -= i & -i) {
       ans = f(ans, nodes[i]);
@@ -63,12 +65,12 @@ template <typename T, T unit = T{}> struct Fen {
   }
   void update(int i, auto &&f, const T &val) { // O(log n)
     assert(i >= 0);
-    for (i++; i < nodes.size(); i += i & -i) {
+    for (i++; i <= n; i += i & -i) {
       nodes[i] = f(nodes[i], val);
     }
   }
   void update(auto &&f) { // O(n)
-    for (int i = 1, j = 2; j < nodes.size(); i++, j = i + (i & -i)) {
+    for (int i = 1, j = 2; j <= n; i++, j = i + (i & -i)) {
       nodes[j] = f(nodes[j], nodes[i]);
     }
   }
@@ -101,23 +103,20 @@ template <typename T, size_t N> struct Trie {
  * Segment Tree
  */
 template <typename T, T unit = T{}> struct SegTree {
-  int n;
+  const int n;
   vector<T> nodes;
   SegTree(int n) : n(n), nodes(2 * n, unit) {}
   SegTree(int n, bool stable) : SegTree(stable ? 1 << (1 + mssb(n - 1)) : n) {}
-  const T &full() const { return nodes[1]; }    // O(1)
-  T &operator[](int i) { return nodes[i + n]; } // O(1)
-  void update(auto &&f) {                       // O(n)
-    for (int i = n - 1; i > 0; i--) {
+  const T &full() const { return nodes[1]; }         // O(1)
+  T &operator[](int i) { return nodes[i + n]; }      // O(1)
+  void update(int i, auto &&f, bool single = true) { // O(log n) / O(n)
+    assert(i >= 0 && i < n);
+    for (i = (i + n) / 2; i > 0; i = single ? i / 2 : i - 1) {
       nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
     }
   }
-  void update(int i, auto &&f) { // O(log n)
-    for (i = (i + n) / 2; i > 0; i /= 2) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
-    }
-  }
-  T query(int l, int r, auto &&f) const { // O(log n)
+  T query(int l, int r, auto &&f) const { // [l, r] O(log n)
+    assert(l >= 0 && l <= r && r < n);
     T ans = unit;
     for (l += n, r += n; l <= r; l /= 2, r /= 2) {
       if (l % 2) {
@@ -128,6 +127,53 @@ template <typename T, T unit = T{}> struct SegTree {
       }
     }
     return ans;
+  }
+};
+
+/**
+ * Interval Tree Node
+ */
+template <typename T> struct Interval {
+  T mid;
+  list<array<T, 2>> contained;
+  void insert(T l, T r) { contained.push_back({l, r}); } // O(1)
+  void visit(T x, auto &&f) {                            // O(n)
+    for (auto it = contained.begin(); it != contained.end();) {
+      auto [l, r] = *it;
+      it = l <= x && x < r && f(l, r) ? contained.erase(it) : next(it);
+    }
+  }
+};
+
+/**
+ * Interval Tree
+ */
+template <typename T> struct IntTree {
+  const int n;
+  vector<Interval<T>> nodes;
+  IntTree(int n) : n(n), nodes(2 * n) {}
+  IntTree(int n, T l, T r) : IntTree(n) { build(l, r); }
+  void build(T l, T r, int i = 1) { // [l, r) O(n)
+    auto mid = nodes[i].mid = (l + r) / 2;
+    if (i < n) {
+      build(l, mid, 2 * i);
+      build(mid, r, 2 * i + 1);
+    }
+  }
+  void insert(T l, T r) { // [l, r) O(log n)
+    assert(l < r);
+    int i = 1;
+    while (i < n && (l >= nodes[i].mid || r <= nodes[i].mid)) {
+      i = 2 * i + (l >= nodes[i].mid);
+    }
+    nodes[i].insert(l, r);
+  }
+  void visit(T x, auto &&f) { // O(n^2) all covering point x
+    int i = 1;
+    for (; i < n; i = 2 * i + (x >= nodes[i].mid)) {
+      nodes[i].visit(x, f); // internal node
+    }
+    nodes[i].visit(x, f); // leaf node
   }
 };
 

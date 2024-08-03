@@ -1,19 +1,18 @@
 /**
- * https://codeforces.com/contest/1990/submission/273800213
+ * https://codeforces.com/contest/1990/submission/274273830
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
-using namespace placeholders;
 using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
 #else
 #include "debug.h"
-init(__FILE__);
+init();
 #endif
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
@@ -69,34 +68,28 @@ template <typename T> struct IntTree {
   }
 };
 
-constexpr int lssb(unsigned x) { return countr_zero(x); }
-constexpr int mssb(unsigned x) { return 31 - countl_zero(x); }
-
-template <typename T, T unit = T{}> struct SegTree {
-  int n;
+template <typename T> struct SegTree {
+  const int n;
   vector<T> nodes;
-  SegTree(int n) : n(n), nodes(2 * n, unit) {}
-  SegTree(int n, bool stable) : SegTree(stable ? 1 << (1 + mssb(n - 1)) : n) {}
-  const T &full() const { return nodes[1]; }         // O(1)
-  T &operator[](int i) { return nodes[i + n]; }      // O(1)
-  void update(int i, auto &&f, bool single = true) { // O(log n) / O(n)
+  function<T(const T &, const T &)> f;
+  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
+  const T &full() const { return nodes[1]; }    // O(1)
+  T &operator[](int i) { return nodes[i + n]; } // O(1)
+  T query(int l, int r) const {                 // O(log n)
+    assert(l >= 0 && l <= r && r < n);
+    return _inner(l + n, r + n);
+  }
+  T _inner(int l, int r) const { // [l, r] O(log n)
+    return l == r       ? nodes[l]
+           : l % 2      ? f(nodes[l], _inner(l + 1, r))
+           : r % 2 == 0 ? f(_inner(l, r - 1), nodes[r])
+                        : _inner(l / 2, r / 2);
+  }
+  void update(int i, bool single = true) { // O(log n) / [0, i] O(n)
     assert(i >= 0 && i < n);
     for (i = (i + n) / 2; i > 0; i = single ? i / 2 : i - 1) {
       nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
     }
-  }
-  T query(int l, int r, auto &&f) const { // O(log n)
-    assert(l >= 0 && l <= r && r < n);
-    T ans = unit;
-    for (l += n, r += n; l <= r; l /= 2, r /= 2) {
-      if (l % 2) {
-        ans = f(ans, nodes[l++]);
-      }
-      if (r % 2 == 0) {
-        ans = f(ans, nodes[r--]);
-      }
-    }
-    return ans;
   }
 };
 
@@ -110,8 +103,6 @@ struct Seg {
   }
 };
 
-auto joinseg = bind(&Seg::join, _1, _2);
-
 struct Query {
   Int type, x;
   I64 y;
@@ -121,11 +112,11 @@ void solve(int t) {
   Int n, q;
   vector<I64> a(n);
   vector<Query> queries(q);
-  SegTree<Seg> segments(n);
+  SegTree<Seg> segments(n, &Seg::join);
   for (int i = 0; i < n; i++) {
     segments[i] = {a[i], a[i], i};
   }
-  segments.update(n - 1, joinseg, false);
+  segments.update(n - 1, false);
   IntTree<int> intervals(n, 0, n);
   map<array<int, 2>, int> cache;
   auto prune = [&](int l, int r) { return cache.erase({l, r}), true; };
@@ -139,7 +130,7 @@ void solve(int t) {
       return ans;
     }
     intervals.insert(l, r + 1);
-    auto [sum, mx, mpos] = segments.query(l, r, joinseg);
+    auto [sum, mx, mpos] = segments.query(l, r);
     if (2 * mx < sum) {
       return ans = r - l + 1;
     }
@@ -150,7 +141,7 @@ void solve(int t) {
       println(query(query, x - 1, y - 1));
     } else {
       segments[x - 1] = {y, y, x - 1};
-      segments.update(x - 1, joinseg);
+      segments.update(x - 1);
       intervals.visit(x - 1, prune);
     }
   }

@@ -1,18 +1,17 @@
 /**
- * https://codeforces.com/contest/1996/submission/273779605
+ * https://codeforces.com/contest/1996/submission/274276789
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
-using namespace placeholders;
 
 #ifdef ONLINE_JUDGE
 #define debug
 #else
 #include "debug.h"
-init(__FILE__);
+init();
 #endif
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
@@ -30,33 +29,29 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-template <typename T, T unit = T{}> struct Fen {
-  int n;
+template <typename T> struct FenTree {
+  const int n;
   vector<T> nodes;
-  Fen(int n) : n(n), nodes(n + 1, unit) {}
+  function<T(const T &, const T &)> f;
+  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
   T &operator[](int i) { return nodes[i + 1]; } // O(1)
-  T query(int i, auto &&f) const {              // O(log n)
+  T query(int i) const {                        // O(log n)
     assert(i < n);
-    T ans = unit;
+    T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
       ans = f(ans, nodes[i]);
     }
     return ans;
   }
-  void update(int i, auto &&f, const T &val) { // O(log n)
+  void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
       nodes[i] = f(nodes[i], val);
     }
   }
-  void update(auto &&f) { // O(n)
-    for (int i = 1, j = 2; j <= n; i++, j = i + (i & -i)) {
-      nodes[j] = f(nodes[j], nodes[i]);
-    }
-  }
 };
 
-auto tadd = [](auto &a, auto &b) { return a + b; };
+const auto tadd = [](auto &a, auto &b) { return a + b; };
 
 constexpr int c = 'z' - 'a' + 1;
 
@@ -64,16 +59,16 @@ void solve(int t) {
   Int n, q;
   Str a, b;
   vector<array<Int, 2>> qs(q);
-  vector<Fen<int>> ca(c, {n}), cb(c, {n});
+  vector<FenTree<int>> ca(c, {n, tadd}), cb(c, {n, tadd});
   for (int i = 0; i < n; i++) {
-    ca[a[i] - 'a'].update(i, tadd, 1);
-    cb[b[i] - 'a'].update(i, tadd, 1);
+    ca[a[i] - 'a'].update(i, 1);
+    cb[b[i] - 'a'].update(i, 1);
   }
   auto f = [&](int j, int l, int r) {
-    int sum = ca[j].query(r - 1, tadd);
-    sum -= ca[j].query(l - 2, tadd);
-    sum -= cb[j].query(r - 1, tadd);
-    sum += cb[j].query(l - 2, tadd);
+    int sum = ca[j].query(r - 1);
+    sum -= ca[j].query(l - 2);
+    sum -= cb[j].query(r - 1);
+    sum += cb[j].query(l - 2);
     return max(0, sum);
   };
   for (auto &[l, r] : qs) {

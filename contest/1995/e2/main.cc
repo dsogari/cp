@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1995/submission/273690174
+ * https://codeforces.com/contest/1995/submission/274273786
  *
  * (c) 2024 Diego Sogari
  */
@@ -8,13 +8,12 @@
 #pragma GCC optimize("O3,unroll-loops")
 
 using namespace std;
-using namespace placeholders;
 
 #ifdef ONLINE_JUDGE
 #define debug
 #else
 #include "debug.h"
-init(__FILE__);
+init();
 #endif
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
@@ -28,7 +27,7 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void madd(auto &lhs, const auto &rhs, const auto &c) {
+inline void madd(auto &lhs, const auto &rhs, const auto &c) {
   for (int i = 0; i < lhs.size(); i++) {
     lhs[i] += rhs[i] * c;
   }
@@ -49,34 +48,28 @@ SMat<U, N, M2> operator*(const SMat<T, N, M1> &lhs,
   return ans;
 }
 
-constexpr int lssb(unsigned x) { return countr_zero(x); }
-constexpr int mssb(unsigned x) { return 31 - countl_zero(x); }
-
-template <typename T, T unit = T{}> struct SegTree {
-  int n;
+template <typename T> struct SegTree {
+  const int n;
   vector<T> nodes;
-  SegTree(int n) : n(n), nodes(2 * n, unit) {}
-  SegTree(int n, bool stable) : SegTree(stable ? 1 << (1 + mssb(n - 1)) : n) {}
-  const T &full() const { return nodes[1]; }         // O(1)
-  T &operator[](int i) { return nodes[i + n]; }      // O(1)
-  void update(int i, auto &&f, bool single = true) { // O(log n) / O(n)
+  function<T(const T &, const T &)> f;
+  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
+  const T &full() const { return nodes[1]; }    // O(1)
+  T &operator[](int i) { return nodes[i + n]; } // O(1)
+  T query(int l, int r) const {                 // O(log n)
+    assert(l >= 0 && l <= r && r < n);
+    return _inner(l + n, r + n);
+  }
+  T _inner(int l, int r) const { // [l, r] O(log n)
+    return l == r       ? nodes[l]
+           : l % 2      ? f(nodes[l], _inner(l + 1, r))
+           : r % 2 == 0 ? f(_inner(l, r - 1), nodes[r])
+                        : _inner(l / 2, r / 2);
+  }
+  void update(int i, bool single = true) { // O(log n) / [0, i] O(n)
     assert(i >= 0 && i < n);
     for (i = (i + n) / 2; i > 0; i = single ? i / 2 : i - 1) {
       nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
     }
-  }
-  T query(int l, int r, auto &&f) const { // O(log n)
-    assert(l >= 0 && l <= r && r < n);
-    T ans = unit;
-    for (l += n, r += n; l <= r; l /= 2, r /= 2) {
-      if (l % 2) {
-        ans = f(ans, nodes[l++]);
-      }
-      if (r % 2 == 0) {
-        ans = f(ans, nodes[r--]);
-      }
-    }
-    return ans;
   }
 };
 
@@ -84,8 +77,6 @@ struct Seg : SMat<bool, 2> {
   Seg join(const Seg &other) const { return static_cast<Seg>(*this * other); }
   bool good() const { return (*this)[0][0] || (*this)[1][1]; }
 };
-
-auto joinseg = bind(&Seg::join, _1, _2);
 
 void solve(int t) {
   Int n;
@@ -118,12 +109,12 @@ void solve(int t) {
     add(i, (i + n + 1) % (2 * n));
   }
   ranges::sort(edges, cmp);
-  SegTree<Seg> desks(n);
+  SegTree<Seg> desks(n, &Seg::join);
   auto use = [&](int k, bool val) { // O(log n)
     auto [_, i, j] = edges[k];
     auto &desk = desks[i % n];
     desk[i % 2 == 0][j % 2] = val;
-    desks.update(i % n, joinseg);
+    desks.update(i % n);
   };
   int ans = INT_MAX;
   for (int l = 0, r = 0; ans > 0 && r < edges.size();) {

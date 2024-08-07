@@ -14,6 +14,13 @@ using namespace std;
 init();
 #endif
 
+template <typename T, size_t N>
+ostream &operator<<(ostream &os, const array<T, N> &a) {
+  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
+}
+template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
+  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
+}
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
 template <typename T> struct Num {
@@ -24,6 +31,26 @@ template <typename T> struct Num {
   operator T() const { return x; }
 };
 using Int = Num<int>;
+
+int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
+  while (s < e) {
+    auto m = (s + e + 1) / 2;
+    f(m) ? s = m : e = m - 1;
+  }
+  return e; // last such that f is true
+}
+
+int lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
+  vector<int> inc = {s};
+  for (int i = s + 1; i < e; i++) {
+    if (f(inc.back(), i)) {
+      inc.push_back(i);
+    } else {
+      *ranges::lower_bound(inc, i, f) = i;
+    }
+  }
+  return inc.size() - (s >= e);
+}
 
 int len1(auto &&b, int n, int k) {
   vector<int> s(k, -1), c(k);
@@ -49,36 +76,71 @@ int len1(auto &&b, int n, int k) {
   return ans;
 }
 
-int len2(auto &&b, int n, int k) { return 0; }
-
-int lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
-  vector<int> inc = {s};
-  for (int i = s + 1; i < e; i++) {
-    if (f(inc.back(), i)) {
-      inc.push_back(i);
-    } else {
-      *ranges::lower_bound(inc, i, f) = i;
+int len2(auto &&b, int n, int k) {
+  auto f = [&](int l) {
+    vector<vector<int>> heights = {{INT_MAX}};
+    auto cmp = [&](auto &v1, auto &v2) { return v1.back() > v2.back(); };
+    vector<int> toupdate;
+    int ans = 0;
+    auto f2 = [&]() {
+      int tocut = 0;
+      for (auto i : toupdate) {
+        heights[i].resize(heights[i].size() - l);
+        if (heights[i].empty()) {
+          heights[i].push_back(0);
+          tocut++;
+        }
+      }
+      ranges::sort(heights, cmp);
+      if (tocut) {
+        heights.resize(heights.size() - tocut);
+      }
+      toupdate.clear();
+    };
+    int prev = 0;
+    for (auto &[w, h] : b) {
+      if (w > prev) {
+        if (toupdate.size()) {
+          f2();
+        }
+        prev = w;
+      }
+      if (heights.back().back() > h) {
+        heights.push_back({h});
+      } else {
+        auto it = ranges::lower_bound(heights, vector<int>{h}, cmp);
+        it->push_back(h);
+        if (it->size() == l) {
+          toupdate.push_back(it - heights.begin());
+          ans++;
+        }
+      }
     }
-  }
-  return inc.size() - (s >= e);
+    if (toupdate.size()) {
+      f2();
+    }
+    ans += heights.size() - 1;
+    return ans > k;
+  };
+  return binsearch(f, n / k, n - k + 1) + 1;
 }
 
 void solve(int t) {
-  Int n;
-  vector<array<Int, 2>> b(n);
-  // int n = 10;
-  // vector<array<int, 2>> b(n);
-  // for (auto &&bi : b) {
-  //   bi[0] = rand() % n + 1;
-  //   bi[1] = rand() % n + 1;
-  // }
+  // Int n;
+  // vector<array<Int, 2>> b(n);
+  int n = 12;
+  vector<array<int, 2>> b(n);
+  for (auto &&bi : b) {
+    bi[0] = rand() % n + 1;
+    bi[1] = rand() % n + 1;
+  }
   ranges::sort(b); // O(n*log n)
   auto cmp = [&](int i, int j) { return b[i][1] > b[j][1]; };
   int k = lis(cmp, 0, n); // O(n*log n)
   int l1 = len1(b, n, k);
   int l2 = len2(b, n, k);
   // assert(l1 == l2);
-  println(k, l1, l2);
+  println(b, k, l1, l2);
 }
 
 int main() {

@@ -52,11 +52,12 @@ SMat<U, N, M2> operator*(const SMat<T, N, M1> &lhs,
  */
 template <typename T> struct Mat : vector<vector<T>> {
   const int n, m;
-  Mat(int n, int m, T s = {}) : vector<vector<T>>(n), n(n), m(m) {
+  Mat(int n, int m) : vector<vector<T>>(n), n(n), m(m) {
     for (auto &row : *this) {
-      row.assign(m, s);
+      row.resize(m);
     }
   }
+  Mat(int n, int m, T s) : vector<vector<T>>(n, vector<T>(m, s)), n(n), m(m) {}
 };
 
 /**

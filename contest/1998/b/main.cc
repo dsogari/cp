@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1993/submission/274347283
+ * https://codeforces.com/contest/1998/submission/275577540
  *
  * (c) 2024 Diego Sogari
  */
@@ -14,6 +14,9 @@ using namespace std;
 init();
 #endif
 
+template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
+  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
+}
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
 template <typename T> struct Num {
@@ -25,7 +28,12 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n;
+  vector<Int> a(n);
+  ranges::rotate(a, a.begin() + 1);
+  println(a);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

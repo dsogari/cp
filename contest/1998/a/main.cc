@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1993/submission/274347283
+ * https://codeforces.com/contest/1998/submission/275555371
  *
  * (c) 2024 Diego Sogari
  */
@@ -25,7 +25,16 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int x, y, k;
+  if (k % 2) {
+    println(x, y);
+  }
+  for (int i = 1; i <= k / 2; i++) {
+    println(x + i, y);
+    println(x - i, y);
+  }
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

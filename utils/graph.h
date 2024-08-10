@@ -173,3 +173,28 @@ struct TwoSat {
     return true;
   }
 };
+
+/**
+ * Traveling Salesman Problem
+ */
+template <typename T> struct TSP : vector<vector<T>> {
+  TSP(const vector<vector<T>> &g) : TSP(g, g.size()) {}
+  TSP(const vector<vector<T>> &g, int n)
+      : vector<vector<T>>(n, vector<T>(1 << n, numeric_limits<T>::max())) {
+    for (int i = 0; i < n; i++) {
+      (*this)[i][1 << i] = {}; // shortest path ending at i, including only i
+    }
+    for (int i = 1; i < 1 << n; i++) {  // all subsets in increasing size
+      for (int j = 0; j < n; j++) {     // select last node in path
+        if ((1 << j) & i) {             // last node is in subset?
+          for (int k = 0; k < n; k++) { // select next node in path
+            if ((1 << k) & ~i) {        // next node is not in subset?
+              int mask = (1 << k) | i;  // include next node in subset
+              (*this)[k][mask] = min((*this)[k][mask], (*this)[j][i] + g[j][k]);
+            }
+          }
+        }
+      }
+    }
+  }
+};

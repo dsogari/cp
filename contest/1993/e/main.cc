@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/1993/submission/275637276
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -33,26 +35,26 @@ template <typename T> struct Mat : vector<vector<T>> {
   Mat(int n, int m, T s) : vector<vector<T>>(n, vector<T>(m, s)), n(n), m(m) {}
 };
 
-template <typename T>
-vector<vector<T>> tsp(const vector<vector<T>> &g) { // O(n^2*2^n)
-  int n = g.size(), s = 1 << n;
-  vector<vector<T>> dp(n, vector<T>(s, numeric_limits<T>::max()));
-  for (int i = 0; i < n; i++) {
-    dp[i][1 << i] = {};
-  }
-  for (int i = 1; i < s; i++) {       // all subsets in increasing size
-    for (int j = 0; j < n; j++) {     // select last node in path
-      if ((1 << j) & i) {             // last node is in subset?
-        for (int k = 0; k < n; k++) { // select next node in path
-          if ((1 << k) & ~i) {        // next node is not in subset?
-            int mask = (1 << k) | i;
-            dp[k][mask] = min(dp[k][mask], dp[j][i] + g[j][k]);
+template <typename T> struct TSP : vector<vector<T>> {
+  TSP(const vector<vector<T>> &g) : TSP(g, g.size()) {}
+  TSP(const vector<vector<T>> &g, int n)
+      : vector<vector<T>>(n, vector<T>(1 << n, numeric_limits<T>::max())) {
+    for (int i = 0; i < n; i++) {
+      (*this)[i][1 << i] = {}; // shortest path ending at i, including only i
+    }
+    for (int i = 1; i < 1 << n; i++) {  // all subsets in increasing size
+      for (int j = 0; j < n; j++) {     // select last node in path
+        if ((1 << j) & i) {             // last node is in subset?
+          for (int k = 0; k < n; k++) { // select next node in path
+            if ((1 << k) & ~i) {        // next node is not in subset?
+              int mask = (1 << k) | i;  // include next node in subset
+              (*this)[k][mask] = min((*this)[k][mask], (*this)[j][i] + g[j][k]);
+            }
           }
         }
       }
     }
   }
-  return dp;
 };
 
 void solve(int t) {
@@ -82,25 +84,31 @@ void solve(int t) {
     }
     return sums;
   };
+  auto getbest = [](const auto &dp, int n) { // O(n^2)
+    vector<int> ans(n, INT_MAX);
+    for (int i = 0; i < n; i++) {
+      int ix = ((1 << n) - 1) ^ (1 << i); // excluding i
+      for (int j = 0; j < n; j++) {
+        ans[i] = min(ans[i], dp[j][ix]); // ending at j
+      }
+    }
+    return ans;
+  };
   auto f1 = [&](int i, int j) { return g[i][j]; };
   auto f2 = [&](int i, int j) { return g[j][i]; };
   vector<vector<int>> rdps(m), cdps(n);
-  for (int j = 0; j < m; j++) { // O(m*n^2*2^n)
-    auto dp = tsp(getsums(f1, n, m, j));
-    rdps[j].resize(n);
-    // for (int i = 0; i < n; i++) {
-    //   rdps[j][i] = min(rdps[j][i], dp[]);
-    // }
+  for (int j = 0; j < m; j++) {       // O(m*n^2*2^n)
+    auto sums = getsums(f1, n, m, j); // excluding column j
+    rdps[j] = getbest(TSP(sums), n);
   }
-  for (int i = 0; i < n; i++) { // O(n*m^2*2^m)
-    auto dp = tsp(getsums(f2, m, n, i));
-    vector<int> abc;
-    cdps[i] = abc;
+  for (int i = 0; i < n; i++) {       // O(n*m^2*2^m)
+    auto sums = getsums(f2, m, n, i); // excluding row i
+    cdps[i] = getbest(TSP(sums), m);
   }
   int ans = INT_MAX;
-  for (int i = 0, rmask = (1 << n) - 1; i < n; i++) {
-    for (int j = 0, cmask = (1 << m) - 1; j < m; j++) {
-      ans = min(ans, rdps[j][rmask ^ (1 << i)] + cdps[i][cmask ^ (1 << j)]);
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      ans = min(ans, rdps[j][i] + cdps[i][j]);
     }
   }
   println(ans);

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1993/submission/274347283
+ * https://codeforces.com/contest/1998/submission/275668585
  *
  * (c) 2024 Diego Sogari
  */
@@ -31,32 +31,42 @@ struct Iota : vector<int> {
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
 };
 
+int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
+  while (s < e) {
+    auto m = s + (e - s + 1) / 2;
+    f(m) ? s = m : e = m - 1;
+  }
+  return e; // last such that f is true
+}
+
 void solve(int t) {
   Int n, k;
   vector<Int> a(n), b(n);
   auto cmp = [&](int i, int j) { return a[i] < a[j]; };
   Iota idx(n, cmp);
-  list<int> lst1, lst2;
-  int mid = n / 2 - 1;
-  for (int i = 0; i < n; i++) {
-    if (b[idx[i]]) {
-      (i <= mid ? lst1 : lst2).push_back(i);
+  int mid = n / 2 - 1, last = n - 1;
+  i64 ans = a[idx[mid]] + a[idx[last]];
+  for (; last >= 0 && !b[idx[last]]; last--)
+    ;
+  if (last >= 0) {
+    ans = a[idx[mid + (last <= mid)]] + a[idx[last]] + i64(k); // use a[last]
+    if (last < n - 1) {
+      auto f = [&](int x) {
+        int cnt = 0;
+        for (int i = n - 2, available = k; i >= 0; i--) {
+          if (a[idx[i]] >= x) {
+            cnt++;
+          } else if (b[idx[i]] && x - a[idx[i]] <= available) {
+            cnt++;
+            available -= x - a[idx[i]];
+          }
+        }
+        return 2 * cnt > n - 1;
+      };
+      auto mid = binsearch(f, a[idx[0]], a[idx[n - 2]] + k);
+      ans = max(ans, i64(mid) + a[idx[n - 1]]);
     }
   }
-  while (k > 0) {
-    int j = mid == lst1.back() ? mid + 1 : mid;
-    auto d1 = a[idx[j]] - a[idx[lst1.back()]];
-    auto d2 = a[idx[n - 1]] - a[idx[lst2.back()]];
-    if (d1 < d2) {
-      auto inc = min<int>(k, d1 + 1);
-      a[idx[lst1.back()]] += inc;
-      swap(idx[j], idx[lst1.back()]);
-      k -= inc;
-    } else {
-      k -= min<int>(k, d2 + 1);
-    }
-  }
-  i64 ans = a[idx[n - 1]] + a[idx[mid]];
   println(ans);
 }
 

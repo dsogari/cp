@@ -16,7 +16,7 @@ struct Iota : vector<int> {
  */
 int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
   while (s < e) {
-    auto m = (s + e + 1) / 2;
+    auto m = s + (e - s + 1) / 2; // 0 < e - s < 2^31-1
     f(m) ? s = m : e = m - 1;
   }
   return e; // last such that f is true

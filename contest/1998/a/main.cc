@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/275555371
+ * https://codeforces.com/contest/1998/submission/275642802
  *
  * (c) 2024 Diego Sogari
  */
@@ -27,12 +27,8 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int x, y, k;
-  if (k % 2) {
-    println(x, y);
-  }
-  for (int i = 1; i <= k / 2; i++) {
-    println(x + i, y);
-    println(x - i, y);
+  for (int i = 1; i <= k; i++) {
+    println(x + 2 * i - k - 1, y);
   }
 }
 

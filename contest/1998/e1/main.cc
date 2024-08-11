@@ -1,6 +1,4 @@
 /**
- * https://codeforces.com/contest/1993/submission/274347283
- *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

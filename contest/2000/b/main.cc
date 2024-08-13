@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/276165179
+ * https://codeforces.com/contest/2000/submission/276304146
  *
  * (c) 2024 Diego Sogari
  */
@@ -32,18 +32,14 @@ void solve(int t) {
   bool first = false;
   for (auto &ai : a) {
     if (first) {
-      if (ai > 1 && ai < n) {
-        if (!seat[ai - 1] && !seat[ai + 1]) {
-          println("NO");
-          return;
-        }
-      } else if ((ai > 1 && !seat[ai - 1]) || (ai < n && !seat[ai + 1])) {
+      auto prev = ai > 1 && seat[ai - 1];
+      auto next = ai < n && seat[ai + 1];
+      if (!prev && !next) {
         println("NO");
         return;
       }
     }
-    seat[ai] = true;
-    first = true;
+    seat[ai] = first = true;
   }
   println("YES");
 }

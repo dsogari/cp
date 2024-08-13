@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/276214241
+ * https://codeforces.com/contest/2000/submission/276309353
  *
  * (c) 2024 Diego Sogari
  */
@@ -36,23 +36,21 @@ void solve(int t) {
   vector<Int> a(n);
   Int m;
   vector<Str> s(m);
-  auto f = [&](const string &str) {
+  auto f = [&](const string &str) { // O(n)
     if (str.size() != n) {
       return false;
     }
     array<int, lowerlatin> dict;
-    set<int> used;
     dict.fill(INT_MAX);
+    unordered_set<int> used;
     for (int i = 0; i < n; i++) {
       char ch = str[i] - 'a';
-      if (dict[ch] == INT_MAX) {
-        if (used.contains(a[i])) {
+      if (dict[ch] != a[i]) {
+        if (dict[ch] != INT_MAX || used.contains(a[i])) {
           return false;
         }
         used.insert(a[i]);
         dict[ch] = a[i];
-      } else if (dict[ch] != a[i]) {
-        return false;
       }
     }
     return true;

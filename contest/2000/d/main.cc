@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/276227341
+ * https://codeforces.com/contest/2000/submission/276310357
  *
  * (c) 2024 Diego Sogari
  */
@@ -44,12 +44,8 @@ void solve(int t) {
       ans += sum[j + 1] - sum[i];
       i++, j--;
     } else {
-      if (s[i] == 'R') {
-        i++;
-      }
-      if (s[j] == 'L') {
-        j--;
-      }
+      i += s[i] == 'R';
+      j -= s[j] == 'L';
     }
   }
   println(ans);

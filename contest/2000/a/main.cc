@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/276127652
+ * https://codeforces.com/contest/2000/submission/276304558
  *
  * (c) 2024 Diego Sogari
  */
@@ -31,8 +31,8 @@ struct Str : string {
 
 void solve(int t) {
   Str a;
-  bool ans = a.size() > 2 && a[0] == '1' && a[1] == '0' && a[2] != '0' &&
-             (a[2] > '1' || a.size() > 3);
+  bool ans = a.size() > 2 && a[0] == '1' && a[1] == '0' &&
+             (a[2] > '1' || (a[2] > '0' && a.size() > 3));
   println(ans ? "YES" : "NO");
 }
 

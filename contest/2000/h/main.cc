@@ -1,6 +1,4 @@
 /**
- * https://codeforces.com/contest/1998/submission/276127652
- *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -25,16 +23,7 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Str : string {
-  Str() { cin >> *this; }
-};
-
-void solve(int t) {
-  Str a;
-  bool ans = a.size() > 2 && a[0] == '1' && a[1] == '0' && a[2] != '0' &&
-             (a[2] > '1' || a.size() > 3);
-  println(ans ? "YES" : "NO");
-}
+void solve(int t) {}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

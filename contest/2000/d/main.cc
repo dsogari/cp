@@ -1,9 +1,12 @@
 /**
+ * https://codeforces.com/contest/1998/submission/276227341
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -23,7 +26,34 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Str : string {
+  Str() { cin >> *this; }
+};
+
+void solve(int t) {
+  Int n;
+  vector<Int> a(n);
+  Str s;
+  vector<i64> sum(n + 1);
+  for (int i = 0; i < n; i++) {
+    sum[i + 1] += sum[i] + a[i];
+  }
+  i64 ans = 0;
+  for (int i = 0, j = n - 1; i < j;) {
+    if (s[i] == 'L' && s[j] == 'R') {
+      ans += sum[j + 1] - sum[i];
+      i++, j--;
+    } else {
+      if (s[i] == 'R') {
+        i++;
+      }
+      if (s[j] == 'L') {
+        j--;
+      }
+    }
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

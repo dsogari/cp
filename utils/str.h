@@ -4,6 +4,12 @@
 #include "utils.h"
 
 /**
+ * Common constants
+ */
+constexpr int lowerlatin = 'z' - 'a' + 1;
+constexpr int upperlatin = 'Z' - 'A' + 1;
+
+/**
  * Z-function
  */
 struct Zfn : vector<int> {

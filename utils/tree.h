@@ -120,6 +120,32 @@ template <typename T> struct FenTreePlus : FenTree<T> {
 };
 
 /**
+ * Fenwick Tree using a map
+ */
+template <typename T> struct FenTreeMap {
+  const int n;
+  unordered_map<int, T> nodes = {{0, {}}};
+  FenTreeMap(int n) : n(n) {}
+  T query(int i, auto &&f) const { // O(log n)
+    assert(i < n);
+    T ans = nodes.find(0)->second;
+    for (i++; i > 0; i -= i & -i) {
+      auto it = nodes.find(i);
+      if (it != nodes.end()) {
+        f(ans, it->second);
+      }
+    }
+    return ans;
+  }
+  void update(int i, auto &&f, const auto &val) { // O(log n)
+    assert(i >= 0);
+    for (i++; i <= n; i += i & -i) {
+      f(nodes[i], val);
+    }
+  }
+};
+
+/**
  * Segment Tree
  */
 template <typename T> struct SegTree {

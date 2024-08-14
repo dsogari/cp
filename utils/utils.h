@@ -74,6 +74,10 @@ constexpr int nxp2(unsigned x) { return 1 << (1 + mssb(x - 1)); }
 /**
  * Printing utilities
  */
+template <typename T, typename U>
+ostream &operator<<(ostream &os, const pair<T, U> &a) {
+  return os << a.first << ' ' << a.second;
+}
 template <typename T, size_t N>
 ostream &operator<<(ostream &os, const array<T, N> &a) {
   return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;

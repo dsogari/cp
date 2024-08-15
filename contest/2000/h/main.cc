@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/276456105
+ * https://codeforces.com/contest/2000/submission/276549811
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,92 +29,98 @@ template <typename T> struct Num {
 using Int = Num<int>;
 using Chr = Num<char>;
 
-template <typename T> struct FenTreeMap {
+template <typename T> struct SegTree {
   const int n;
-  unordered_map<int, T> nodes = {{0, {}}};
-  FenTreeMap(int n) : n(n) {}
-  T query(int i, auto &&f) const { // O(log n)
-    assert(i < n);
-    T ans = nodes.find(0)->second;
-    for (i++; i > 0; i -= i & -i) {
-      auto it = nodes.find(i);
-      if (it != nodes.end()) {
-        f(ans, it->second);
-      }
-    }
-    return ans;
+  vector<T> nodes;
+  function<T(const T &, const T &)> f;
+  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
+  const T &full() const { return nodes[1]; }    // O(1)
+  T &operator[](int i) { return nodes[i + n]; } // O(1)
+  T query(int l, int r) const {                 // O(log n)
+    assert(l >= 0 && l <= r && r < n);
+    return _query(l + n, r + n);
   }
-  void update(int i, auto &&f, const auto &val) { // O(log n)
-    assert(i >= 0);
-    for (i++; i <= n; i += i & -i) {
-      f(nodes[i], val);
+  T _query(int l, int r) const { // [l, r] O(log n)
+    return l == r       ? nodes[l]
+           : l % 2      ? f(nodes[l], _query(l + 1, r))
+           : r % 2 == 0 ? f(_query(l, r - 1), nodes[r])
+                        : _query(l / 2, r / 2);
+  }
+  void update(int i) { // O(log n)
+    assert(i >= 0 && i < n);
+    for (i = (i + n) / 2; i > 0; i /= 2) {
+      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
+    }
+  }
+  void update_upto(int i) { // [0, i] O(n)
+    assert(i >= 0 && i < n);
+    for (i = (i + n) / 2; i > 0; i--) {
+      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
     }
   }
 };
 
-const auto tget = [](auto &lhs, auto &rhs) {
-  if (rhs.size()) {
-    lhs.insert(*rhs.begin());
+int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
+  while (s < e) {
+    auto m = s + (e - s + 1) / 2; // 0 < e - s < 2^31-1
+    f(m) ? s = m : e = m - 1;
   }
-};
-const auto tadd = [](auto &lhs, auto &rhs) { lhs.insert(rhs); };
-const auto trem = [](auto &lhs, auto &rhs) { lhs.erase(rhs); };
+  return e; // last such that f is true
+}
+
+const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
 constexpr int mxa = 2e6;
+SegTree<int> gaps(mxa + 2, tmax);
+auto set_gap = [](auto it) { // O(log n)
+  auto x = *it + 1;
+  gaps[x] = *next(it) - x;
+  gaps.update(x);
+};
+auto clear_gap = [](auto it) { // O(log n)
+  auto x = *it + 1;
+  gaps[x] = 0;
+  gaps.update(x);
+};
 
-void solve(int t) {
+void solve(int t) { // O((n + m)*log n)
   Int n;
   vector<Int> a(n);
   Int m;
   vector<pair<Chr, Int>> ops(m);
   set<int> vals(a.begin(), a.end()); // O(n*log n)
-  vals.insert(0);
-  vals.insert(2 * mxa + 1);
-  FenTreeMap<set<int>> gaps(2 * mxa);
-  auto add_gap = [&](auto it) { // O(log^2 n)
-    auto gap = *next(it) - *it - 1;
-    if (gap > 0) {
-      gaps.update(2 * mxa - gap, tadd, *it);
-    }
-  };
-  auto rem_gap = [&](auto it) { // O(log^2 n)
-    auto gap = *next(it) - *it - 1;
-    if (gap > 0) {
-      gaps.update(2 * mxa - gap, trem, *it);
-    }
-  };
+  vals.insert({0, 2 * mxa + 1});
   for (auto it = vals.begin(), end = prev(vals.end()); it != end; it++) {
-    add_gap(it);
+    set_gap(it);
   }
-  function<void(int)> add = [&](int x) { // O(log^2 n)
-    auto it = vals.lower_bound(x);
-    if (*it > x) {
-      rem_gap(prev(it));
-      it = vals.insert(it, x);
-      add_gap(it);
-      add_gap(prev(it));
+  function<void(int)> add = [&](int x) { // O(log n)
+    auto [it, ok] = vals.insert(x);
+    if (ok) {
+      set_gap(it);
+      set_gap(prev(it));
     }
   };
-  function<void(int)> rem = [&](int x) { // O(log^2 n)
+  function<void(int)> rem = [&](int x) { // O(log n)
     auto it = vals.find(x);
     if (it != vals.end()) {
-      rem_gap(prev(it));
-      rem_gap(it);
+      clear_gap(it);
       it = vals.erase(it);
-      add_gap(prev(it));
+      set_gap(prev(it));
     }
   };
   vector<int> ans;
   function<void(int)> rep = [&](int k) { // O(log^2 n)
-    auto vals = gaps.query(2 * mxa - k, tget);
-    assert(vals.size());
-    auto x = *vals.begin();
-    ans.push_back(x + 1);
+    auto f = [&](int x) { return gaps.query(0, x) < k; };
+    auto x = binsearch(f, 0, mxa + 1) + 1;
+    ans.push_back(x);
   };
   for (auto &&[type, x] : ops) { // O(m*log^2 n)
     auto op = type == '+' ? add : type == '-' ? rem : rep;
     op(x);
   }
   println(ans);
+  for (auto it = vals.begin(), end = prev(vals.end()); it != end; it++) {
+    clear_gap(it);
+  }
 }
 
 int main() {

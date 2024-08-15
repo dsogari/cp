@@ -157,17 +157,23 @@ template <typename T> struct SegTree {
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const {                 // O(log n)
     assert(l >= 0 && l <= r && r < n);
-    return _inner(l + n, r + n);
+    return _query(l + n, r + n);
   }
-  T _inner(int l, int r) const { // [l, r] O(log n)
+  T _query(int l, int r) const { // [l, r] O(log n)
     return l == r       ? nodes[l]
-           : l % 2      ? f(nodes[l], _inner(l + 1, r))
-           : r % 2 == 0 ? f(_inner(l, r - 1), nodes[r])
-                        : _inner(l / 2, r / 2);
+           : l % 2      ? f(nodes[l], _query(l + 1, r))
+           : r % 2 == 0 ? f(_query(l, r - 1), nodes[r])
+                        : _query(l / 2, r / 2);
   }
-  void update(int i, bool single = true) { // O(log n) / [0, i] O(n)
+  void update(int i) { // O(log n)
     assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i = single ? i / 2 : i - 1) {
+    for (i = (i + n) / 2; i > 0; i /= 2) {
+      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
+    }
+  }
+  void update_upto(int i) { // [0, i] O(n)
+    assert(i >= 0 && i < n);
+    for (i = (i + n) / 2; i > 0; i--) {
       nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
     }
   }

@@ -131,3 +131,16 @@ i64 maxsum(int a, int ca, int b, int cb, i64 m) {
   auto ra = min<i64>({ua, cb - ub, (m - ua * a - ub * b) / (b - a)});
   return (ua - ra) * a + (ub + ra) * b;
 }
+
+/**
+ * Absolute and Reverse modulus (works for negative numbers)
+ */
+constexpr int absmod(int x, int m) { return (m + x % m) % m; };
+constexpr int revmod(int x, int m) { return (m - x % m) % m; };
+
+/**
+ * Most/least significant set bits/next power of 2
+ */
+constexpr int lssb(unsigned x) { return countr_zero(x); }
+constexpr int mssb(unsigned x) { return 31 - countl_zero(x); }
+constexpr int nxp2(unsigned x) { return 1 << (1 + mssb(x - 1)); }

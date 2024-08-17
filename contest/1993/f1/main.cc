@@ -1,11 +1,12 @@
 /**
- * https://codeforces.com/contest/1993/submission/276851167
+ * https://codeforces.com/contest/1993/submission/276852390
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -31,29 +32,21 @@ struct Str : string {
 
 constexpr int absmod(int x, int m) { return (m + x % m) % m; };
 
-void solve(int t) {
+void solve(int t) { // O((n + k)*log n)
   Int n, k, w, h;
   Str s;
-  unordered_map<int, vector<int>> hori, vert;
+  map<array<int, 2>, int> cnt;
   int x = 0, y = 0;
-  for (int i = 0; i < n; i++) { // O(n)
+  for (int i = 0; i < n; i++) { // O(n*log n)
     x += (s[i] == 'L') - (s[i] == 'R');
     y += (s[i] == 'U') - (s[i] == 'D');
-    hori[absmod(x, 2 * w)].push_back(i);
-    vert[absmod(y, 2 * h)].push_back(i);
+    cnt[{absmod(x, 2 * w), absmod(y, 2 * h)}]++;
   }
-  vector<bool> vis(n);
-  int ans = 0;
-  auto f = [&](int x, auto &a, bool val, bool count) { // O(n)
-    for (auto i : a[x]) {
-      ans += count && vis[i];
-      vis[i] = val;
-    }
-  };
-  for (int i = 0, x0 = 0, y0 = 0; i < k; i++, x0 -= x, y0 -= y) { // O(n*k)
-    f(absmod(x0, 2 * w), hori, true, false);
-    f(absmod(y0, 2 * h), vert, false, true);
-    f(absmod(x0, 2 * w), hori, false, false);
+  i64 ans = 0;
+  for (int i = 0, x0 = 0, y0 = 0; i < k; i++) { // O(k*log n)
+    ans += cnt[{x0, y0}];
+    x0 = absmod(x0 - x, 2 * w); // move Y axis in opposite direction
+    y0 = absmod(y0 - y, 2 * h); // move X axis in opposite direction
   }
   println(ans);
 }

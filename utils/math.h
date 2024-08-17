@@ -4,74 +4,93 @@
 #include "utils.h"
 
 /**
- * Common constants
- */
-constexpr int _mod = 1000000007;
-// constexpr int _mod = 998244353;
-
-/**
  * Modular integer
  */
-struct Mod {
-  int x, m;
-  Mod(i64 x = 0, int m = _mod) : x(x % m), m(m) {}
-  operator int() const { return x; }
-  Mod operator+(int rhs) const { return Mod(x, m) += rhs; }
-  Mod operator-(int rhs) const { return Mod(x, m) -= rhs; }
-  Mod operator*(int rhs) const { return Mod(x, m) *= rhs; }
-  Mod operator/(int rhs) const { return Mod(x, m) /= rhs; }
-  Mod &operator+=(int rhs) {
-    return rhs < 0 ? operator-=(-rhs) : ((x += rhs) >= m ? x -= m : x, *this);
+template <typename T> struct Mod {
+  constexpr static T _def = 1000000007; // 998244353;
+  T x, m;
+  operator T() const { return x; }
+  void set(i64 y) { x = (y %= m) < 0 ? y + m : y; };
+  Mod(i64 x = 0, T m = _def) : m(m) { set(x); }
+  Mod operator+(auto y) const { return Mod(x, m) += y; }
+  Mod operator-(auto y) const { return Mod(x, m) -= y; }
+  Mod operator*(auto y) const { return Mod(x, m) *= y; }
+  Mod operator/(auto y) const { return Mod(x, m) /= y; }
+  Mod &operator+=(i64 y) { return set(x + y), *this; }
+  Mod &operator-=(i64 y) { return set(x - y), *this; }
+  Mod &operator*=(i64 y) { return set(x * y), *this; }
+  Mod &operator/=(i64 y) { // O(log^2 m) / y and m must be coprime
+    i64 u = 0, v = 1, d = m;
+    while (y) {
+      auto q = d / y;
+      d -= q * y, swap(d, y); // (d, y) = (y, d - q * y)
+      u -= q * v, swap(u, v); // (u, v) = (v, u - q * v)
+    }
+    assert(d == 1); // u*y == 1 (mod m)
+    return operator*=(u);
   }
-  Mod &operator-=(int rhs) {
-    return rhs < 0 ? operator+=(-rhs) : ((x -= rhs) < 0 ? x += m : x, *this);
-  }
-  Mod &operator*=(int rhs) { return x = (i64(x) * rhs) % m, *this; }
-  Mod &operator/=(int rhs) { return operator*=(Mod(rhs, m).inv()); }
-  Mod inv() const { return pow(m - 2); } // inv of zero gives zero
-  Mod pow(int rhs) const {
-    Mod base(x, m), ans(!!x, m);
-    for (; base && rhs; rhs >>= 1, base *= base) {
-      if (rhs & 1) {
-        ans *= base;
-      }
+  Mod pow(auto y) const { // O(log y) / 0^0 -> 1
+    Mod ans(1, m), base(x, m);
+    for (; y; y >>= 1, base *= base) {
+      y & 1 ? ans *= base : ans;
     }
     return ans;
   }
 };
+using Mint = Mod<int>;
+using Mi64 = Mod<i64>;
 
 /**
  * (Modular) Factorial
  */
-struct Fac : vector<Mod> {
-  Fac(int m = _mod) : vector<Mod>(1, {1, m}) {}
-  Mod operator[](int n) {
-    while (size() <= n) {
-      push_back(back() * (int)size());
+template <typename T> struct Fac : vector<Mod<T>> {
+  Fac(T m = Mod<T>::_def) : vector<Mod<T>>(1, {1, m}) {}
+  Mod<T> operator[](int n) {
+    while (this->size() <= n) {
+      this->push_back(this->back() * this->size());
     }
-    return vector<Mod>::operator[](n);
+    return vector<Mod<T>>::operator[](n);
   }
 };
 
 /**
  * (Modular) Binomial coefficient
  */
-struct Bin : Fac {
-  vector<Mod> inv;
-  Mod operator()(int n, int k) {
+template <typename T> struct Bin : Fac<T> {
+  vector<Mod<T>> inv;
+  Mod<T> operator()(int n, int k) {
     if (k < 0 || k > n) {
-      return front() * 0;
+      return this->front() * 0;
     }
     auto ans = (*this)[n];
     if (inv.size() <= n) {
       int s = inv.size();
       inv.resize(n + 1);
-      inv[n] = ans.inv();
+      inv[n] = Mod(1, ans.m) / ans;
       for (int i = n; i > s; i--) {
         inv[i - 1] = inv[i] * i;
       }
     }
     return ans * inv[k] * inv[n - k];
+  }
+};
+
+/**
+ * Chinese Remainder Theorem
+ */
+template <typename T> struct CRT : vector<Mod<T>> {
+  using vector<Mod<T>>::vector;
+  Mod<i64> operator()() const { // O(n*log^2 max(mi))
+    i64 m = 1;
+    for (const auto &ai : *this) {
+      m *= ai.m;
+    }
+    Mod ans = {0, m};
+    for (const auto &ai : *this) { // O(n*log^2 max(mi))
+      auto Mi = Mod(m / ai.m, m);
+      ans += Mi * (ai / Mi);
+    }
+    return ans;
   }
 };
 
@@ -97,6 +116,19 @@ struct Dist : uniform_int_distribution<int> {
     static random_device device;
     static mt19937 engine{device()};
     return uniform_int_distribution<int>::operator()(engine);
+  }
+};
+
+/**
+ * Array hashing function
+ */
+template <size_t N> struct ArrayHash {
+  size_t operator()(const array<int, N> &a) const {
+    size_t h = 0;
+    for (auto e : a) {
+      h ^= hash<int>{}(e) + 0x9e3779b9 + (h << 6) + (h >> 2);
+    }
+    return h;
   }
 };
 
@@ -135,8 +167,8 @@ i64 maxsum(int a, int ca, int b, int cb, i64 m) {
 /**
  * Absolute and Reverse modulus (works for negative numbers)
  */
-constexpr int absmod(int x, int m) { return (m + x % m) % m; };
-constexpr int revmod(int x, int m) { return (m - x % m) % m; };
+constexpr auto absmod(auto x, auto m) { return (m + x % m) % m; };
+constexpr auto revmod(auto x, auto m) { return (m - x % m) % m; };
 
 /**
  * Most/least significant set bits/next power of 2
@@ -144,3 +176,31 @@ constexpr int revmod(int x, int m) { return (m - x % m) % m; };
 constexpr int lssb(unsigned x) { return countr_zero(x); }
 constexpr int mssb(unsigned x) { return 31 - countl_zero(x); }
 constexpr int nxp2(unsigned x) { return 1 << (1 + mssb(x - 1)); }
+
+/**
+ * Extended Euclid's algorithm
+ */
+template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
+  T u = 1, v = 0, a = 0, b = 1;
+  while (n) {
+    T q = m / n;
+    m -= q * n, swap(m, n); // (m, n) = (n, m - q * n)
+    u -= q * a, swap(u, a); // (u, a) = (a, u - q * a)
+    v -= q * b, swap(v, b); // (v, b) = (b, v - q * b)
+  }
+  return {u, v, m}; // u*m + v*n == gcd(m,n)
+}
+
+/**
+ * Modular Multiplicative Inverse
+ */
+auto invmod(auto x, auto m) { // O(log^2 m) / x and m must be coprime
+  decltype(m) u = 0, v = 1;
+  while (x) {
+    auto q = m / x;
+    m -= q * x, swap(m, x); // (m, x) = (x, m - q * x)
+    u -= q * v, swap(u, v); // (u, v) = (v, u - q * v)
+  }
+  assert(m == 1); // u*x == 1 (mod m)
+  return u;
+}

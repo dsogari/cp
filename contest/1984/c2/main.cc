@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/276990101
+ * https://codeforces.com/contest/1984/submission/277068306
  *
  * (c) 2024 Diego Sogari
  */
@@ -28,6 +28,9 @@ using Int = Num<int>;
 
 template <typename T> struct Mod {
   constexpr static T _def = 998244353;
+  static i64 inv(i64 x, i64 m) { // O(log^2 m) / x and m must be coprime
+    return x < 0 ? inv(x % m + m, m) : x > 1 ? m - inv(m % x, x) * m / x : 1;
+  } // https://codeforces.com/blog/entry/23365
   T x, m;
   operator T() const { return x; }
   void set(i64 y) { x = (y %= m) < 0 ? y + m : y; };
@@ -39,19 +42,10 @@ template <typename T> struct Mod {
   Mod &operator+=(i64 y) { return set(x + y), *this; }
   Mod &operator-=(i64 y) { return set(x - y), *this; }
   Mod &operator*=(i64 y) { return set(x * y), *this; }
-  Mod &operator/=(i64 y) { // O(log^2 m) / y and m must be coprime
-    i64 u = 0, v = 1, d = m;
-    while (y) {
-      auto q = d / y;
-      d -= q * y, swap(d, y); // (d, y) = (y, d - q * y)
-      u -= q * v, swap(u, v); // (u, v) = (v, u - q * v)
-    }
-    assert(d == 1); // u*y == 1 (mod m)
-    return operator*=(u);
-  }
-  Mod pow(auto y) const { // O(log y) / 0^0 -> 1
-    Mod ans(1, m), base(x, m);
-    for (; y; y >>= 1, base *= base) {
+  Mod &operator/=(i64 y) { return *this *= inv(y, m); }
+  Mod pow(auto y) const { // O(log y) / 0^(-inf,0] -> 1
+    Mod ans(1, m), base(y < 0 ? inv(x, m) : x, m);
+    for (y = abs(y); y; y >>= 1, base *= base) {
       y & 1 ? ans *= base : ans;
     }
     return ans;

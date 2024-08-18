@@ -8,6 +8,9 @@
  */
 template <typename T> struct Mod {
   constexpr static T _def = 1000000007; // 998244353;
+  static i64 inv(i64 x, i64 m) {        // O(log^2 m) / x and m must be coprime
+    return x < 0 ? inv(x % m + m, m) : x > 1 ? m - inv(m % x, x) * m / x : 1;
+  } // https://codeforces.com/blog/entry/23365
   T x, m;
   operator T() const { return x; }
   void set(i64 y) { x = (y %= m) < 0 ? y + m : y; };
@@ -19,19 +22,10 @@ template <typename T> struct Mod {
   Mod &operator+=(i64 y) { return set(x + y), *this; }
   Mod &operator-=(i64 y) { return set(x - y), *this; }
   Mod &operator*=(i64 y) { return set(x * y), *this; }
-  Mod &operator/=(i64 y) { // O(log^2 m) / y and m must be coprime
-    i64 u = 0, v = 1, d = m;
-    while (y) {
-      auto q = d / y;
-      d -= q * y, swap(d, y); // (d, y) = (y, d - q * y)
-      u -= q * v, swap(u, v); // (u, v) = (v, u - q * v)
-    }
-    assert(d == 1); // u*y == 1 (mod m)
-    return operator*=(u);
-  }
-  Mod pow(auto y) const { // O(log y) / 0^0 -> 1
-    Mod ans(1, m), base(x, m);
-    for (; y; y >>= 1, base *= base) {
+  Mod &operator/=(i64 y) { return *this *= inv(y, m); }
+  Mod pow(auto y) const { // O(log y) / 0^(-inf,0] -> 1
+    Mod ans(1, m), base(y < 0 ? inv(x, m) : x, m);
+    for (y = abs(y); y; y >>= 1, base *= base) {
       y & 1 ? ans *= base : ans;
     }
     return ans;
@@ -83,7 +77,7 @@ template <typename T> struct CRT : vector<Mod<T>> {
   Mod<i64> operator()() const { // O(n*log^2 max(mi))
     i64 m = 1;
     for (const auto &ai : *this) {
-      m *= ai.m;
+      m *= ai.m; // mi are mutually coprime
     }
     Mod ans = {0, m};
     for (const auto &ai : *this) { // O(n*log^2 max(mi))
@@ -181,7 +175,7 @@ constexpr int nxp2(unsigned x) { return 1 << (1 + mssb(x - 1)); }
  * Extended Euclid's algorithm
  */
 template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
-  T u = 1, v = 0, a = 0, b = 1;
+  T a = 0, b = 1, u = 1, v = 0;
   while (n) {
     T q = m / n;
     m -= q * n, swap(m, n); // (m, n) = (n, m - q * n)
@@ -194,13 +188,8 @@ template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
 /**
  * Modular Multiplicative Inverse
  */
-auto invmod(auto x, auto m) { // O(log^2 m) / x and m must be coprime
-  decltype(m) u = 0, v = 1;
-  while (x) {
-    auto q = m / x;
-    m -= q * x, swap(m, x); // (m, x) = (x, m - q * x)
-    u -= q * v, swap(u, v); // (u, v) = (v, u - q * v)
-  }
-  assert(m == 1); // u*x == 1 (mod m)
-  return u;
-}
+template <typename T> T invmod(T x, T m) { // O(log^2 m) / x and m are coprime
+  return x < 0   ? invmod(x % m + m, m)
+         : x > 1 ? m - invmod(m % x, x) * 1ll * m / x
+                 : 1;
+} // https://codeforces.com/blog/entry/23365

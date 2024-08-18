@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/1993/submission/277067839
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -29,44 +31,50 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
-  T u = 1, v = 0;
-  for (T a = 0, b = 1; n;) {
-    T q = m / n;
-    m -= q * n, swap(m, n); // (m, n) = (n, m - q * n)
-    u -= q * a, swap(u, a); // (u, a) = (a, u - q * a)
-    v -= q * b, swap(v, b); // (v, b) = (b, v - q * b)
-  }
-  return {u, v, m}; // u*m + v*n == gcd(m,n)
-}
+template <typename T> T invmod(T x, T m) { // O(log^2 m) / x and m are coprime
+  return x < 0   ? invmod(x % m + m, m)
+         : x > 1 ? m - invmod(m % x, x) * 1ll * m / x
+                 : 1;
+} // https://codeforces.com/blog/entry/23365
 
-void solve(int t) { // O(n*log^2 max(w, h))
-  I64 n, k, w, h;
+array<int, 3> normalize(int dx, int w) { // O(log^2 w)
+  auto g = gcd(dx, w);
+  auto u = invmod(dx / g, w /= g);
+  return {g, w, u};
+};
+
+void solve(int t) { // O(n + log^2 max(w,h))
+  Int n;
+  I64 k;
+  Int w, h;
   Str s;
-  int dx = 0, dy = 0;
-  for (int i = 0; i < n; i++) { // O(n)
-    dx += (s[i] == 'L') - (s[i] == 'R');
-    dy += (s[i] == 'U') - (s[i] == 'D');
-  }
-  auto gx = gcd<int, int>(dx, 2 * w);
-  auto gy = gcd<int, int>(dy, 2 * h);
-  auto w1 = 2 * w / gx, h1 = 2 * h / gy;
-  auto [ux, _x, mx] = exgcd<int>(dx / gx, w1);
-  auto [uy, _y, my] = exgcd<int>(dy / gy, h1);
-  assert(mx == 1 && my == 1);
-  auto f = [&](int x, int y) {
-    if (x % gx == 0 && y % gy == 0) { // a solution exists for the CRT
-      // count of i in [0,k-1] such that i == ax (mod w1) == ay (mod h1)
-      auto ax = (-x / gx * ux) % w1; // i = cx + z*w1, for z >= 0
-      auto ay = (-y / gy * uy) % h1;
-    }
-    return 0;
-  };
-  i64 ans = 0;
-  for (int i = 0, x = 0, y = 0; i < n; i++) { // O(n*log^2 max(w, h))
+  vector<array<int, 2>> pos(n);
+  for (int i = 0, x = 0, y = 0; i < n; i++) { // O(n)
     x += (s[i] == 'L') - (s[i] == 'R');
     y += (s[i] == 'U') - (s[i] == 'D');
-    ans += f(x, y);
+    pos[i] = {x % (2 * w), y % (2 * h)};
+  }
+  auto [dx, dy] = pos[n - 1];
+  auto [gx, mx, ux] = normalize(-dx, 2 * w); // O(log^2 w)
+  auto [gy, my, uy] = normalize(-dy, 2 * h); // O(log^2 h)
+  auto [g, mmx, umx] = normalize(mx, my);    // O(log^2 h)
+  i64 ans = 0, l = lcm<i64>(mx, my);
+  for (auto &[x, y] : pos) {          // O(n)
+    if (x % gx == 0 && y % gy == 0) { // a solution exists for the CRT
+      int ax = x / gx * i64(ux) % mx; // i = ax + b*mx (mod mx), for b >= 0
+      int ay = y / gy * i64(uy) % my; // i = ay + b*my (mod my), for b >= 0
+      int bx = (ay - ax) % my;        // modified CRT
+      if (bx % g == 0) {              // a solution exists for the modified CRT
+        int b = bx / g * i64(umx) % mmx; // b + z*l, for z >= 0
+        i64 a = ax + i64(b) * mx;        // i = ax + (b + z*l)*mx, for z >= 0
+        if (a < 0) {
+          a += l;
+        }
+        if (k > a) {
+          ans += 1 + (k - 1 - a) / l; // count of i in [0,k)
+        }
+      }
+    }
   }
   println(ans);
 }

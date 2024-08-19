@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1993/submission/277067839
+ * https://codeforces.com/contest/1993/submission/277126069
  *
  * (c) 2024 Diego Sogari
  */
@@ -31,16 +31,20 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-template <typename T> T invmod(T x, T m) { // O(log^2 m) / x and m are coprime
-  return x < 0   ? invmod(x % m + m, m)
-         : x > 1 ? m - invmod(m % x, x) * 1ll * m / x
-                 : 1;
-} // https://codeforces.com/blog/entry/23365
+template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
+  T a = 0, b = 1, u = 1, v = 0;
+  while (n) {
+    T q = m / n;
+    m -= q * n, swap(m, n); // (m, n) = (n, m - q * n)
+    u -= q * a, swap(u, a); // (u, a) = (a, u - q * a)
+    v -= q * b, swap(v, b); // (v, b) = (b, v - q * b)
+  }
+  return {u, v, m}; // u*m + v*n == gcd(m,n)
+}
 
-array<int, 3> normalize(int dx, int w) { // O(log^2 w)
-  auto g = gcd(dx, w);
-  auto u = invmod(dx / g, w /= g);
-  return {g, w, u};
+template <typename T> array<T, 3> gcdinvmod(T x, T m) { // O(log^2 m)
+  auto [u, v, d] = exgcd(x, m);
+  return {d, u, m / d};
 };
 
 void solve(int t) { // O(n + log^2 max(w,h))
@@ -55,10 +59,11 @@ void solve(int t) { // O(n + log^2 max(w,h))
     pos[i] = {x % (2 * w), y % (2 * h)};
   }
   auto [dx, dy] = pos[n - 1];
-  auto [gx, mx, ux] = normalize(-dx, 2 * w); // O(log^2 w)
-  auto [gy, my, uy] = normalize(-dy, 2 * h); // O(log^2 h)
-  auto [g, mmx, umx] = normalize(mx, my);    // O(log^2 h)
-  i64 ans = 0, l = lcm<i64>(mx, my);
+  auto [gx, ux, mx] = gcdinvmod(-dx, 2 * w); // O(log^2 w)
+  auto [gy, uy, my] = gcdinvmod(-dy, 2 * h); // O(log^2 h)
+  auto [g, umx, mmx] = gcdinvmod(mx, my);    // O(log^2 h)
+  auto l = lcm<i64>(mx, my);
+  i64 ans = 0;
   for (auto &[x, y] : pos) {          // O(n)
     if (x % gx == 0 && y % gy == 0) { // a solution exists for the CRT
       int ax = x / gx * i64(ux) % mx; // i = ax + b*mx (mod mx), for b >= 0

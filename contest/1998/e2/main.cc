@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/277254064
+ * https://codeforces.com/contest/1998/submission/277318673
  *
  * (c) 2024 Diego Sogari
  */
@@ -40,7 +40,7 @@ struct Treap {
   Treap(auto &&f) : f(f) {}
   void push(int i) { // O(1) amortized / i must be pushed in order
     assert(i == nodes.size());
-    nodes.emplace_back(-1, -1, -1, -1, -1);
+    nodes.emplace_back(-1, -1, -1, i, -1);
     int last = -1;
     while (above.size() && f(above.top(), i)) {
       last = above.top();
@@ -54,11 +54,11 @@ struct Treap {
     if (last >= 0) {
       nodes[last].par = i;
       nodes[i].left = last; // greatest smaller
+      nodes[i].start = nodes[last].start;
     }
     if (top < 0 || f(top, i)) {
       top = i;
     }
-    nodes[i].start = nodes[i].par + 1;
     above.push(i);
   }
   void finish() { // O(n)
@@ -69,29 +69,47 @@ struct Treap {
   }
 };
 
-void solve(int t) { // O(n^2)
+void solve(int t) { // O(n)
   Int n, x;
   vector<Int> a(n);
   auto cmp = [&](int i, int j) { return a[i] < a[j]; };
   Treap treap(cmp);
   vector<i64> sum(n + 1);
-  vector<int> cnt(n + 1);
-  auto f = [&](auto &self, int u, int end) { // O(n)
+  for (int i = 0; i < n; i++) { // O(n)
+    treap.push(i);
+    sum[i + 1] += sum[i] + a[i];
+  }
+  vector<int> far(n);
+  for (int i = 0, j = 0; i < n; i++) { // O(n)
+    for (; j < n && sum[j + 1] - sum[i + 1] < a[i]; j++)
+      ;
+    far[i] = j;
+  }
+  vector<array<int, 2>> ranges(n);
+  auto f = [&](auto &self, int u, int L, int R) { // O(n)
     if (u < 0) {
       return;
     }
-    auto [p, l, r, s, e] = treap.nodes[u];
-    auto st = sum[e < 0 ? end : e] - sum[s]; // sum of subtree
-    cnt[u + 1] = p < 0 || st >= a[p] ? cnt[l + 1] + cnt[r + 1] + 1 : 0;
-    self(self, p, end);
+    ranges[u] = {L, R};
+    auto [_p, l, r, s, e] = treap.nodes[u];
+    auto sl = sum[u] - sum[s];
+    auto sr = sum[e < 0 ? int(n) : e] - sum[u + 1];
+    self(self, l, L, sl >= a[u] ? R : u);
+    self(self, r, sr >= a[u] ? L : u + 1, R);
   };
+  f(f, treap.top, 0, n);
+  vector<int> inc(n + 1);
+  for (int i = 0; i < n; i++) { // O(n)
+    auto [l, r] = ranges[i];
+    if (l == 0 && far[i] < r) {
+      inc[far[i]]++;
+      inc[r]--;
+    }
+  }
   vector<int> ans(n);
-  for (int i = 0; i < n; i++) { // O(n^2)
-    sum[i + 1] += sum[i] + a[i];
-    treap.push(i);
-    auto l = treap.nodes[i].left;
-    f(f, l >= 0 ? l : i, i + 1);
-    ans[i] = cnt[treap.top + 1];
+  for (int i = 0, c = 1; i < n; i++) { // O(n)
+    c += inc[i];
+    ans[i] = c;
   }
   println(ans);
 }

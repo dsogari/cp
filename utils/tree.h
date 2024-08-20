@@ -253,7 +253,7 @@ struct Treap {
   Treap(auto &&f) : f(f) {}
   void push(int i) { // O(1) amortized / i must be pushed in order
     assert(i == nodes.size());
-    nodes.emplace_back(-1, -1, -1, -1, -1);
+    nodes.emplace_back(-1, -1, -1, i, -1);
     int last = -1;
     while (above.size() && f(above.top(), i)) {
       last = above.top();
@@ -267,11 +267,11 @@ struct Treap {
     if (last >= 0) {
       nodes[last].par = i;
       nodes[i].left = last; // greatest smaller
+      nodes[i].start = nodes[last].start;
     }
     if (top < 0 || f(top, i)) {
       top = i;
     }
-    nodes[i].start = nodes[i].par + 1;
     above.push(i);
   }
   void finish() { // O(n)
@@ -293,28 +293,27 @@ template <typename T> struct TreapMap {
   stack<T> above; // minimum stack
   function<bool(const T &, const T &)> f;
   const Info empty;
-  T top, end;
-  TreapMap(auto &&f, T def)
-      : f(f), top(def), end(def), empty{def, def, def, def, def} {}
+  T top, end, def;
+  TreapMap(auto &&f, T def) : f(f), top(def), end(def), def(def) {}
   void push(T x) { // O(1) amortized / x must be pushed in order
     assert(above.empty() || above.top() < x);
-    nodes.emplace(x, empty);
-    T last = empty.par;
+    nodes.emplace(x, Info{def, def, def, x, def});
+    T last = def;
     while (above.size() && f(above.top(), x)) {
       last = above.top();
       nodes[last].end = end;
-      nodes[x].start = nodes[last].start;
       above.pop();
     }
     if (above.size()) {
       nodes[x].par = above.top(); // smallest greater or equal
       nodes[above.top()].right = x;
     }
-    if (last != empty.par) {
+    if (last != def) {
       nodes[last].par = x;
       nodes[x].left = last; // greatest smaller
+      nodes[x].start = nodes[last].start;
     }
-    if (top == empty.par || f(top, x)) {
+    if (top == def || f(top, x)) {
       top = x;
     }
     end = x;

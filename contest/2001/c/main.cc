@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2001/submission/277427855
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -26,6 +28,7 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+#ifndef ONLINE_JUDGE
 struct Graph : vector<vector<int>> {
   const int n, m;
   Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
@@ -38,8 +41,8 @@ struct Graph : vector<vector<int>> {
 };
 
 struct Path : vector<int> {
-  Path(Graph &g, int s, int e) { dfs(g, s, e, s); }
-  int dfs(Graph &g, int a, int b, int p) {
+  Path(const Graph &g, int s, int e) { dfs(g, s, e, s); }
+  int dfs(const Graph &g, int a, int b, int p) {
     push_back(a);
     if (a == b) {
       return true;
@@ -58,6 +61,7 @@ int simulate(Graph &g, int a, int b) {
   Path path(g, a, b);
   return path[(path.size() - 1) / 2];
 }
+#endif
 
 void solve(int t) {
   Int n;
@@ -65,7 +69,7 @@ void solve(int t) {
   Graph g(n, n - 1);
 #endif
   int rem = 15 * n;
-  auto q = [&](int a, int b) {
+  auto query = [&](int a, int b) {
     assert(rem--);
     println('?', a, b);
 #ifndef ONLINE_JUDGE
@@ -74,22 +78,17 @@ void solve(int t) {
     return Int();
 #endif
   };
-  set<array<int, 2>> vis;
   vector<int> ans;
-  auto f = [&](auto &self, int a, int b) {
-    if (!vis.insert({a, b}).second) {
-      return; // this path was already visited
-    }
-    auto x = q(a, b);
+  auto f = [&](auto &self, int a, int b) { // O(log n)
+    auto x = query(a, b);                  // middle node between a and b
     if (x == a || x == b) {
       ans.push_back(a);
       ans.push_back(b);
       return; // add edge between a and b
     }
-    self(self, a, x);
-    self(self, x, b);
+    self(self, a, x); // binary search
   };
-  for (int u = 1; u < n; u++) {
+  for (int u = 1; u < n; u++) { // O(n*log n)
     f(f, u, n);
   }
   assert(ans.size() == 2 * (n - 1));

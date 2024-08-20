@@ -5,7 +5,47 @@
 #include "utils.h"
 
 /**
- * Tree
+ * Path between two nodes
+ */
+struct Path : vector<int> {
+  Path(const Graph &g, int s, int e) { dfs(g, s, e, s); }
+  int dfs(const Graph &g, int a, int b, int p) {
+    push_back(a);
+    if (a == b) {
+      return true;
+    }
+    for (auto &v : g[a]) {
+      if (v != p && dfs(g, v, b, a)) {
+        return true;
+      }
+    }
+    pop_back();
+    return false;
+  }
+};
+
+/**
+ * Matching
+ */
+struct Match : vector<int> {
+  int count = 0;
+  Match(const Graph &g, int s) : vector<int>(g.size(), -1) { dfs(g, s, s); }
+  void dfs(const Graph &g, int u, int p) {
+    for (auto v : g[u]) {
+      if (v != p) {
+        dfs(g, v, u); // post-order (visit leaves first)
+        if ((*this)[u] == (*this)[v]) {
+          (*this)[u] = v;
+          (*this)[v] = u;
+          count++;
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Tree (with additional information)
  */
 struct Tree : Graph {
   struct Info {

@@ -35,12 +35,12 @@ struct WGraph : vector<vector<array<int, 3>>> {
 };
 
 struct Dist : vector<array<int, 2>> {
-  Dist(WGraph &g, int e) : vector<array<int, 2>>(g.size()) {
+  Dist(const WGraph &g, int e) : vector<array<int, 2>>(g.size()) {
     for (int u = 0; u < g.size(); u++) {
       dfs(g, u, u, e);
     }
   }
-  int dfs(WGraph &g, int u, int p, int e) {
+  int dfs(const WGraph &g, int u, int p, int e) {
     if (u == e || (*this)[u][0]) {
       return (*this)[u][0];
     }

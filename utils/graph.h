@@ -59,35 +59,15 @@ struct WGraph : vector<vector<array<int, 2>>> {
 };
 
 /**
- * Path between two nodes (in undirected graph)
- */
-struct Path : vector<int> {
-  Path(Graph &g, int s, int e) { dfs(g, s, e, s); }
-  int dfs(Graph &g, int a, int b, int p) {
-    push_back(a);
-    if (a == b) {
-      return true;
-    }
-    for (auto &v : g[a]) {
-      if (v != p && dfs(g, v, b, a)) {
-        return true;
-      }
-    }
-    pop_back();
-    return false;
-  }
-};
-
-/**
- * Shortest Distances (of weighed undirected graph)
+ * Shortest Distances to a node (in weighed undirected graph)
  */
 struct Dist : vector<array<int, 2>> {
-  Dist(WGraph &g, int e) : vector<array<int, 2>>(g.size()) {
+  Dist(const WGraph &g, int e) : vector<array<int, 2>>(g.size()) {
     for (int u = 0; u < g.size(); u++) {
       dfs(g, u, u, e);
     }
   }
-  int dfs(WGraph &g, int u, int p, int e) {
+  int dfs(const WGraph &g, int u, int p, int e) {
     if (u == e || (*this)[u][0]) {
       return (*this)[u][0];
     }
@@ -99,30 +79,6 @@ struct Dist : vector<array<int, 2>> {
       }
     }
     return ((*this)[u] = ans)[0];
-  }
-};
-
-/**
- * Matching (of tree)
- */
-struct Match : vector<int> {
-  int count = 0;
-  vector<bool> vis;
-  Match(const Graph &g, int s) : vector<int>(g.size(), -1), vis(g.size()) {
-    dfs(g, s, s);
-  }
-  void dfs(const Graph &g, int u, int p) {
-    vis[u] = true;
-    for (auto v : g[u]) {
-      if (v != p && !vis[v]) {
-        dfs(g, v, u); // post-order (visit leaves first)
-        if ((*this)[u] == (*this)[v]) {
-          (*this)[u] = v;
-          (*this)[v] = u;
-          count++;
-        }
-      }
-    }
   }
 };
 

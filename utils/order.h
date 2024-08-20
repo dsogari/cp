@@ -4,6 +4,12 @@
 #include "utils.h"
 
 /**
+ * Min/Max heap
+ */
+template <typename T> using MaxHeap = priority_queue<T>;
+template <typename T> using MinHeap = priority_queue<T, vector<T>, greater<T>>;
+
+/**
  * Vector Indices
  */
 struct Iota : vector<int> {

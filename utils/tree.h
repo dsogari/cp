@@ -2,7 +2,6 @@
  * (c) 2024 Diego Sogari
  */
 #include "graph.h"
-#include "utils.h"
 
 /**
  * Path between two nodes
@@ -189,15 +188,24 @@ template <typename T> struct FenTreeMap {
  * Segment Tree
  */
 template <typename T> struct SegTree {
-  const int n;
+  int n;
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
   const T &full() const { return nodes[1]; }    // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
-  T query(int l, int r) const {                 // O(log n)
-    assert(l >= 0 && l <= r && r < n);
-    return _query(l + n, r + n);
+  T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
+  void update(int i) { // O(log n)
+    _check(i, i);
+    for (i = (i + n) / 2; i > 0; i /= 2) {
+      _update(i);
+    }
+  }
+  void update_upto(int i) { // [0, i] O(n)
+    _check(i, i);
+    for (i = (i + n) / 2; i > 0; i--) {
+      _update(i);
+    }
   }
   T _query(int l, int r) const { // [l, r] O(log n)
     return l == r       ? nodes[l]
@@ -205,18 +213,8 @@ template <typename T> struct SegTree {
            : r % 2 == 0 ? f(_query(l, r - 1), nodes[r])
                         : _query(l / 2, r / 2);
   }
-  void update(int i) { // O(log n)
-    assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i /= 2) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
-    }
-  }
-  void update_upto(int i) { // [0, i] O(n)
-    assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i--) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
-    }
-  }
+  void _update(int i) { nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]); }
+  void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 /**

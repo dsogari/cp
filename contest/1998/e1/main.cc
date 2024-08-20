@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/277248438
+ * https://codeforces.com/contest/1998/submission/277319399
  *
  * (c) 2024 Diego Sogari
  */
@@ -37,7 +37,7 @@ struct Treap {
   Treap(auto &&f) : f(f) {}
   void push(int i) { // O(1) amortized / i must be pushed in order
     assert(i == nodes.size());
-    nodes.emplace_back(-1, -1, -1, -1, -1);
+    nodes.emplace_back(-1, -1, -1, i, -1);
     int last = -1;
     while (above.size() && f(above.top(), i)) {
       last = above.top();
@@ -51,11 +51,11 @@ struct Treap {
     if (last >= 0) {
       nodes[last].par = i;
       nodes[i].left = last; // greatest smaller
+      nodes[i].start = nodes[last].start;
     }
     if (top < 0 || f(top, i)) {
       top = i;
     }
-    nodes[i].start = nodes[i].par + 1;
     above.push(i);
   }
   void finish() { // O(n)

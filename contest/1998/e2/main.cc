@@ -1,5 +1,8 @@
 /**
- * https://codeforces.com/contest/1998/submission/277318673
+ * https://codeforces.com/contest/1998/submission/277320415
+ *
+ * Inspired by neal's solution:
+ * https://codeforces.com/contest/1998/submission/275679381
  *
  * (c) 2024 Diego Sogari
  */
@@ -79,6 +82,7 @@ void solve(int t) { // O(n)
     treap.push(i);
     sum[i + 1] += sum[i] + a[i];
   }
+  treap.finish();
   vector<int> far(n);
   for (int i = 0, j = 0; i < n; i++) { // O(n)
     for (; j < n && sum[j + 1] - sum[i + 1] < a[i]; j++)
@@ -93,7 +97,7 @@ void solve(int t) { // O(n)
     ranges[u] = {L, R};
     auto [_p, l, r, s, e] = treap.nodes[u];
     auto sl = sum[u] - sum[s];
-    auto sr = sum[e < 0 ? int(n) : e] - sum[u + 1];
+    auto sr = sum[e] - sum[u + 1];
     self(self, l, L, sl >= a[u] ? R : u);
     self(self, r, sr >= a[u] ? L : u + 1, R);
   };

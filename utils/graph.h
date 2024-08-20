@@ -59,6 +59,26 @@ struct WGraph : vector<vector<array<int, 2>>> {
 };
 
 /**
+ * Path between two nodes (in undirected graph)
+ */
+struct Path : vector<int> {
+  Path(Graph &g, int s, int e) { dfs(g, s, e, s); }
+  int dfs(Graph &g, int a, int b, int p) {
+    push_back(a);
+    if (a == b) {
+      return true;
+    }
+    for (auto &v : g[a]) {
+      if (v != p && dfs(g, v, b, a)) {
+        return true;
+      }
+    }
+    pop_back();
+    return false;
+  }
+};
+
+/**
  * Shortest Distances (of weighed undirected graph)
  */
 struct Dist : vector<array<int, 2>> {

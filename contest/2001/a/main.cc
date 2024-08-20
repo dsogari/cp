@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2001/submission/277335915
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,19 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n;
+  vector<Int> a(n);
+  map<int, int> cnt;
+  for (auto &&ai : a) {
+    cnt[ai]++;
+  }
+  int mx = 0;
+  for (auto &&[_, c] : cnt) {
+    mx = max(mx, c);
+  }
+  println(n - mx);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/277068775
+ * https://codeforces.com/contest/1984/submission/277584712
  *
  * (c) 2024 Diego Sogari
  */
@@ -28,24 +28,24 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 template <typename T> struct Mod {
-  constexpr static T _def = 998244353;
+  inline static T mod = 998244353;
   static i64 inv(i64 x, i64 m) { // O(log^2 m) / x and m must be coprime
     return x < 0 ? inv(x % m + m, m) : x > 1 ? m - inv(m % x, x) * m / x : 1;
   } // https://codeforces.com/blog/entry/23365
-  T x, m;
+  T x;
   operator T() const { return x; }
-  void set(i64 y) { x = (y %= m) < 0 ? y + m : y; };
-  Mod(i64 x = 0, T m = _def) : m(m) { set(x); }
-  Mod operator+(auto y) const { return Mod(x, m) += y; }
-  Mod operator-(auto y) const { return Mod(x, m) -= y; }
-  Mod operator*(auto y) const { return Mod(x, m) *= y; }
-  Mod operator/(auto y) const { return Mod(x, m) /= y; }
+  void set(i64 y) { x = y % mod + (y < 0 ? mod : 0); };
+  Mod(i64 x = 0) { set(x); }
+  Mod operator+(auto y) const { return Mod(x) += y; }
+  Mod operator-(auto y) const { return Mod(x) -= y; }
+  Mod operator*(auto y) const { return Mod(x) *= y; }
+  Mod operator/(auto y) const { return Mod(x) /= y; }
   Mod &operator+=(i64 y) { return set(x + y), *this; }
   Mod &operator-=(i64 y) { return set(x - y), *this; }
   Mod &operator*=(i64 y) { return set(x * y), *this; }
-  Mod &operator/=(i64 y) { return *this *= inv(y, m); }
+  Mod &operator/=(i64 y) { return *this *= inv(y, mod); }
   Mod pow(auto y) const { // O(log y) / 0^(-inf,0] -> 1
-    Mod ans(1, m), base(y < 0 ? inv(x, m) : x, m);
+    Mod ans(1), base(y < 0 ? inv(x, mod) : x);
     for (y = abs(y); y; y >>= 1, base *= base) {
       y & 1 ? ans *= base : ans;
     }
@@ -55,7 +55,7 @@ template <typename T> struct Mod {
 using Mint = Mod<int>;
 
 template <typename T> struct Fac : vector<Mod<T>> {
-  Fac(T m = Mod<T>::_def) : vector<Mod<T>>(1, {1, m}) {}
+  Fac() : vector<Mod<T>>(1, 1) {}
   Mod<T> operator[](int n) {
     while (this->size() <= n) {
       this->push_back(this->back() * this->size());
@@ -186,7 +186,7 @@ void solve(int t) {
   };
   Mint ans = 1;
   auto f = [&](auto &self, int i, int j) -> int { // O(n*log n) / O(n^2)
-    for (Mod k = {i + 1, m}; k != j; k += 1) {
+    for (int k = (i + 1) % m; k != j; k = (k + 1) % m) {
       if (chk(i, j, k)) {
         auto l = self(self, i, k);
         auto r = self(self, k, j);
@@ -198,7 +198,8 @@ void solve(int t) {
   };
   auto s0 = f(f, p0, p1);
   auto s1 = f(f, p1, p0);
-  println(s0 || s1 ? fac[m - 2] / ans : Mod{0, m});
+  ans = s0 || s1 ? fac[m - 2] / ans : Mint(0);
+  println(ans);
 }
 
 int main() {

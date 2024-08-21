@@ -7,24 +7,24 @@
  * Modular integer
  */
 template <typename T> struct Mod {
-  constexpr static T _def = 1000000007; // 998244353;
-  static i64 inv(i64 x, i64 m) {        // O(log^2 m) / x and m must be coprime
+  inline static T mod = 1000000007; // 998244353;
+  static i64 inv(i64 x, i64 m) {    // O(log^2 m) / x and m must be coprime
     return x < 0 ? inv(x % m + m, m) : x > 1 ? m - inv(m % x, x) * m / x : 1;
   } // https://codeforces.com/blog/entry/23365
-  T x, m;
+  T x;
   operator T() const { return x; }
-  void set(i64 y) { x = (y %= m) < 0 ? y + m : y; };
-  Mod(i64 x = 0, T m = _def) : m(m) { set(x); }
-  Mod operator+(auto y) const { return Mod(x, m) += y; }
-  Mod operator-(auto y) const { return Mod(x, m) -= y; }
-  Mod operator*(auto y) const { return Mod(x, m) *= y; }
-  Mod operator/(auto y) const { return Mod(x, m) /= y; }
+  void set(i64 y) { x = y % mod + (y < 0 ? mod : 0); };
+  Mod(i64 x = 0) { set(x); }
+  Mod operator+(auto y) const { return Mod(x) += y; }
+  Mod operator-(auto y) const { return Mod(x) -= y; }
+  Mod operator*(auto y) const { return Mod(x) *= y; }
+  Mod operator/(auto y) const { return Mod(x) /= y; }
   Mod &operator+=(i64 y) { return set(x + y), *this; }
   Mod &operator-=(i64 y) { return set(x - y), *this; }
   Mod &operator*=(i64 y) { return set(x * y), *this; }
-  Mod &operator/=(i64 y) { return *this *= inv(y, m); }
+  Mod &operator/=(i64 y) { return *this *= inv(y, mod); }
   Mod pow(auto y) const { // O(log y) / 0^(-inf,0] -> 1
-    Mod ans(1, m), base(y < 0 ? inv(x, m) : x, m);
+    Mod ans(1), base(y < 0 ? inv(x, mod) : x);
     for (y = abs(y); y; y >>= 1, base *= base) {
       y & 1 ? ans *= base : ans;
     }
@@ -38,7 +38,7 @@ using Mi64 = Mod<i64>;
  * (Modular) Factorial
  */
 template <typename T> struct Fac : vector<Mod<T>> {
-  Fac(T m = Mod<T>::_def) : vector<Mod<T>>(1, {1, m}) {}
+  Fac() : vector<Mod<T>>(1, 1) {}
   Mod<T> operator[](int n) {
     while (this->size() <= n) {
       this->push_back(this->back() * this->size());
@@ -60,7 +60,7 @@ template <typename T> struct Bin : Fac<T> {
     if (inv.size() <= n) {
       int s = inv.size();
       inv.resize(n + 1);
-      inv[n] = Mod(1, ans.m) / ans;
+      inv[n] = Mod<T>(1) / ans;
       for (int i = n; i > s; i--) {
         inv[i - 1] = inv[i] * i;
       }
@@ -125,6 +125,12 @@ template <size_t N> struct ArrayHash {
     return h;
   }
 };
+
+/**
+ * Sum of arithmetic/geometric progressions
+ */
+auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; }
+auto gpsum(auto a, auto r, auto n) { return a * (1 - pow(r, n)) / (1 - r); }
 
 /**
  * Choices satisfying equality x + y == m, for a1 <= x <= a2 and b1 <= y <= b2

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/277584712
+ * https://codeforces.com/contest/1984/submission/277675865
  *
  * (c) 2024 Diego Sogari
  */
@@ -7,6 +7,7 @@
 
 using namespace std;
 using i64 = int64_t;
+using u64 = uint64_t;
 using f64 = double;
 
 #ifdef ONLINE_JUDGE
@@ -27,22 +28,35 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+struct Barret {
+  u64 mod, div;
+  Barret(u64 m) : mod(m), div(-1llu / m) {}
+  operator u64() const { return mod; }
+  i64 operator()(i64 x) const {
+#ifdef __SIZEOF_INT128__
+    x -= (x >= 0 ? __uint128_t(x) * div >> 64 : x / i64(mod)) * mod;
+#else
+    x %= i64(mod);
+#endif
+    return x < 0 ? x + mod : x < mod ? x : x - mod;
+  }
+};
+
 template <typename T> struct Mod {
-  inline static T mod = 998244353;
+  inline static Barret mod = 998244353;
   static i64 inv(i64 x, i64 m) { // O(log^2 m) / x and m must be coprime
     return x < 0 ? inv(x % m + m, m) : x > 1 ? m - inv(m % x, x) * m / x : 1;
   } // https://codeforces.com/blog/entry/23365
   T x;
+  Mod(i64 y = 0) { x = mod(y); }
   operator T() const { return x; }
-  void set(i64 y) { x = y % mod + (y < 0 ? mod : 0); };
-  Mod(i64 x = 0) { set(x); }
   Mod operator+(auto y) const { return Mod(x) += y; }
   Mod operator-(auto y) const { return Mod(x) -= y; }
   Mod operator*(auto y) const { return Mod(x) *= y; }
   Mod operator/(auto y) const { return Mod(x) /= y; }
-  Mod &operator+=(i64 y) { return set(x + y), *this; }
-  Mod &operator-=(i64 y) { return set(x - y), *this; }
-  Mod &operator*=(i64 y) { return set(x * y), *this; }
+  Mod &operator+=(i64 y) { return x = mod(x + y), *this; }
+  Mod &operator-=(i64 y) { return x = mod(x - y), *this; }
+  Mod &operator*=(i64 y) { return x = mod(x * y), *this; }
   Mod &operator/=(i64 y) { return *this *= inv(y, mod); }
   Mod pow(auto y) const { // O(log y) / 0^(-inf,0] -> 1
     Mod ans(1), base(y < 0 ? inv(x, mod) : x);

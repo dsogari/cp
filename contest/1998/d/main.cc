@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/275863908
+ * https://codeforces.com/contest/1998/submission/277940601
  *
  * (c) 2024 Diego Sogari
  */
@@ -45,9 +45,8 @@ void solve(int t) {
   vector<int> dp(n + 1, n); // minimum distance traveled by Elsie
   dp[1] = 0;
   for (int u = 1, s = 2, mx = 0; s < n; u++, s++) { // O(n + m)
-    auto d = dp[u] + 1;
     for (auto &v : g[u]) {
-      dp[v] = min(dp[v], d);
+      dp[v] = min(dp[v], dp[u] + 1);
       mx = max(mx, v - dp[v]);
     }
     ans[u] = (mx <= s) + '0';

@@ -105,7 +105,7 @@ template <typename T> struct CRT : vector<Mod<T>> {
 };
 
 /**
- * Precomputed integer factors (Divisors)
+ * Precomputed factors (Divisors)
  */
 struct Div : vector<vector<int>> {
   Div(int n) : vector<vector<int>>(n + 1) { // O(n*log n)
@@ -118,10 +118,28 @@ struct Div : vector<vector<int>> {
 };
 
 /**
+ * Precomputed Prime numbers (Sieve of Eratosthenes)
+ */
+struct Sieve : vector<int> {
+  Sieve(int n) : Sieve(n, n * log(n * log(n))) {}
+  Sieve(int n, int mx) { // O(mx*log log mx)
+    vector<bool> vis(mx + 1);
+    for (int i = 2; i <= mx && size() < n; i++) {
+      if (!vis[i]) {
+        push_back(i);
+        for (auto j = 1ll * i * i; j <= mx; j += i) {
+          vis[j] = true;
+        }
+      }
+    }
+  }
+};
+
+/**
  * Uniform Distribution using Mersenne Twister engine
  */
-struct Dist : uniform_int_distribution<int> {
-  Dist(int s, int e) : uniform_int_distribution<int>(s, e) {}
+struct Uniform : uniform_int_distribution<int> {
+  Uniform(int s, int e) : uniform_int_distribution<int>(s, e) {}
   int operator()() {
     static random_device device;
     static mt19937 engine{device()};

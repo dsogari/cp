@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2003/submission/278166151
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -26,13 +28,27 @@ using Int = Num<int>;
 
 constexpr int mxa = 1e9;
 
-void solve(int t) {
+void solve(int t) { // O(sum(li))
   Int n, m;
   vector<vector<Int>> a(n);
-  for (auto &ai : a) {
-    ai.resize(Int());
+  int best = 0;
+  for (auto &ai : a) { // O(sum(li))
+    Int li;
+    ai.resize(li);
+    vector<bool> vis(li + 2);
+    for (auto &&aai : ai) { // O(li)
+      if (aai < li + 2) {
+        vis[aai] = true;
+      }
+    }
+    for (int i = 0, c = 0; i < li + 2 && c < 2; i++) { // O(li)
+      if (!vis[i] && c++) {
+        best = max(best, i);
+      }
+    }
   }
-  i64 ans = 0;
+  auto [lt, gt] = m < best ? array<i64, 2>{m, best} : array<i64, 2>{best, m};
+  i64 ans = (lt + 1) * best + (gt - best) * (best + m + 1) / 2;
   println(ans);
 }
 

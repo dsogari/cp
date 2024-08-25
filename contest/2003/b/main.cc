@@ -25,10 +25,10 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {
+void solve(int t) { // O(n*log n)
   Int n;
   vector<Int> a(n);
-  ranges::sort(a);
+  ranges::sort(a); // O(n*log n)
   println(a[n / 2]);
 }
 

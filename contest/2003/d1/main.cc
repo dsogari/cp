@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -23,7 +24,17 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+constexpr int mxa = 1e9;
+
+void solve(int t) {
+  Int n, m;
+  vector<vector<Int>> a(n);
+  for (auto &ai : a) {
+    ai.resize(Int());
+  }
+  i64 ans = 0;
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

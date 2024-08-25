@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2003/submission/278118791
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,26 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Str : string {
+  Str() { cin >> *this; }
+};
+
+void solve(int t) { // O(n + A*log A), A is the size of the alphabet
+  Int n;
+  Str s;
+  map<char, int> cnt;
+  for (auto &&c : s) { // O(A*log A)
+    cnt[c]++;
+  }
+  string ans;
+  while (cnt.size()) { // O(n)
+    for (auto it = cnt.begin(); it != cnt.end();) {
+      ans.push_back(it->first);                     // O(1) amortized
+      it = --it->second ? next(it) : cnt.erase(it); // O(1) amortized
+    }
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

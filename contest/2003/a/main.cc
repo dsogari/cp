@@ -29,7 +29,7 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-void solve(int t) {
+void solve(int t) { // O(n)
   Int n;
   Str s;
   auto ans = s.front() != s.back() ? "YES" : "NO";

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/276549811
+ * https://codeforces.com/contest/2000/submission/278314655
  *
  * (c) 2024 Diego Sogari
  */
@@ -30,34 +30,29 @@ using Int = Num<int>;
 using Chr = Num<char>;
 
 template <typename T> struct SegTree {
-  const int n;
+  int n;
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
   const T &full() const { return nodes[1]; }    // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
-  T query(int l, int r) const {                 // O(log n)
-    assert(l >= 0 && l <= r && r < n);
-    return _query(l + n, r + n);
+  T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
+  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
+  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      _merge(i);
+    }
   }
   T _query(int l, int r) const { // [l, r] O(log n)
-    return l == r       ? nodes[l]
-           : l % 2      ? f(nodes[l], _query(l + 1, r))
-           : r % 2 == 0 ? f(_query(l, r - 1), nodes[r])
-                        : _query(l / 2, r / 2);
+    return l == r   ? nodes[l]
+           : l & 1  ? f(nodes[l], _query(l + 1, r))
+           : ~r & 1 ? f(_query(l, r - 1), nodes[r])
+                    : _query(l >> 1, r >> 1);
   }
-  void update(int i) { // O(log n)
-    assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i /= 2) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
-    }
-  }
-  void update_upto(int i) { // [0, i] O(n)
-    assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i--) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
-    }
-  }
+  virtual T _node(int i) const { return nodes[i]; }
+  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
+  void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
@@ -74,12 +69,12 @@ SegTree<int> gaps(mxa + 2, tmax);
 auto set_gap = [](auto it) { // O(log n)
   auto x = *it + 1;
   gaps[x] = *next(it) - x;
-  gaps.update(x);
+  gaps.update(x, true);
 };
 auto clear_gap = [](auto it) { // O(log n)
   auto x = *it + 1;
   gaps[x] = 0;
-  gaps.update(x);
+  gaps.update(x, true);
 };
 
 void solve(int t) { // O((n + m)*log n)

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1990/submission/274273830
+ * https://codeforces.com/contest/1990/submission/278410541
  *
  * (c) 2024 Diego Sogari
  */
@@ -37,10 +37,14 @@ template <typename T> struct Interval {
       it = l <= x && x < r && f(l, r) ? contained.erase(it) : next(it);
     }
   }
+  bool contains(T x) const {
+    auto f = [&](auto &pair) { return pair[0] <= x && x < pair[1]; };
+    return ranges::find_if(contained, f) != contained.end();
+  }
 };
 
 template <typename T> struct IntTree {
-  const int n;
+  int n;
   vector<Interval<T>> nodes;
   IntTree(int n) : n(n), nodes(2 * n) {}
   IntTree(int n, T l, T r) : IntTree(n) { build(l, r); }
@@ -66,31 +70,41 @@ template <typename T> struct IntTree {
     }
     nodes[i].visit(x, f); // leaf node
   }
+  bool contains(T x) const { // O(n^2)
+    int i = 1;
+    for (; i < n; i = 2 * i + (x >= nodes[i].mid)) {
+      if (nodes[i].contains(x)) { // internal node
+        return true;
+      }
+    }
+    return nodes[i].contains(x); // leaf node
+  }
 };
 
 template <typename T> struct SegTree {
-  const int n;
+  int n;
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
   const T &full() const { return nodes[1]; }    // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
-  T query(int l, int r) const {                 // O(log n)
-    assert(l >= 0 && l <= r && r < n);
-    return _inner(l + n, r + n);
-  }
-  T _inner(int l, int r) const { // [l, r] O(log n)
-    return l == r       ? nodes[l]
-           : l % 2      ? f(nodes[l], _inner(l + 1, r))
-           : r % 2 == 0 ? f(_inner(l, r - 1), nodes[r])
-                        : _inner(l / 2, r / 2);
-  }
-  void update(int i, bool single = true) { // O(log n) / [0, i] O(n)
-    assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i = single ? i / 2 : i - 1) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
+  T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
+  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
+  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      _merge(i);
     }
   }
+  T _query(int l, int r) const { // [l, r] O(log n)
+    return l == r   ? _node(l)
+           : l & 1  ? f(_node(l), _query(l + 1, r))
+           : ~r & 1 ? f(_query(l, r - 1), _node(r))
+                    : _query(l >> 1, r >> 1);
+  }
+  virtual T _node(int i) const { return nodes[i]; }
+  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
+  void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 struct Seg {
@@ -141,7 +155,7 @@ void solve(int t) {
       println(query(query, x - 1, y - 1));
     } else {
       segments[x - 1] = {y, y, x - 1};
-      segments.update(x - 1);
+      segments.update(x - 1, true);
       intervals.visit(x - 1, prune);
     }
   }

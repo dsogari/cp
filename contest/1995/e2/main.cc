@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1995/submission/274273786
+ * https://codeforces.com/contest/1995/submission/278314803
  *
  * (c) 2024 Diego Sogari
  */
@@ -49,28 +49,29 @@ SMat<U, N, M2> operator*(const SMat<T, N, M1> &lhs,
 }
 
 template <typename T> struct SegTree {
-  const int n;
+  int n;
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
   const T &full() const { return nodes[1]; }    // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
-  T query(int l, int r) const {                 // O(log n)
-    assert(l >= 0 && l <= r && r < n);
-    return _inner(l + n, r + n);
-  }
-  T _inner(int l, int r) const { // [l, r] O(log n)
-    return l == r       ? nodes[l]
-           : l % 2      ? f(nodes[l], _inner(l + 1, r))
-           : r % 2 == 0 ? f(_inner(l, r - 1), nodes[r])
-                        : _inner(l / 2, r / 2);
-  }
-  void update(int i, bool single = true) { // O(log n) / [0, i] O(n)
-    assert(i >= 0 && i < n);
-    for (i = (i + n) / 2; i > 0; i = single ? i / 2 : i - 1) {
-      nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]);
+  T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
+  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
+  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      _merge(i);
     }
   }
+  T _query(int l, int r) const { // [l, r] O(log n)
+    return l == r   ? nodes[l]
+           : l & 1  ? f(nodes[l], _query(l + 1, r))
+           : ~r & 1 ? f(_query(l, r - 1), nodes[r])
+                    : _query(l >> 1, r >> 1);
+  }
+  virtual T _node(int i) const { return nodes[i]; }
+  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
+  void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 struct Seg : SMat<bool, 2> {
@@ -114,7 +115,7 @@ void solve(int t) {
     auto [_, i, j] = edges[k];
     auto &desk = desks[i % n];
     desk[i % 2 == 0][j % 2] = val;
-    desks.update(i % n);
+    desks.update(i % n, true);
   };
   int ans = INT_MAX;
   for (int l = 0, r = 0; ans > 0 && r < edges.size();) {

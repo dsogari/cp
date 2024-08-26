@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2001/submission/277507551
+ * https://codeforces.com/contest/2001/submission/278314682
  *
  * (c) 2024 Diego Sogari
  */
@@ -36,25 +36,21 @@ template <typename T> struct SegTree {
   const T &full() const { return nodes[1]; }    // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  void update(int i) { // O(log n)
-    _check(i, i);
-    for (i = (i + n) / 2; i > 0; i /= 2) {
-      _update(i);
-    }
-  }
-  void update_upto(int i) { // [0, i] O(n)
-    _check(i, i);
-    for (i = (i + n) / 2; i > 0; i--) {
-      _update(i);
+  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
+  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      _merge(i);
     }
   }
   T _query(int l, int r) const { // [l, r] O(log n)
-    return l == r       ? nodes[l]
-           : l % 2      ? f(nodes[l], _query(l + 1, r))
-           : r % 2 == 0 ? f(_query(l, r - 1), nodes[r])
-                        : _query(l / 2, r / 2);
+    return l == r   ? nodes[l]
+           : l & 1  ? f(nodes[l], _query(l + 1, r))
+           : ~r & 1 ? f(_query(l, r - 1), nodes[r])
+                    : _query(l >> 1, r >> 1);
   }
-  void _update(int i) { nodes[i] = f(nodes[2 * i], nodes[2 * i + 1]); }
+  virtual T _node(int i) const { return nodes[i]; }
+  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
@@ -78,8 +74,8 @@ void solve(int t) {
   for (int i = 0; i < n; i++) { // O(n)
     segmin[i] = segmax[i] = a[i];
   }
-  segmin.update_upto(n - 1); // O(n)
-  segmax.update_upto(n - 1); // O(n)
+  segmin.update(n - 1, false); // O(n)
+  segmax.update(n - 1, false); // O(n)
   vector<int> ans;
   auto f = [&](int &l, int x) { // O(log n) on average
     auto &idx = pos[x];
@@ -89,8 +85,8 @@ void solve(int t) {
     for (; it != idx.end(); it++) {
       segmin[*it] = INT_MAX; // clear position
       segmax[*it] = INT_MIN; // clear position
-      segmin.update(*it);
-      segmax.update(*it);
+      segmin.update(*it, true);
+      segmax.update(*it, true);
     }
     right.erase(idx.back()); // remove right boundary of this element
     ans.push_back(x);

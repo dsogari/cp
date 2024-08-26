@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2003/submission/278166151
+ * https://codeforces.com/contest/2003/submission/278186446
  *
  * (c) 2024 Diego Sogari
  */
@@ -26,7 +26,7 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-constexpr int mxa = 1e9;
+auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; }
 
 void solve(int t) { // O(sum(li))
   Int n, m;
@@ -47,8 +47,8 @@ void solve(int t) { // O(sum(li))
       }
     }
   }
-  auto [lt, gt] = m < best ? array<i64, 2>{m, best} : array<i64, 2>{best, m};
-  i64 ans = (lt + 1) * best + (gt - best) * (best + m + 1) / 2;
+  auto [mn, mx] = minmax<i64>({m, best});
+  i64 ans = (mn + 1) * best + apsum(best + 1, mx, mx - best);
   println(ans);
 }
 

@@ -200,8 +200,6 @@ template <typename T> struct MedQueue2 {
   }
 };
 
-// consider using ranges::nth_element
-
 // Comparison operators
 const less<int> lt1;
 const greater<int> gt1;
@@ -219,3 +217,8 @@ const auto lta2 = [](auto &lhs, auto &rhs) {
 const auto gta2 = [](auto &lhs, auto &rhs) {
   return lhs[0] > rhs[0] || (lhs[0] == rhs[0] && lhs[1] > rhs[1]);
 };
+
+// Utility functions
+// sort
+// nth_element
+// next_permutation

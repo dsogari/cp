@@ -205,13 +205,6 @@ constexpr auto absmod(auto x, auto m) { return (m + x % m) % m; };
 constexpr auto revmod(auto x, auto m) { return (m - x % m) % m; };
 
 /**
- * Most/least significant set bits/next power of 2
- */
-constexpr int lssb(unsigned x) { return countr_zero(x); }
-constexpr int mssb(unsigned x) { return 31 - countl_zero(x); }
-constexpr int nxp2(unsigned x) { return 1 << (1 + mssb(x - 1)); }
-
-/**
  * Extended Euclid's algorithm
  */
 template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
@@ -254,3 +247,19 @@ template <typename T> T invmod(T x, T m) { // O(log^2 m) / x and m are coprime
          : x > 1 ? m - invmod(m % x, x) * 1ll * m / x
                  : 1;
 } // https://codeforces.com/blog/entry/23365
+
+// Utility functions
+// minmax
+
+// Bit functions
+// rotl: Rotate `x` to the left by `s` bits.
+// rotr: Rotate `x` to the right by `s` bits.
+// countl_zero: number of contiguous zero bits, starting from the highest bit.
+// countl_one: number of contiguous one bits, starting from the highest bit.
+// countr_zero: number of contiguous zero bits, starting from the lowest bit.
+// countr_one: number of contiguous one bits, starting from the lowest bit.
+// popcount: number of bits set in `x`.
+// has_single_bit: whether `x` is a power of two.
+// bit_ceil: smallest power-of-two not less than `x`.
+// bit_floor: largest power-of-two not greater than `x`.
+// bit_width: smallest integer greater than the base-2 logarithm of `x`.

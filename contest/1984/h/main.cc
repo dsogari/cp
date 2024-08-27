@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/277675865
+ * https://codeforces.com/contest/1984/submission/278440290
  *
  * (c) 2024 Diego Sogari
  */
@@ -150,9 +150,12 @@ template <typename T = int> struct Triangle {
   }
 };
 
+template <typename T> struct Polygon : vector<Point<T>> {
+  using vector<Point<T>>::vector;
+};
+
 struct Hull : vector<int> {
-  template <typename T>
-  Hull(const vector<Point<T>> &p) : vector<int>(p.size()) {
+  template <typename T> Hull(const Polygon<T> &p) : vector<int>(p.size()) {
     assert(size() > 2);
     auto cmp1 = [&](int i, int j) { return p[i].reflect() < p[j].reflect(); };
     auto cmp2 = [&](int i, int j) {
@@ -175,7 +178,7 @@ Fac<int> fac;
 
 void solve(int t) {
   Int n;
-  vector<Point<Int>> p(n);
+  Polygon<Int> p(n);
   Hull hull(p); // O(n*log n)
   int m = hull.size();
   int p0 = ranges::find(hull, 0) - hull.begin();

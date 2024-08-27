@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1990/submission/273050926
+ * https://codeforces.com/contest/1990/submission/278439686
  *
  * (c) 2024 Diego Sogari
  */
@@ -35,20 +35,19 @@ struct Graph : vector<vector<int>> {
   void _add(int u, int v) { (*this)[u].push_back(v); }
 };
 
-struct Tree : Graph {
-  struct Info {
-    int par, dep, siz, hei;
-  };
-  vector<Info> info;
-  Tree(int n) : Graph(n), info(n + 1) {} // no edges
-  Tree(int n, int s) : Graph(n, n - 1), info(n + 1) { dfs(s, s); }
-  void dfs(int u, int p, int d = 1) {
-    auto &cur = info[u] = {p, d, 1, 1};
-    for (auto &v : (*this)[u]) {
+struct NodeInfo {
+  int par, dep, siz, hei;
+};
+
+struct Subtree : vector<NodeInfo> {
+  Subtree(const Graph &g, int s) : vector<NodeInfo>(g.size()) { dfs(g, s, s); }
+  void dfs(const Graph &g, int u, int p, int d = 1) {
+    auto &cur = (*this)[u] = {p, d, 1, 1};
+    for (auto &v : g[u]) {
       if (v != p) {
-        dfs(v, u, d + 1);
-        cur.siz += info[v].siz;
-        cur.hei = max(cur.hei, 1 + info[v].hei);
+        dfs(g, v, u, d + 1);
+        cur.siz += (*this)[v].siz;
+        cur.hei = max(cur.hei, 1 + (*this)[v].hei);
       }
     }
   }
@@ -62,32 +61,56 @@ int binsearch(auto &&f, int s, int e) {
   return e;
 }
 
+int simulate(Subtree &s, int &mole, int x) {
+  int i = mole;
+  while (i != 1 && i != x) {
+    i = s[i].par;
+  }
+  if (i == x) {
+    return true;
+  }
+  mole = s[mole].par;
+  return false;
+}
+
 void solve(int t) {
   Int n;
-  Tree g(n, 1);
+#ifndef ONLINE_JUDGE
+  Int mole;
+#endif
+  Graph g(n, n - 1);
+  Subtree s(g, 1);
+  int rem = 300, limit = n / 300;
+  auto q = [&](int x) {
+    assert(rem--);
+    println('?', x);
+#ifndef ONLINE_JUDGE
+    return simulate(s, mole, x);
+#else
+    return Int();
+#endif
+  };
   vector<int> path;
-  int limit = n / 300;
-  auto q = [&](int x) { return println('?', x), Int(); };
   auto f = [&](auto &self, int u, int p) -> void {
     path.push_back(u);
     vector<int> test;
     for (auto &&v : g[u]) {
       if (v != p) {
-        if (g.info[v].hei + 1 == g.info[u].hei) {
+        if (s[v].hei + 1 == s[u].hei) {
           test.push_back(v);
-        } else if (g.info[v].hei > limit && q(v)) {
+        } else if (s[v].hei > limit && q(v)) {
           return self(self, v, u);
         }
       }
     }
     bool check = test.size() > 1;
     for (auto &v : test) {
-      if (!check || (g.info[v].hei > limit && q(v))) {
+      if (!check || (s[v].hei > limit && q(v))) {
         return self(self, v, u);
       }
     }
   };
-  if (g.info[1].hei > limit) {
+  if (s[1].hei > limit) {
     f(f, 1, 1);
   }
   while (limit && !q(n)) {

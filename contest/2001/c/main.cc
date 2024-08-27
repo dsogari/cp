@@ -30,7 +30,7 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 #else
-#include "tree.h"
+#include "tree/path.h"
 int simulate(Graph &g, int a, int b) {
   Path path(g, a, b);
   return path[(path.size() - 1) / 2];

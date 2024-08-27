@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1990/submission/274501348
+ * https://codeforces.com/contest/1990/submission/278440042
  *
  * (c) 2024 Diego Sogari
  */
@@ -36,20 +36,19 @@ struct Graph : vector<vector<int>> {
   void _add(int u, int v) { (*this)[u].push_back(v); }
 };
 
-struct Tree : Graph {
-  struct Info {
-    int par, dep, siz, hei;
-  };
-  vector<Info> info;
-  Tree(int n) : Graph(n), info(n + 1) {} // no edges
-  Tree(int n, int s) : Graph(n, n - 1), info(n + 1) { dfs(s, s); }
-  void dfs(int u, int p, int d = 1) {
-    auto &cur = info[u] = {p, d, 1, 1};
-    for (auto &v : (*this)[u]) {
+struct NodeInfo {
+  int par, dep, siz, hei;
+};
+
+struct Subtree : vector<NodeInfo> {
+  Subtree(const Graph &g, int s) : vector<NodeInfo>(g.size()) { dfs(g, s, s); }
+  void dfs(const Graph &g, int u, int p, int d = 1) {
+    auto &cur = (*this)[u] = {p, d, 1, 1};
+    for (auto &v : g[u]) {
       if (v != p) {
-        dfs(v, u, d + 1);
-        cur.siz += info[v].siz;
-        cur.hei = max(cur.hei, 1 + info[v].hei);
+        dfs(g, v, u, d + 1);
+        cur.siz += (*this)[v].siz;
+        cur.hei = max(cur.hei, 1 + (*this)[v].hei);
       }
     }
   }
@@ -60,15 +59,15 @@ struct Iota : vector<int> {
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
 };
 
-int simulate(Tree &g, int &mole, int x) {
+int simulate(Subtree &s, int &mole, int x) {
   int i = mole;
   while (i != 1 && i != x) {
-    i = g.info[i].par;
+    i = s[i].par;
   }
   if (i == x) {
     return true;
   }
-  mole = g.info[mole].par;
+  mole = s[mole].par;
   return false;
 }
 
@@ -77,13 +76,14 @@ void solve(int t) {
 #ifndef ONLINE_JUDGE
   Int mole;
 #endif
+  Graph g(n, n - 1);
+  Subtree s(g, 1);
   int rem = 160;
-  Tree g(n, 1);
   auto q = [&](int x) {
     assert(rem--);
     println('?', x);
 #ifndef ONLINE_JUDGE
-    return simulate(g, mole, x);
+    return simulate(s, mole, x);
 #else
     return Int();
 #endif
@@ -97,30 +97,30 @@ void solve(int t) {
       }
     }
   };
-  auto cmp = [&](int i, int j) { return g.info[i].dep > g.info[j].dep; };
+  auto cmp = [&](int i, int j) { return s[i].dep > s[j].dep; };
   Iota ids(n, cmp, 1);
   for (int u : ids) {
     if (!vis[u]) {
       int v = u;
       for (int i = 0; i < (rem - 1) / 2 - 1 && v != 1; i++) {
-        v = g.info[v].par;
+        v = s[v].par;
       }
       if (q(v)) {
-        int d = g.info[u].dep - g.info[v].dep + 1;
+        int d = s[u].dep - s[v].dep + 1;
         for (int i = 0; i < d; i++) { // drive out of subtree
           if (q(u)) {
             v = u;
             break;
           }
           if (!q(v)) {
-            v = g.info[g.info[v].par].par;
+            v = s[s[v].par].par;
             break;
           }
         }
         println('!', v);
         return;
       }
-      f(f, v, g.info[v].par); // cut subtree
+      f(f, v, s[v].par); // cut subtree
     }
   }
   assert(false);

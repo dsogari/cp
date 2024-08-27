@@ -74,7 +74,7 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
   }
   void pushall(int i) { this->_check(i, i), _push(i + this->n, false); }
   void _push(unsigned i, bool single) { // O(log n) / [0, i] O(n)
-    int s = bit_width(i), j = 0, end = single ? i : i >> 1 | 1;
+    int s = bit_width(i), j = 0, end = single ? i : i / 2 + 1;
     function<void()> inc[] = {[&]() { j++; }, [&]() { s--, j = i >> s; }};
     for (inc[single](); j != end; inc[single]()) {
       _pushone(j);

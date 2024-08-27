@@ -12,9 +12,9 @@ template <typename T> struct Pref : vector<T> {
   Pref(int n, auto &&f, T val = {}) : vector<T>(n, val), n(n), f(f) {}
   T full() const { return query(0, n - 1); }
   T query(int l, int r) const { // O(n)
-    T ans = (*this)[l++];
-    for (; l <= r; l++) {
-      ans = f(ans, (*this)[l]);
+    T ans = (*this)[l];
+    for (int i = l + 1; i <= r; i++) {
+      ans = f(ans, (*this)[i]);
     }
     return ans;
   }

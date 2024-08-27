@@ -1,13 +1,12 @@
 /**
  * (c) 2024 Diego Sogari
  */
-#include <bits/stdc++.h>
+#pragma once
 
 /**
- * Common pragmas
+ * Common includes
  */
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,popcnt,lzcnt")
+#include <bits/stdc++.h>
 
 /**
  * Common namespaces

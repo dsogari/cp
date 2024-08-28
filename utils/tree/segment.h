@@ -89,3 +89,19 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
     }
   }
 };
+
+/**
+ * Assignment Segment Tree (supports range assignments)
+ */
+template <typename T, typename U> struct AssignSegTree : PushSegTree<T, U> {
+  using PushSegTree<T, U>::PushSegTree;
+  using SegTree<T>::update;
+  void update(int l, int r, const U &val) { // [l, r] O(log n)
+    this->_check(l, r);
+    this->_push(l + this->n, true);
+    this->_push(r + this->n, true);
+    this->_apply(l + this->n, r + this->n, val);
+    this->_build(l + this->n, true);
+    this->_build(r + this->n, true);
+  }
+};

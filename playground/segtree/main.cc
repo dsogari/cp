@@ -12,8 +12,9 @@ struct Lazy {
   bool set; // add by default
   int val;
   operator int() const { return val; }
-  int merge(int original) const { return set ? val : val + original; }
-  Lazy join(const Lazy &rhs) const { return {rhs.set, rhs.merge(val)}; }
+  auto operator<=>(const Lazy &) const = default; // important!
+  int merge(int prev) const { return set ? val : val + prev; }
+  Lazy join(const Lazy &rhs) const { return {set || rhs.set, rhs.merge(val)}; }
 };
 
 auto tmerge = bind(&Lazy::merge, _2, _1);
@@ -29,7 +30,7 @@ void solve(int t) {
     }
   }
   Pref<int> pref(n, tmax);
-  PushSegTree<int, Lazy> segtree(n, tmax, tmerge, &Lazy::join);
+  AssignSegTree<int, Lazy> segtree(n, tmax, tmerge, &Lazy::join);
   for (int i = 0; i < n; i++) {
     pref[i] = segtree[i] = rand() % mx;
   }
@@ -41,9 +42,9 @@ void solve(int t) {
     }
     segtree.update(l, r, {set, x});
   };
-  for (auto &[op, l, r, x] : q) {
+  for (auto [op, l, r, x] : q) {
     if (op <= 1) {
-      upd(l, r, x, /*op*/ false);
+      upd(l, r, x, op);
     } else {
       assert(pref.query(l, r) == segtree.query(l, r));
     }

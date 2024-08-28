@@ -8,17 +8,6 @@
 #include "debug.h"
 init();
 
-struct Lazy {
-  bool set; // add by default
-  int val;
-  operator int() const { return val; }
-  auto operator<=>(const Lazy &) const = default; // important!
-  int merge(int prev) const { return set ? val : val + prev; }
-  Lazy join(const Lazy &rhs) const { return {set || rhs.set, rhs.merge(val)}; }
-};
-
-auto tmerge = bind(&Lazy::merge, _2, _1);
-
 void solve(int t) {
   srand(time(0));
   Int n, m, mx;
@@ -26,28 +15,33 @@ void solve(int t) {
   for (int i = 0; i < m; i++) {
     q[i] = {rand() % 3, rand() % n, rand() % n, rand() % mx};
     if (q[i][1] > q[i][2]) {
-      swap(q[i][1], q[i][2]);
+      swap(q[i][1], q[i][2]); // [l, r]
     }
   }
   Pref<int> pref(n, tmax);
-  AssignSegTree<int, Lazy> segtree(n, tmax, tmerge, &Lazy::join);
+  AssignSegTree<int, int> segtree(n, tmax);
   for (int i = 0; i < n; i++) {
     pref[i] = segtree[i] = rand() % mx;
   }
   segtree.update(n - 1, false);
   assert(pref.full() == segtree.full());
+  chrono::duration<double, milli> ms;
   auto upd = [&](int l, int r, int x, bool set) {
     for (int i = l; i <= r; i++) {
       pref[i] = set ? x : pref[i] + x;
     }
-    segtree.update(l, r, {set, x});
+    auto t0 = now();
+    segtree.update(l, r, x, set);
+    ms += now() - t0;
+  };
+  auto chk = [&](int l, int r) {
+    auto t0 = now();
+    auto ans = segtree.query(l, r);
+    ms += now() - t0;
+    assert(pref.query(l, r) == ans);
   };
   for (auto [op, l, r, x] : q) {
-    if (op <= 1) {
-      upd(l, r, x, op);
-    } else {
-      assert(pref.query(l, r) == segtree.query(l, r));
-    }
+    op <= 1 ? upd(l, r, x, op) : chk(l, r);
   }
   segtree.pushall(n - 1);
   if (n > 1) {
@@ -56,7 +50,7 @@ void solve(int t) {
   for (int i = 0; i < n; i++) {
     assert(pref[i] == segtree.lazy[i + n].merge(segtree[i]));
   }
-  println("OK");
+  println("OK", ms.count(), "ms");
 }
 
 int main() {

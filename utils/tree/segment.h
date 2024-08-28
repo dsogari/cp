@@ -81,8 +81,8 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
     }
     this->_build(i, single);
   }
-  void _pushone(int i) { // O(1)
-    if (this->lazy[i] != this->lazy[0]) {
+  void _pushone(int i) {                  // O(1)
+    if (this->lazy[i] != this->lazy[0]) { // requires operator<=>
       this->_apply(i << 1, this->lazy[i]);
       this->_apply(i << 1 | 1, this->lazy[i]);
       this->lazy[i] = this->lazy[0];
@@ -91,16 +91,32 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
 };
 
 /**
+ * Lazy Node for mixed-assignment operations
+ */
+template <typename T, typename U> struct Lazy {
+  bool set; // add by default
+  U val;    // lazy value (T must be constructible from U)
+  auto operator<=>(const Lazy &) const = default;
+  T merge(const T &prev) const { return set ? T(val) : prev + val; }
+  Lazy join(const Lazy &rhs) const {
+    return {set || rhs.set, rhs.set ? rhs.val : val + rhs.val};
+  }
+};
+
+/**
  * Assignment Segment Tree (supports range assignments)
  */
-template <typename T, typename U> struct AssignSegTree : PushSegTree<T, U> {
-  using PushSegTree<T, U>::PushSegTree;
+template <typename T, typename U>
+struct AssignSegTree : PushSegTree<T, Lazy<T, U>> {
+  AssignSegTree(int n, auto &&f, T val = {}, U lazyval = {})
+      : PushSegTree<T, Lazy<T, U>>(n, f, bind(&Lazy<T, U>::merge, _2, _1),
+                                   &Lazy<T, U>::join, val, {false, lazyval}) {}
   using SegTree<T>::update;
-  void update(int l, int r, const U &val) { // [l, r] O(log n)
+  void update(int l, int r, const U &val, bool set) { // [l, r] O(log n)
     this->_check(l, r);
     this->_push(l + this->n, true);
     this->_push(r + this->n, true);
-    this->_apply(l + this->n, r + this->n, val);
+    this->_apply(l + this->n, r + this->n, {set, val});
     this->_build(l + this->n, true);
     this->_build(r + this->n, true);
   }

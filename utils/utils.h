@@ -34,3 +34,8 @@ const auto tadd = [](auto &lhs, auto &rhs) { return lhs + rhs; };
 const auto tmul = [](auto &lhs, auto &rhs) { return lhs * rhs; };
 const auto tmin = [](auto &lhs, auto &rhs) { return min(lhs, rhs); };
 const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
+
+/**
+ * Timing utilities
+ */
+auto now() { return chrono::high_resolution_clock::now(); }

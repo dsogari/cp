@@ -1,11 +1,37 @@
 /**
  * (c) 2024 Diego Sogari
  */
-#include "utils.h"
+#include <bits/stdc++.h>
 
-/**
- * Segment Tree
- */
+using namespace std;
+using namespace placeholders;
+
+#ifdef ONLINE_JUDGE
+#define debug
+#else
+#include "debug.h"
+init();
+#endif
+
+template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
+  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
+}
+void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
+
+template <typename T> struct Num {
+  T x;
+  Num() { cin >> x; }
+  Num(T a) : x(a) {}
+  operator T &() { return x; }
+  operator T() const { return x; }
+};
+using Int = Num<int>;
+using Chr = Num<char>;
+
+struct Str : string {
+  Str() { cin >> *this; }
+};
+
 template <typename T> struct SegTree {
   int n;
   vector<T> nodes;
@@ -32,9 +58,6 @@ template <typename T> struct SegTree {
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
-/**
- * Lazy Segment Tree (for range updates and full queries)
- */
 template <typename T, typename U> struct LazySegTree : SegTree<T> {
   vector<U> lazy;
   function<T(const T &, const U &)> ftree;
@@ -61,9 +84,6 @@ private:
   using SegTree<T>::query; // hide method (only full queries allowed)
 };
 
-/**
- * Push Segment Tree (for range updates and arbitrary queries)
- */
 template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
   using LazySegTree<T, U>::LazySegTree;
   T query(int l, int r) { // [l, r] O(log n)
@@ -90,9 +110,6 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
   }
 };
 
-/**
- * Lazy Node for mixed-assignment operations
- */
 template <typename T, typename U> struct Lazy {
   bool set; // add by default
   U val;    // lazy value (T must be constructible from U)
@@ -103,9 +120,6 @@ template <typename T, typename U> struct Lazy {
   }
 };
 
-/**
- * Assignment Segment Tree (supports range assignments)
- */
 template <typename T, typename U>
 struct AssignSegTree : PushSegTree<T, Lazy<T, U>> {
   AssignSegTree(int n, auto &&f, T val = {}, U lazyval = {})
@@ -121,3 +135,44 @@ struct AssignSegTree : PushSegTree<T, Lazy<T, U>> {
     this->_build(r + this->n, true);
   }
 };
+
+struct Query {
+  Int type, l, r;
+  Chr c = 0;
+  Query() {
+    if (type == 1) {
+      c = {};
+    }
+  }
+};
+
+struct Seg {
+  char c;
+  int cnt;
+  Seg join(const Seg &rhs) const { return rhs; }
+  Seg operator+(char c) const { return *this; }
+};
+
+void solve() {
+  Str s;
+  Int k, m;
+  vector<Query> q(m);
+  AssignSegTree<Seg, char> segtree(s.size(), &Seg::join);
+  for (int i = 0; i < s.size(); i++) {
+    segtree[i] = {s[i], 0};
+  }
+  vector<int> ans;
+  for (auto &[type, l, r, c] : q) {
+    if (type == 1) {
+      segtree.update(l - 1, r - 1, c, true);
+    } else {
+      ans.push_back(segtree.query(l, r).cnt);
+    }
+  }
+  println(ans);
+}
+
+int main() {
+  cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
+  solve();
+}

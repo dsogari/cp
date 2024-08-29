@@ -95,9 +95,10 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
  */
 template <typename T, typename U> struct Lazy {
   bool set; // add by default
-  U val;    // lazy value (T must be constructible from U)
+  U val;    // lazy value
   auto operator<=>(const Lazy &) const = default;
   T merge(const T &prev) const { return set ? T(val) : prev + val; }
+  // T merge(const T &prev) const { return set ? prev.set(val) : prev.add(val);}
   Lazy join(const Lazy &rhs) const {
     return {set || rhs.set, rhs.set ? rhs.val : U(val + rhs.val)};
   }

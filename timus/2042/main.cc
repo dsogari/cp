@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace placeholders;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -13,9 +14,6 @@ using namespace placeholders;
 init();
 #endif
 
-template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
-  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
-}
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
 template <typename T> struct Num {
@@ -112,9 +110,9 @@ template <typename T, typename U> struct PushSegTree : LazySegTree<T, U> {
 
 template <typename T, typename U> struct Lazy {
   bool set; // add by default
-  U val;    // lazy value (T must be constructible from U)
+  U val;    // lazy value
   auto operator<=>(const Lazy &) const = default;
-  T merge(const T &prev) const { return set ? T(val) : prev + val; }
+  T merge(const T &prev) const { return set ? prev.set(val) : prev.add(val); }
   Lazy join(const Lazy &rhs) const {
     return {set || rhs.set, rhs.set ? rhs.val : U(val + rhs.val)};
   }
@@ -136,6 +134,33 @@ struct AssignSegTree : PushSegTree<T, Lazy<T, U>> {
   }
 };
 
+struct Manacher : vector<int> {
+  Manacher(auto &&a, int s = 0) : Manacher(a, s, a.size()) {}
+  Manacher(auto &&a, int s, int e) : vector<int>(e - s) { // [s, e) O(n)
+    auto &z = *this;
+    for (int i = 0, j = 0; i + s < e; i++) {
+      auto &c = z[i] = max(0, min(j + z[j] - i, z[max(0, 2 * j - i)]));
+      while (i + c + s < e && i - c >= s && a[i + c + s] == a[i - c + s]) {
+        c++, j = i; // update center of palindrome
+      }
+    }
+  }
+};
+
+vector<array<int, 2>> manacher(auto &&a, int s, int e, auto d) { // [s, e) O(n)
+  typename remove_cvref<decltype(a)>::type b = {d};
+  for (int i = s; i < e; i++) {
+    b.insert(b.end(), {a[i], d});
+  }
+  Manacher z(b);
+  vector<array<int, 2>> ans(e - s);
+  for (int i = 0; i < e - s; i++) {
+    ans[i][0] = (z[2 * i] - 1) / 2; // even
+    ans[i][1] = (z[2 * i + 1]) / 2; // odd
+  }
+  return ans;
+}
+
 struct Query {
   Int type, l, r;
   Chr c = 0;
@@ -147,10 +172,13 @@ struct Query {
 };
 
 struct Seg {
-  char c;
-  int cnt;
-  Seg join(const Seg &rhs) const { return rhs; }
-  Seg operator+(char c) const { return *this; }
+  int l, r;
+  string s;
+  Seg join(const Seg &rhs) const {
+    return l < rhs.l ? Seg{l, rhs.r, s + rhs.s} : Seg{rhs.l, r, rhs.s + s};
+  }
+  Seg set(char c) const { return {l, r, string(r - l + 1, c)}; }
+  Seg add(char c) const { return *this; } // unused
 };
 
 void solve() {
@@ -159,17 +187,21 @@ void solve() {
   vector<Query> q(m);
   AssignSegTree<Seg, char> segtree(s.size(), &Seg::join);
   for (int i = 0; i < s.size(); i++) {
-    segtree[i] = {s[i], 0};
+    segtree[i] = {i, i, s.substr(i, 1)};
   }
-  vector<int> ans;
-  for (auto &[type, l, r, c] : q) {
-    if (type == 1) {
-      segtree.update(l - 1, r - 1, c, true);
-    } else {
-      ans.push_back(segtree.query(l, r).cnt);
+  segtree.update(s.size() - 1, false);
+  auto f = [&](int l, int r) { // O(|r-l+1|+log n)
+    auto str = segtree.query(l, r).s;
+    auto cnt = manacher(str, 0, str.size(), '#');
+    i64 ans = 0;
+    for (auto &[even, odd] : cnt) {
+      ans += min(k / 2, even) + min((k + 1) / 2, odd);
     }
+    println(ans);
+  };
+  for (auto &[type, l, r, c] : q) {
+    type == 1 ? segtree.update(l - 1, r - 1, c, true) : f(l - 1, r - 1);
   }
-  println(ans);
 }
 
 int main() {

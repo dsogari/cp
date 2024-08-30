@@ -23,7 +23,17 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int l, r;
+  int ans = 0;
+  for (int i = l; i <= r; i++) {
+    if (i % 2) {
+      ans += i + 2 <= r;
+      i += 2;
+    }
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

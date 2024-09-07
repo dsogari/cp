@@ -1,10 +1,12 @@
 /**
+ * https://codeforces.com/contest/2007/submission/280245432
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
-using i64 = int64_t;
+using namespace placeholders;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -28,31 +30,6 @@ template <typename T> struct Num {
 using Int = Num<int>;
 using Chr = Num<char>;
 
-template <typename T> struct FenTreeMap {
-  int n;
-  unordered_map<int, T> nodes = {{0, {}}};
-  FenTreeMap(int n) : n(n) {}
-  T query(int i, auto &&f) const { // O(log n)
-    assert(i < n);
-    T ans = nodes.find(0)->second;
-    for (i++; i > 0; i -= i & -i) {
-      auto it = nodes.find(i);
-      if (it != nodes.end()) {
-        ans = f(ans, it->second);
-      }
-    }
-    return ans;
-  }
-  void update(int i, auto &&f, const auto &val) { // O(log n)
-    assert(i >= 0);
-    for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
-    }
-  }
-};
-
-const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
-
 struct Query {
   Chr type;
   Int l, r;
@@ -62,16 +39,13 @@ void solve(int t) {
   Int n, m;
   vector<Int> a(n);
   vector<Query> q(m);
-  vector<i64> ans;
-  FenTreeMap<i64> fen(1e9 + 1);
-  for (int i = 0; i < n; i++) {
-    fen.update(i64(a[i]), tmax, i64(a[i]));
-  }
+  vector<int> ans;
+  auto mx = *ranges::max_element(a);
   for (auto &&[type, l, r] : q) {
-    auto c = type == '+' ? 1 : -1;
-    fen.update(l - 1, tmax, fen.query(l - 1, tmax) + c);
-    fen.update(i64(r), tmax, fen.query(i64(r), tmax) - c);
-    ans.push_back(fen.query(i64(n), tmax));
+    if (l <= mx && mx <= r) {
+      mx += type == '+' ? 1 : -1;
+    }
+    ans.push_back(mx);
   }
   println(ans);
 }

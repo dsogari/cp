@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2007/submission/280245986
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -25,14 +27,11 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int l, r;
-  int ans = 0;
+  int cnt = 0;
   for (int i = l; i <= r; i++) {
-    if (i % 2) {
-      ans += i + 2 <= r;
-      i += 2;
-    }
+    cnt += i % 2;
   }
-  println(ans);
+  println(cnt / 2);
 }
 
 int main() {

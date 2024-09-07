@@ -44,11 +44,9 @@ void solve(int t) {
     op <= 1 ? upd(l, r, x, op) : chk(l, r);
   }
   segtree.pushall(n - 1);
-  if (n > 1) {
-    assert(pref.full() == segtree.full());
-  }
+  assert(pref.full() == segtree.full());
   for (int i = 0; i < n; i++) {
-    assert(pref[i] == segtree.lazy[i + n].merge(segtree[i]));
+    assert(pref[i] == segtree.get(i));
   }
   println("OK", ms.count(), "ms");
 }

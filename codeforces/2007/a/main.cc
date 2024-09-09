@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2007/submission/280245986
+ * https://codeforces.com/contest/2007/submission/280376357
  *
  * (c) 2024 Diego Sogari
  */
@@ -27,10 +27,7 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int l, r;
-  int cnt = 0;
-  for (int i = l; i <= r; i++) {
-    cnt += i % 2;
-  }
+  int cnt = (r + 1) / 2 - l / 2;
   println(cnt / 2);
 }
 

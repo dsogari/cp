@@ -2,7 +2,7 @@
  * (c) 2024 Diego Sogari
  */
 #include "io.h"
-#include "math/pref.h"
+#include "math/prefix.h"
 #include "tree/segment.h"
 
 #include "debug.h"

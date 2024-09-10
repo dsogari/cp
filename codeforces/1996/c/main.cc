@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1996/submission/274276789
+ * https://codeforces.com/contest/1996/submission/280512483
  *
  * (c) 2024 Diego Sogari
  */
@@ -34,8 +34,7 @@ template <typename T> struct FenTree {
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
-  T &operator[](int i) { return nodes[i + 1]; } // O(1)
-  T query(int i) const {                        // O(log n)
+  T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
@@ -46,9 +45,10 @@ template <typename T> struct FenTree {
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      _apply(i, val);
     }
   }
+  void _apply(int i, const T &val) { nodes[i] = f(nodes[i], val); }
 };
 
 const auto tadd = [](auto &a, auto &b) { return a + b; };

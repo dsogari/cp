@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2003/submission/278736438
+ * https://codeforces.com/contest/2003/submission/280516513
  *
  * (c) 2024 Diego Sogari
  */
@@ -26,10 +26,62 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+template <typename T> struct FenTree {
+  int n;
+  vector<T> nodes;
+  function<T(const T &, const T &)> f;
+  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  T query(int i) const { // O(log n)
+    assert(i < n);
+    T ans = nodes[0];
+    for (i++; i > 0; i -= i & -i) {
+      ans = f(ans, nodes[i]);
+    }
+    return ans;
+  }
+  void update(int i, const T &val) { // O(log n)
+    assert(i >= 0);
+    for (i++; i <= n; i += i & -i) {
+      _apply(i, val);
+    }
+  }
+  void _apply(int i, const T &val) { nodes[i] = f(nodes[i], val); }
+};
+
+const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
+
+mt19937 rng{random_device{}()};
+
+auto now() { return chrono::high_resolution_clock::now(); }
+
+#ifdef ONLINE_JUDGE
+constexpr auto limit = 2.5;
+#else
+constexpr auto limit = 0.1;
+#endif
+
 void solve(int t) {
   Int n, m;
   vector<Int> a(n), b(n), c(n);
-  int ans = 0;
+  vector<int> ids(n);
+  int ans = -1;
+  for (auto s = now(); chrono::duration<double>(now() - s).count() < limit;) {
+    for (auto &&id : ids) {
+      id = rng() % m;
+    }
+    vector dp(m - 1, FenTree<int>(n, tmax, -1));
+    for (int i = 0; i < n; i++) {
+      auto ord = ids[b[i] - 1];
+      auto val = ord ? dp[ord - 1].query(a[i] - 1) : 0;
+      if (val >= 0) {
+        if (ord < m - 1) {
+          dp[ord].update(a[i] - 1, val + c[i]);
+        } else {
+          ans = max(ans, val + c[i]);
+        }
+      }
+    }
+  }
   println(ans);
 }
 

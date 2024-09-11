@@ -1,9 +1,12 @@
 /**
+ * https://codeforces.com/contest/2000/submission/280672836
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -34,53 +37,27 @@ struct WGraph : vector<vector<array<int, 3>>> {
   void _add(int u, int v, int w, int z) { (*this)[u].push_back({v, w, z}); }
 };
 
-struct Dist : vector<array<int, 2>> {
-  Dist(const WGraph &g, int e) : vector<array<int, 2>>(g.size()) {
-    for (int u = 0; u < g.size(); u++) {
-      dfs(g, u, u, e);
-    }
-  }
-  int dfs(const WGraph &g, int u, int p, int e) {
-    if (u == e || (*this)[u][0]) {
-      return (*this)[u][0];
-    }
-    array<int, 2> ans = {INT_MAX, u};
-    for (auto &[v, w, _] : g[u]) {
-      if (v != p) {
-        auto d = dfs(g, v, u, e);
-        ans = min(ans, {d + w, v});
-      }
-    }
-    return ((*this)[u] = ans)[0];
-  }
-};
-
 void solve(int t) {
   Int n, m, t0, t1, t2;
   WGraph g(n, m);
-  Dist d(g, n);      // O(n)
-  int len = d[1][0]; // shortest route taking only buses
-  if (t2 <= t0 - len) {
-    println(t0 - len);
-    return;
-  }
-  vector<int> path;
-  for (int u = 1; u != n; u = d[u][1]) { // O(n)
-    path.push_back(u);
-  }
-  int ans = -1;
-  for (int i = path.size() - 1; i >= 0; i--) { // O(n)
-    auto [l, u] = d[path[i]]; // length of time to travel to n on bus
-    if (t2 > t0 - l) {
-      // cannot take bus on the trip to u starting now
-      // either wait t2 - t1 minutes and set time limit to t1, or
-      // walk
-      // we have to reach u at most at t0 - d[path[i + 1]]
-      //
-      auto call = t2 - t1;
+  vector<int> times(n + 1, -1);
+  times[n] = t0;
+  set<array<int, 2>> q = {{t0, n}};
+  while (q.size()) { // O(m*log n)
+    int u = (*q.rbegin())[1];
+    q.erase(prev(q.end()));
+    auto tu = times[u];
+    for (auto &[v, w, z] : g[u]) {
+      auto &tv = times[v];
+      auto ty = tu <= t1 || tu - w >= t2 ? tu - w : max(t1 - w, tu - z);
+      if (ty > tv) {
+        q.erase({tv, v});
+        tv = ty;
+        q.insert({tv, v});
+      }
     }
   }
-  println(ans);
+  println(times[1]);
 }
 
 int main() {

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280681934
+ * https://codeforces.com/contest/2008/submission/280751432
  *
  * (c) 2024 Diego Sogari
  */
@@ -32,44 +32,24 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-struct DSU {
-  vector<int> par, siz;
-  DSU(int n) : par(n, -1), siz(n) {}
-  bool has(int v) const { return par[v] != -1; }                      // O(1)
-  int add(int v) { return siz[v] = 1, par[v] = v; }                   // O(1)
-  int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(1)
-  int merge(int a, int b) { // O(1) amortized
-    a = find(a), b = find(b);
-    if (a != b) {
-      if (siz[a] < siz[b]) {
-        swap(a, b);
-      }
-      siz[a] += siz[b];
-      par[b] = a;
-    }
-    return a;
-  }
-};
-
 void solve(int t) {
   Int n;
   vector<Int> p(n);
   Str s;
-  DSU dsu(n);
-  map<int, int> cnt;
+  vector<int> group(n, -1), cnt;
   for (int i = 0; i < n; i++) {
-    dsu.add(i);
-  }
-  for (int i = 0; i < n; i++) {
-    auto a = dsu.find(i);
-    auto b = dsu.find(p[i] - 1);
-    auto prev = cnt[a] + (a != b ? cnt[b] : 0);
-    auto id = dsu.merge(i, p[i] - 1);
-    cnt[id] = prev + (s[i] == '0');
+    if (group[i] < 0) {
+      int id = cnt.size(), c = 0;
+      for (int j = i; group[j] < 0; j = p[j] - 1) {
+        group[j] = id;
+        c += s[j] == '0';
+      }
+      cnt.push_back(c);
+    }
   }
   vector<int> ans(n);
   for (int i = 0; i < n; i++) {
-    ans[i] = cnt[dsu.find(i)];
+    ans[i] = cnt[group[i]];
   }
   println(ans);
 }

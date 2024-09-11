@@ -8,7 +8,7 @@
  */
 struct DSU {
   vector<int> par, siz;
-  DSU(int n) : par(n + 1, -1), siz(n + 1) {}
+  DSU(int n) : par(n, -1), siz(n) {}
   bool has(int v) const { return par[v] != -1; }                      // O(1)
   int add(int v) { return siz[v] = 1, par[v] = v; }                   // O(1)
   int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(1)

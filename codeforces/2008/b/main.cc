@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2008/submission/280679069
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,30 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Str : string {
+  Str() { cin >> *this; }
+};
+
+void solve(int t) {
+  Int n;
+  Str s;
+  auto ans = "NO";
+  auto r = sqrt<int>(n);
+  if (r * r == n) {
+    if (r < 3) {
+      ans = "YES";
+    } else {
+      auto i = s.find('0');
+      if (i != string::npos) {
+        auto j = s.find('1', i);
+        if (j - i == r - 2) {
+          ans = "YES";
+        }
+      }
+    }
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

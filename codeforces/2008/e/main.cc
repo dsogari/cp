@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2008/submission/280689970
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,50 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Str : string {
+  Str() { cin >> *this; }
+};
+
+constexpr int lowerlatin = 'z' - 'a' + 1;
+
+template <typename T, size_t N>
+array<T, N> operator+(const array<T, N> &lhs, const array<T, N> &rhs) {
+  array<T, N> ans;
+  for (int i = 0; i < N; i++) {
+    ans[i] = lhs[i] + rhs[i];
+  }
+  return ans;
+}
+
+void solve(int t) {
+  Int n;
+  Str s;
+  int ans = n % 2;
+  if (n > 2) {
+    vector<array<array<array<int, lowerlatin>, 2>, 2>> cnt(n + 1);
+    for (int i = 0; i < n; i++) {
+      cnt[i + 1] = cnt[i];
+      cnt[i + 1][0][i & 1][s[i] - 'a']++;
+      cnt[i + 1][1][(n - i - 1) & 1][s[n - i - 1] - 'a']++;
+    }
+    int mx = 0;
+    if (ans) {
+      for (int i = 0; i < n; i++) {
+        auto sumeven = cnt[i][0][0] + cnt[n - i - 1][1][1];
+        auto sumodd = cnt[i][0][1] + cnt[n - i - 1][1][0];
+        auto besteven = *ranges::max_element(sumeven);
+        auto bestodd = *ranges::max_element(sumodd);
+        mx = max(mx, besteven + bestodd);
+      }
+    } else {
+      auto besteven = *ranges::max_element(cnt[n][0][0]);
+      auto bestodd = *ranges::max_element(cnt[n][0][1]);
+      mx = besteven + bestodd;
+    }
+    ans += n - ans - mx;
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -4,6 +4,18 @@
 #include "utils.h"
 
 /**
+ * Element-wise sum of static array
+ */
+template <typename T, size_t N>
+array<T, N> operator+(const array<T, N> &lhs, const array<T, N> &rhs) {
+  array<T, N> ans;
+  for (int i = 0; i < N; i++) {
+    ans[i] = lhs[i] + rhs[i];
+  }
+  return ans;
+}
+
+/**
  * Uniform Distribution (using Mersenne Twister engine)
  */
 struct Uniform : uniform_int_distribution<int> {

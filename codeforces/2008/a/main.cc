@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2008/submission/280678197
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,12 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int a, b;
+  bool aodd = a % 2, bodd = b % 2;
+  auto ans = (!aodd && !bodd) || (!aodd && a > 0 && bodd) ? "YES" : "NO";
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

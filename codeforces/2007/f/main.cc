@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2007/submission/280402490
+ * https://codeforces.com/contest/2007/submission/280761796
  *
  * (c) 2024 Diego Sogari
  */
@@ -59,12 +59,10 @@ template <typename T> struct Sparse {
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
-const auto tgcd = [](auto &lhs, auto &rhs) { return gcd(lhs, rhs); };
-
 void solve(int t) { // O(n*log n*log V)
   Int n;
   vector<Int> a(n);
-  Sparse<int> sparse(n, tgcd);
+  Sparse<int> sparse(n, gcd<int, int>);
   for (int i = 1; i < n; i++) { // O(n)
     sparse[i] = abs(a[i] - a[i - 1]);
   }

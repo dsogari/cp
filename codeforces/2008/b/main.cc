@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280679069
+ * https://codeforces.com/contest/2008/submission/280786160
  *
  * (c) 2024 Diego Sogari
  */
@@ -33,19 +33,14 @@ void solve(int t) {
   Int n;
   Str s;
   auto ans = "NO";
-  auto r = sqrt<int>(n);
-  if (r * r == n) {
-    if (r < 3) {
+  auto i = s.find('0');
+  if (i != string::npos) {
+    auto c = i - 1;
+    if (c * c == n) {
       ans = "YES";
-    } else {
-      auto i = s.find('0');
-      if (i != string::npos) {
-        auto j = s.find('1', i);
-        if (j - i == r - 2) {
-          ans = "YES";
-        }
-      }
     }
+  } else if (n == 4) {
+    ans = "YES";
   }
   println(ans);
 }

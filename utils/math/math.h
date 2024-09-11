@@ -41,6 +41,13 @@ template <size_t N> struct ArrayHash {
 };
 
 /**
+ * Bhaskara formula
+ */
+auto bhaskara(auto a, auto b, auto c) {
+  return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
+}
+
+/**
  * Sum of arithmetic/geometric progressions
  */
 auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; }

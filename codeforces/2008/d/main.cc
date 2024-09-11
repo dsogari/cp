@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280751432
+ * https://codeforces.com/contest/2008/submission/280787532
  *
  * (c) 2024 Diego Sogari
  */
@@ -32,12 +32,12 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
-void solve(int t) {
+void solve(int t) { // O(n)
   Int n;
   vector<Int> p(n);
   Str s;
-  vector<int> group(n, -1), cnt;
-  for (int i = 0; i < n; i++) {
+  vector<int> group(n, -1), cnt, ans(n);
+  for (int i = 0; i < n; i++) { // O(n)
     if (group[i] < 0) {
       int id = cnt.size(), c = 0;
       for (int j = i; group[j] < 0; j = p[j] - 1) {
@@ -46,9 +46,6 @@ void solve(int t) {
       }
       cnt.push_back(c);
     }
-  }
-  vector<int> ans(n);
-  for (int i = 0; i < n; i++) {
     ans[i] = cnt[group[i]];
   }
   println(ans);

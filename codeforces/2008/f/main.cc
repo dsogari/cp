@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280693919
+ * https://codeforces.com/contest/2008/submission/280788198
  *
  * (c) 2024 Diego Sogari
  */
@@ -79,8 +79,7 @@ void solve(int t) {
     ans += (sum[n] - sum[i + 1]) * a[i];
   }
   ans *= 2;
-  ans /= n;
-  ans /= n - 1;
+  ans /= Mint(n) * (n - 1);
   println(ans);
 }
 

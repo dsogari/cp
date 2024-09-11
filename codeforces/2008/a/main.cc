@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280678197
+ * https://codeforces.com/contest/2008/submission/280785861
  *
  * (c) 2024 Diego Sogari
  */
@@ -28,7 +28,7 @@ using Int = Num<int>;
 void solve(int t) {
   Int a, b;
   bool aodd = a % 2, bodd = b % 2;
-  auto ans = (!aodd && !bodd) || (!aodd && a > 0 && bodd) ? "YES" : "NO";
+  auto ans = !aodd && (!bodd || a > 0) ? "YES" : "NO";
   println(ans);
 }
 

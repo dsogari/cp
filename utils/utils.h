@@ -39,7 +39,7 @@ const auto txor = [](auto &lhs, auto &rhs) { return lhs ^ rhs; };
  */
 const auto tmin = [](auto &lhs, auto &rhs) { return min(lhs, rhs); };
 const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
-const auto tgcd = [](auto &lhs, auto &rhs) { return gcd(lhs, rhs); };
+// for gcd, use gcd<int, int>
 
 /**
  * Timing utilities

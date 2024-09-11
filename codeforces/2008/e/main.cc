@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280689970
+ * https://codeforces.com/contest/2008/submission/280787993
  *
  * (c) 2024 Diego Sogari
  */
@@ -45,24 +45,24 @@ void solve(int t) {
   Str s;
   int ans = n % 2;
   if (n > 2) {
-    vector<array<array<array<int, lowerlatin>, 2>, 2>> cnt(n + 1);
+    array<array<int, lowerlatin>, 2> pref = {}, suff = {};
     for (int i = 0; i < n; i++) {
-      cnt[i + 1] = cnt[i];
-      cnt[i + 1][0][i & 1][s[i] - 'a']++;
-      cnt[i + 1][1][(n - i - 1) & 1][s[n - i - 1] - 'a']++;
+      suff[i & 1][s[i] - 'a']++;
     }
     int mx = 0;
     if (ans) {
       for (int i = 0; i < n; i++) {
-        auto sumeven = cnt[i][0][0] + cnt[n - i - 1][1][1];
-        auto sumodd = cnt[i][0][1] + cnt[n - i - 1][1][0];
+        suff[i & 1][s[i] - 'a']--;
+        auto sumeven = pref[0] + suff[1];
+        auto sumodd = pref[1] + suff[0];
         auto besteven = *ranges::max_element(sumeven);
         auto bestodd = *ranges::max_element(sumodd);
         mx = max(mx, besteven + bestodd);
+        pref[i & 1][s[i] - 'a']++;
       }
     } else {
-      auto besteven = *ranges::max_element(cnt[n][0][0]);
-      auto bestodd = *ranges::max_element(cnt[n][0][1]);
+      auto besteven = *ranges::max_element(suff[0]);
+      auto bestodd = *ranges::max_element(suff[1]);
       mx = besteven + bestodd;
     }
     ans += n - ans - mx;

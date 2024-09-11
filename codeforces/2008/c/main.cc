@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280679370
+ * https://codeforces.com/contest/2008/submission/280787311
  *
  * (c) 2024 Diego Sogari
  */
@@ -27,10 +27,7 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int l, r;
-  int ans = 0;
-  for (int i = l, d = 1; i <= r; i += d, d++) {
-    ans++;
-  }
+  int ans = (1 + sqrt(1 + 8ll * (r - l))) / 2; // Bhaskara
   println(ans);
 }
 

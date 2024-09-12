@@ -32,6 +32,16 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+struct Digraph : vector<vector<int>> {
+  const int n, m;
+  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
+    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
+      add(u, v);
+    }
+  }
+  void add(int u, int v) { (*this)[u].push_back(v); }
+};
+
 int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
   while (s < e) {
     auto m = (s + e + 1) / 2;
@@ -40,23 +50,23 @@ int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
   return e; // last such that f is true
 }
 
-int lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
-  vector<int> inc = {s};
-  for (int i = s + 1; i < e; i++) {
-    if (f(inc.back(), i)) {
+array<vector<int>, 2> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
+  vector<int> inc, len;
+  for (int i = s; i < e; i++) {
+    if (inc.empty() || f(inc.back(), i)) {
       inc.push_back(i);
+      len.push_back(1);
     } else {
-      *ranges::lower_bound(inc, i, f) = i;
+      auto j = ranges::lower_bound(inc, i, f) - inc.begin();
+      inc[j] = i;
+      len[j]++;
     }
   }
-  return inc.size() - (s >= e);
+  return {inc, len};
 }
 
-int len1(auto &&b, int n, int k) {
+int len1(auto &&b, int n, int k) { // O(k^n)
   vector<int> s(k, -1), c(k);
-  auto lte = [&](int i, int j) {
-    return b[i][0] <= b[j][0] && b[i][1] <= b[j][1];
-  };
   int ans = n;
   auto f = [&](auto &self, int i) -> void {
     if (i == n) {
@@ -64,7 +74,7 @@ int len1(auto &&b, int n, int k) {
       return;
     }
     for (int j = 0; j < k; j++) {
-      if (s[j] < 0 || lte(s[j], i)) {
+      if (s[j] < 0 || b[s[j]][1] <= b[i][1]) {
         auto saved = s[j];
         s[j] = i, c[j]++;
         self(self, i + 1);
@@ -76,54 +86,56 @@ int len1(auto &&b, int n, int k) {
   return ans;
 }
 
-int len2(auto &&b, int n, int k) {
-  auto f = [&](int l) {
-    vector<vector<int>> heights = {{INT_MAX}};
-    auto cmp = [&](auto &v1, auto &v2) { return v1.back() > v2.back(); };
-    vector<int> toupdate;
-    int ans = 0;
-    auto f2 = [&]() {
-      int tocut = 0;
-      for (auto i : toupdate) {
-        heights[i].resize(heights[i].size() - l);
-        if (heights[i].empty()) {
-          heights[i].push_back(0);
-          tocut++;
+int len2(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
+  Digraph g(n);
+  for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+      if (b[i][1] <= b[j][1]) {
+        g.add(i, j);
+      }
+    }
+  }
+  vector<bool> vis(n);
+  auto f = [&](int len) {
+    auto dfs = [&](auto &self, int u, int i, int j) -> bool {
+      vis[u] = true;
+      if (j < len) {
+        for (auto &&v : g[u]) {
+          if (!vis[v] && !self(self, v, i, j + 1)) {
+            vis[u] = false;
+            return false;
+          }
         }
       }
-      ranges::sort(heights, cmp);
-      if (tocut) {
-        heights.resize(heights.size() - tocut);
-      }
-      toupdate.clear();
-    };
-    int prev = 0;
-    for (auto &[w, h] : b) {
-      if (w > prev) {
-        if (toupdate.size()) {
-          f2();
-        }
-        prev = w;
-      }
-      if (heights.back().back() > h) {
-        heights.push_back({h});
+      bool ans = false;
+      auto v = ranges::find(vis, false) - vis.begin();
+      if (v < n) {
+        ans = i == k - 1 || self(self, v, i + 1, 1);
       } else {
-        auto it = ranges::lower_bound(heights, vector<int>{h}, cmp);
-        it->push_back(h);
-        if (it->size() == l) {
-          toupdate.push_back(it - heights.begin());
-          ans++;
-        }
+        assert(i == k - 1);
+      }
+      vis[u] = false;
+      return ans;
+    };
+    return dfs(dfs, 0, 0, 1);
+  };
+  assert(k > 0 && k <= n);
+  return binsearch(f, n / k - 1, mxlen) + 1;
+}
+
+int len3(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
+  Digraph g(n);
+  for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+      if (b[i][1] > b[j][1]) {
+        g.add(i, j);
       }
     }
-    if (toupdate.size()) {
-      f2();
-    }
-    ans += heights.size() - 1;
-    return ans > k;
-  };
-  return binsearch(f, n / k, n - k + 1) + 1;
+  }
+  return 0;
 }
+
+auto now() { return chrono::high_resolution_clock::now(); }
 
 void solve(int t) {
   // Int n;
@@ -136,15 +148,25 @@ void solve(int t) {
   }
   ranges::sort(b); // O(n*log n)
   auto cmp = [&](int i, int j) { return b[i][1] > b[j][1]; };
-  int k = lis(cmp, 0, n); // O(n*log n)
+  auto [seq, cnt] = lis(cmp, 0, n); // O(n*log n)
+  int k = seq.size(), mxlen = *ranges::max_element(cnt);
+  auto t0 = now();
   int l1 = len1(b, n, k);
-  int l2 = len2(b, n, k);
-  // assert(l1 == l2);
-  println(b, k, l1, l2);
+  auto t1 = now();
+  int l2 = len2(b, n, k, mxlen);
+  auto t2 = now();
+  int l3 = len3(b, n, k, mxlen);
+  auto t3 = now();
+  assert(l1 == l2);
+  // assert(l1 == l3);
+  println(b, k, l1, l2, l3);
+  // chrono::duration<double, milli> d1 = t1 - t0, d2 = t2 - t1;
+  // println("OK", d1.count(), "ms", d2.count(), "ms");
 }
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
+  // srand(time(0));
   Int t;
   for (int i = 1; i <= t; i++) {
     solve(i);

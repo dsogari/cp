@@ -32,3 +32,8 @@ struct TwoSat {
     return true;
   }
 };
+
+/**
+ * 3-Satisfiability solver
+ */
+struct TriSat {};

@@ -25,16 +25,16 @@ int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
 /**
  * Longest Increasing Subsequence
  */
-int lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
-  vector<int> inc = {s};
-  for (int i = s + 1; i < e; i++) {
-    if (f(inc.back(), i)) {
+vector<int> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
+  vector<int> ans;
+  for (int i = s; i < e; i++) {
+    if (inc.empty() || f(inc.back(), i)) {
       inc.push_back(i);
     } else {
       *ranges::lower_bound(inc, i, f) = i;
     }
   }
-  return inc.size() - (s >= e);
+  return ans;
 }
 
 /**

@@ -26,6 +26,7 @@ using f64 = double;
  */
 constexpr int lowerlatin = 'z' - 'a' + 1;
 constexpr int upperlatin = 'Z' - 'A' + 1;
+const string vowels = "aeiou";
 
 /**
  * Common associative operations

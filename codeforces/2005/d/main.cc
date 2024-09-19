@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2005/submission/281840592
+ * https://codeforces.com/contest/2005/submission/281855060
  *
  * (c) 2024 Diego Sogari
  */
@@ -44,12 +44,12 @@ void solve(int t) {
       auto dp1 = self(self, l, mid);
       auto dp2 = self(self, mid, r);
       array<i64, 3> c;
-      for (auto [d1, c1] : dp1) {
+      for (auto [d1, c1] : dp1) { // O(log^3 V)
         for (auto [d2, c2] : dp2) {
           c[0] = c1[0] * c2[0];
           c[1] = c1[0] * c2[1];
           c[2] = c1[0] * c2[2] + c1[1] * c2[0] + c1[2] * c2[0];
-          if (c[0] + c[1] + c[2]) {
+          if (c[0] | c[1] | c[2]) {
             auto x = gcd(d1[0], d2[0]);
             auto y = gcd(d1[1], d2[1]);
             dp[{x, y}] += c;
@@ -57,7 +57,7 @@ void solve(int t) {
           c[0] = 0;
           c[1] = c1[0] * c2[0] + c1[1] * c2[0];
           c[2] = c1[0] * c2[1] + c1[1] * c2[1];
-          if (c[0] + c[1] + c[2]) {
+          if (c[0] | c[1] | c[2]) {
             auto x = gcd(d1[0], d2[1]);
             auto y = gcd(d1[1], d2[0]);
             dp[{x, y}] += c;
@@ -69,16 +69,15 @@ void solve(int t) {
     }
     return dp;
   };
-  auto dp = f(f, 0, n);
+  auto dp = f(f, 0, n); // O(n*log^3 V)
   int ans = 0;
   i64 cnt = 0;
-  for (auto &&[p, c] : dp) {
-    auto [d0, d1] = p;
-    if (d0 + d1 > ans) {
-      ans = d0 + d1;
+  for (auto &&[d, c] : dp) { // O(log^2 V)
+    if (d[0] + d[1] > ans) {
+      ans = d[0] + d[1];
       cnt = 0;
     }
-    if (d0 + d1 == ans) {
+    if (d[0] + d[1] == ans) {
       cnt += c[0] + 2 * c[1] + c[2];
     }
   }

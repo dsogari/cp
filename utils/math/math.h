@@ -4,6 +4,17 @@
 #include "utils.h"
 
 /**
+ * Element-wise assigment sum of static array
+ */
+template <typename T, size_t N>
+array<T, N> &operator+=(array<T, N> &lhs, const array<T, N> &rhs) {
+  for (int i = 0; i < N; i++) {
+    lhs[i] += rhs[i];
+  }
+  return lhs;
+}
+
+/**
  * Element-wise sum of static array
  */
 template <typename T, size_t N>

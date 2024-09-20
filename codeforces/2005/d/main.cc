@@ -52,7 +52,7 @@ void solve(int t) {
           if (c[0] | c[1] | c[2]) {
             auto x = gcd(d1[0], d2[0]);
             auto y = gcd(d1[1], d2[1]);
-            dp[{x, y}] += c;
+            dp[{x, y}] += c; // unchanged
           }
           c[0] = 0;
           c[1] = c1[0] * c2[0] + c1[1] * c2[0];
@@ -60,7 +60,7 @@ void solve(int t) {
           if (c[0] | c[1] | c[2]) {
             auto x = gcd(d1[0], d2[1]);
             auto y = gcd(d1[1], d2[0]);
-            dp[{x, y}] += c;
+            dp[{x, y}] += c; // swapped
           }
         }
       }

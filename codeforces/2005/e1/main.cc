@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2005/submission/281925657
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -38,49 +40,21 @@ void solve(int t) {
   vector<Int> a(l);
   Mat<Int> b(n, m);
   unordered_set<int> valid;
-  for (int i = 0; i < l && valid.insert(a[i]).second; i++)
+  int mx = 0;
+  for (; mx < l && valid.insert(a[mx]).second; mx++)
     ;
-  map<int, vector<array<int, 2>>> pos;
-  auto f = [](auto &lhs, auto &rhs) { return lhs[1] > rhs[1]; };
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < m; j++) {
-      if (valid.contains(b[i][j])) {
-        array<int, 2> cell{i, j};
-        auto &cells = pos[b[i][j]];
-        if (cells.size() && cells.back()[1] <= j) {
-          auto k = ranges::lower_bound(cells, cell, f) - cells.begin();
-          cells.resize(k);
-        }
-        cells.push_back(cell);
+  Mat<bool> dp0(n + 1, m + 1), dp1(n + 1, m + 1);
+  for (int k = mx - 1; k >= 0; k--) {
+    for (int i = n - 1; i >= 0; i--) {
+      for (int j = m - 1; j >= 0; j--) {
+        dp1[i][j] = dp1[i + 1][j] | dp1[i][j + 1] |
+                    (b[i][j] == a[k] && !dp0[i + 1][j + 1]);
       }
     }
+    swap(dp0, dp1);
   }
-  set<array<int, 2>> cur = {{-1, -1}};
-  for (int k = 0; k < l; k++) {
-    set<array<int, 2>> cur2;
-    auto it = pos.find(a[k]);
-    if (it != pos.end()) {
-      for (auto &cell1 : cur) {
-        bool ok = false;
-        for (auto &cell2 : it->second) {
-          if (cell2[0] > cell1[0] && cell2[1] > cell1[1]) {
-            cur2.insert(cell2);
-            ok |= true;
-          }
-        }
-        if (!ok && k % 2) {
-          println('T');
-          return;
-        }
-      }
-      if (cur2.empty()) {
-        println(k % 2 ? 'T' : 'N');
-        return;
-      }
-    }
-    swap(cur, cur2);
-  }
-  println(l % 2 ? 'T' : 'N');
+  auto ans = dp0[0][0] ? 'T' : 'N';
+  println(ans);
 }
 
 int main() {

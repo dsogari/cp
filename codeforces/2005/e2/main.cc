@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2005/submission/281926943
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -37,21 +39,29 @@ void solve(int t) {
   Int l, n, m;
   vector<Int> a(l);
   Mat<Int> b(n, m);
-  unordered_set<int> valid;
-  int mx = 0;
-  for (; mx < l && valid.insert(a[mx]).second; mx++)
+  unordered_map<int, int> pos;
+  for (int i = 0; i < l && pos.emplace(a[i], i).second; i++)
     ;
-  Mat<bool> dp0(n + 1, m + 1), dp1(n + 1, m + 1);
-  for (int k = mx - 1; k >= 0; k--) {
-    for (int i = n - 1; i >= 0; i--) {
-      for (int j = m - 1; j >= 0; j--) {
-        dp1[i][j] = dp1[i + 1][j] | dp1[i][j + 1] |
-                    (b[i][j] == a[k] && !dp0[i + 1][j + 1]);
+  vector<array<int, 2>> dp0(m + 1, {INT_MAX, INT_MAX});
+  auto dp1 = dp0;
+  for (int i = n - 1; i >= 0; i--) { // O(n*m)
+    for (int j = m - 1; j >= 0; j--) {
+      dp1[j][0] = min(dp0[j][0], dp1[j + 1][0]);
+      dp1[j][1] = min(dp0[j][1], dp1[j + 1][1]);
+      auto it = pos.find(b[i][j]);
+      if (it != pos.end()) {
+        auto k = it->second;
+        if (k < dp1[j][0] && k % 2 == 0 && k + 1 < dp0[j + 1][1]) {
+          dp1[j][0] = k;
+        }
+        if (k < dp1[j][1] && k % 2 == 1 && k + 1 < dp0[j + 1][0]) {
+          dp1[j][1] = k;
+        }
       }
     }
     swap(dp0, dp1);
   }
-  auto ans = dp0[0][0] ? 'T' : 'N';
+  auto ans = dp0[0][0] == 0 ? 'T' : 'N';
   println(ans);
 }
 

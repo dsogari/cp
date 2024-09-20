@@ -44,7 +44,7 @@ void solve(int t) {
   for (; mx < l && valid.insert(a[mx]).second; mx++)
     ;
   Mat<bool> dp0(n + 1, m + 1), dp1(n + 1, m + 1);
-  for (int k = mx - 1; k >= 0; k--) {
+  for (int k = mx - 1; k >= 0; k--) { // O(n*m*l)
     for (int i = n - 1; i >= 0; i--) {
       for (int j = m - 1; j >= 0; j--) {
         dp1[i][j] = dp1[i + 1][j] | dp1[i][j + 1] |

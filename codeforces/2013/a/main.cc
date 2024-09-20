@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2013/submission/282015259
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,12 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n, x, y;
+  int c = min(x, y);
+  int ans = n / c + bool(n % c);
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -8,7 +8,7 @@
  */
 struct Dist : vector<pair<i64, int>> {
   Dist(const WGraph &g, int s)
-      : vector<pair<i64, int>>(g.size(), {LONG_MAX, -1}) { // O(m*log n)
+      : vector<pair<i64, int>>(g.size(), {LLONG_MAX, -1}) { // O(m*log n)
     (*this)[s].first = 0;
     set<pair<i64, int>> q = {{0, s}};
     while (q.size()) {

@@ -15,11 +15,22 @@ struct Iota : vector<int> {
  * Binary Search
  */
 int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
-  while (s < e) {
-    auto m = s + (e - s + 1) / 2; // 0 < e - s < 2^31-1
-    f(m) ? s = m : e = m - 1;
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = s + (e - s + inc) / 2; // |e - s| < 2^31-1
+    f(m) ? s = m : e = m - inc;
   }
   return e; // last such that f is true
+}
+
+/**
+ * Binary Search (for real numbers)
+ */
+double binsearch(auto &&f, double s, double e, int iter) {
+  while (iter--) {
+    auto m = (s + e) / 2;
+    (f(m) ? s : e) = m;
+  }
+  return (s + e) / 2;
 }
 
 /**

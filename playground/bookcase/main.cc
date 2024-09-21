@@ -43,9 +43,9 @@ struct Digraph : vector<vector<int>> {
 };
 
 int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
-  while (s < e) {
-    auto m = (s + e + 1) / 2;
-    f(m) ? s = m : e = m - 1;
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = s + (e - s + inc) / 2; // |e - s| < 2^31-1
+    f(m) ? s = m : e = m - inc;
   }
   return e; // last such that f is true
 }
@@ -101,26 +101,26 @@ int len2(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
       vis[u] = true;
       if (j < len) {
         for (auto &&v : g[u]) {
-          if (!vis[v] && !self(self, v, i, j + 1)) {
+          if (!vis[v] && self(self, v, i, j + 1)) {
             vis[u] = false;
-            return false;
+            return true;
           }
         }
       }
-      bool ans = false;
+      bool ans = true;
       auto v = ranges::find(vis, false) - vis.begin();
       if (v < n) {
-        ans = i == k - 1 || self(self, v, i + 1, 1);
+        ans = i < k && self(self, v, i + 1, 1);
       } else {
-        assert(i == k - 1);
+        assert(i == k);
       }
       vis[u] = false;
       return ans;
     };
-    return dfs(dfs, 0, 0, 1);
+    return dfs(dfs, 0, 1, 1);
   };
   assert(k > 0 && k <= n);
-  return binsearch(f, n / k - 1, mxlen) + 1;
+  return binsearch(f, mxlen + 1, n / k);
 }
 
 int len3(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)

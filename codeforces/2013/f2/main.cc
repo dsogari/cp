@@ -55,9 +55,9 @@ struct Path : vector<int> {
 };
 
 int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
-  while (s < e) {
-    auto m = s + (e - s + 1) / 2; // 0 < e - s < 2^31-1
-    f(m) ? s = m : e = m - 1;
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = s + (e - s + inc) / 2; // |e - s| < 2^31-1
+    f(m) ? s = m : e = m - inc;
   }
   return e; // last such that f is true
 }
@@ -94,9 +94,7 @@ void solve(int t) {
   auto f3 = [&](int l, int r) {
     auto mid = (l + r) / 2;
     auto last1 = binsearch(f2, l - 1, mid - 1);
-    reverse(path.begin() + mid, path.begin() + r);
-    auto last2 = mid + r - 1 - binsearch(f2, mid - 1, r - 1);
-    reverse(path.begin() + mid, path.begin() + r);
+    auto last2 = binsearch(f2, r, mid);
     for (int i = l; i < r; i++) {
       auto ans = i > last1 && i < last2 ? "Alice" : "Bob";
       println(ans);

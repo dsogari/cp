@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2014/submission/282459616
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -39,38 +41,43 @@ void solve(int t) {
   Int n, m, h;
   vector<Int> a(h);
   vector<bool> horses(n + 1);
-  for (auto &u : a) {
+  for (auto &u : a) { // O(h)
     horses[u] = true;
   }
   WGraph g(n, m);
-  auto f = [&](int s) {
-    vector<pair<i64, bool>> times(n + 1, {LLONG_MAX, false});
-    times[s] = {0, horses[s]};
-    set<pair<i64, int>> q = {{0, s}};
+  auto f = [&](int s) { // O(m*log n)
+    vector<array<i64, 2>> times(n + 1, {LLONG_MAX, LLONG_MAX});
+    times[s] = {0, horses[s] ? 0 : LLONG_MAX};
+    set<tuple<i64, bool, int>> q = {{0, false, s}};
     while (q.size()) { // O(m*log n)
-      int u = q.begin()->second;
+      auto [tu, hu, u] = *q.begin();
       q.erase(q.begin());
-      auto [tu, hu] = times[u];
       for (auto &[v, w] : g[u]) {
-        auto &[tv, hv] = times[v];
-        auto ww = hu ? w / 2 : w;
-        if (tu + ww < tv) {
-          q.erase({tv, v});
-          tv = tu + ww;
-          hv = hu | horses[v];
-          q.insert({tv, v});
+        auto &[t1v, t2v] = times[v];
+        if (hu | horses[u]) {
+          if (tu + w / 2 < t2v) {
+            q.erase({t2v, true, v});
+            t2v = tu + w / 2;
+            q.insert({t2v, true, v});
+          }
+        } else {
+          if (tu + w < t1v) {
+            q.erase({t1v, false, v});
+            t1v = tu + w;
+            q.insert({t1v, false, v});
+          }
         }
       }
     }
     return times;
   };
-  auto times1 = f(1);
-  auto times2 = f(n);
+  auto times1 = f(1); // O(m*log n)
+  auto times2 = f(n); // O(m*log n)
   i64 ans = LLONG_MAX;
-  for (int i = 1; i <= n; i++) {
-    auto t1 = times1[i].first;
-    auto t2 = times2[i].first;
-    ans = min(ans, max(t1, t2));
+  for (int i = 1; i <= n; i++) { // O(n)
+    auto [t11, t12] = times1[i];
+    auto [t21, t22] = times2[i];
+    ans = min(ans, max(min(t11, t12), min(t21, t22)));
   }
   if (ans == LLONG_MAX) {
     ans = -1;

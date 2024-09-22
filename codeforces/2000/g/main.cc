@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/280672836
+ * https://codeforces.com/contest/2000/submission/282429246
  *
  * (c) 2024 Diego Sogari
  */
@@ -44,9 +44,8 @@ void solve(int t) {
   times[n] = t0;
   set<array<int, 2>> q = {{t0, n}};
   while (q.size()) { // O(m*log n)
-    int u = (*q.rbegin())[1];
+    auto [tu, u] = *q.rbegin();
     q.erase(prev(q.end()));
-    auto tu = times[u];
     for (auto &[v, w, z] : g[u]) {
       auto &tv = times[v];
       auto ty = tu <= t1 || tu - w >= t2 ? tu - w : max(t1 - w, tu - z);

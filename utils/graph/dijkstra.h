@@ -12,9 +12,8 @@ struct Dist : vector<pair<i64, int>> {
     (*this)[s].first = 0;
     set<pair<i64, int>> q = {{0, s}};
     while (q.size()) {
-      int u = q.begin()->second;
+      auto [du, u] = *q.begin();
       q.erase(q.begin());
-      auto du = (*this)[u].first;
       for (auto &[v, w] : g[u]) {
         auto &[dv, p] = (*this)[v];
         if (du + w < dv) {

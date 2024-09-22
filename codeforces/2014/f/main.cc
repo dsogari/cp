@@ -25,8 +25,9 @@ using Int = Num<int>;
 
 struct Graph : vector<vector<int>> {
   const int n, m;
-  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
-    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
+  vector<array<Int, 2>> e;
+  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), e(m) {
+    for (auto &[u, v] : e) {
       add(u, v);
     }
   }

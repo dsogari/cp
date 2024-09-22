@@ -39,9 +39,11 @@ void solve(int t) {
   Int n, c;
   vector<Int> a(n);
   Graph g(n, n - 1);
-  vector<int> idx(n);
+  vector<int> idx(n), cnt(n);
   iota(idx.begin(), idx.end(), 0);
-  auto cmp = [&](int i, int j) { return a[i] > a[j]; };
+  auto cmp = [&](int i, int j) {
+    return a[i] > a[j] || (a[i] == a[j] && cnt[i] < cnt[j]);
+  };
   vector<bool> vis(n + 1);
   for (int i = 0; i < n; i++) { // O(n*log n)
     ranges::sort(idx.begin() + i, idx.end(), cmp);
@@ -54,6 +56,7 @@ void solve(int t) {
       vis[u] = true;
       for (auto &&v : g[u]) {
         a[v - 1] -= c;
+        cnt[v - 1]++;
       }
     }
   }

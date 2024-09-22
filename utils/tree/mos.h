@@ -1,31 +1,11 @@
 /**
- * https://codeforces.com/contest/2014/submission/282536533
- *
  * (c) 2024 Diego Sogari
  */
-#include <bits/stdc++.h>
+#include "utils.h"
 
-using namespace std;
-using u64 = uint64_t;
-
-#ifdef ONLINE_JUDGE
-#define debug
-#else
-#include "debug.h"
-init();
-#endif
-
-void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
-
-template <typename T> struct Num {
-  T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
-  operator T &() { return x; }
-  operator T() const { return x; }
-};
-using Int = Num<int>;
-
+/**
+ * Hilbert Curve 2-to-1D Mapping
+ */
 u64 hilbert(int x, int y) { // O(log max(x,y))
   const unsigned mx = max(x, y) * 2 + 1;
   const int logn = (bit_width(mx) - 1) | 1;
@@ -44,6 +24,9 @@ u64 hilbert(int x, int y) { // O(log max(x,y))
   return ans;
 }
 
+/**
+ * Mo's algorithm
+ */
 struct Mos {
   vector<int> idx;
   vector<u64> ord;
@@ -78,36 +61,3 @@ struct Mos {
     }
   }
 };
-
-mt19937 rng(random_device{}());
-
-void solve(int t) {
-  Int n, m;
-  vector<Int> a(n);
-  vector<array<Int, 2>> q(m);
-  unordered_map<int, int> ids;
-  for (auto &&ai : a) { // O(n)
-    if (!ids.contains(ai)) {
-      ids[ai] = rng();
-    }
-  }
-  vector<bool> ans(m);
-  int acc = 0;
-  auto add = [&](int i) { acc ^= ids[a[i - 1]]; };
-  auto rem = [&](int i) { acc ^= ids[a[i - 1]]; };
-  auto get = [&](int j) { ans[j] = acc; };
-  Mos mos;
-  mos.build(q);                   // O(m*log m)
-  mos.visit(q, add, rem, get, 1); // O((n + m)*sqrt n)
-  for (int i = 0; i < m; i++) {   // O(m)
-    println(ans[i] ? "NO" : "YES");
-  }
-}
-
-int main() {
-  cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
-  Int t;
-  for (int i = 1; i <= t; i++) {
-    solve(i);
-  }
-}

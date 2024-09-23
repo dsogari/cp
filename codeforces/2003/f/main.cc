@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2003/submission/282649722
+ * https://codeforces.com/contest/2003/submission/282669237
  *
  * (c) 2024 Diego Sogari
  */
@@ -54,7 +54,8 @@ template <typename T> struct Max {
 auto now() { return chrono::high_resolution_clock::now(); }
 
 seed_seq seq{(u64)now().time_since_epoch().count(),
-             (u64)make_unique<char>().get()};
+             (u64)make_unique<char>().get(), (u64)random_device{}()};
+
 mt19937 rng(seq);
 
 #ifdef ONLINE_JUDGE

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/282642441
+ * https://codeforces.com/contest/2000/submission/282663150
  *
  * (c) 2024 Diego Sogari
  */
@@ -45,16 +45,16 @@ void solve(int t) {
   Int n;
   vector<Int> a(n);
   Int m;
-  vector<Str> s(m);
-  auto f = [&](const string &str) { // O(n)
-    if (str.size() != n) {
+  vector<Str> b(m);
+  auto f = [&](const string &s) { // O(n)
+    if (s.size() != n) {
       return false;
     }
     array<int, lowerlatin> dict;
     dict.fill(INT_MAX);
     unordered_set<int, SplitHash> used;
     for (int i = 0; i < n; i++) {
-      char ch = str[i] - 'a';
+      char ch = s[i] - 'a';
       if (dict[ch] != a[i]) {
         if (dict[ch] != INT_MAX || used.contains(a[i])) {
           return false;
@@ -65,8 +65,8 @@ void solve(int t) {
     }
     return true;
   };
-  for (auto &str : s) {
-    println(f(str) ? "YES" : "NO");
+  for (auto &s : b) {
+    println(f(s) ? "YES" : "NO");
   }
 }
 

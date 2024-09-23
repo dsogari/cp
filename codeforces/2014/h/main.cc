@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2014/submission/282649842
+ * https://codeforces.com/contest/2014/submission/282659654
  *
  * (c) 2024 Diego Sogari
  */
@@ -87,26 +87,15 @@ struct SplitHash {
   }
 };
 
-auto now() { return chrono::high_resolution_clock::now(); }
-
-seed_seq seq{(u64)now().time_since_epoch().count(),
-             (u64)make_unique<char>().get()};
-mt19937 rng(seq);
-
 void solve(int t) {
   Int n, m;
   vector<Int> a(n);
   vector<array<Int, 2>> q(m);
-  unordered_map<int, int, SplitHash> ids;
-  for (auto &&ai : a) { // O(n)
-    if (!ids.contains(ai)) {
-      ids[ai] = rng();
-    }
-  }
   vector<bool> ans(m);
-  int acc = 0;
-  auto add = [&](int i) { acc ^= ids[a[i - 1]]; };
-  auto rem = [&](int i) { acc ^= ids[a[i - 1]]; };
+  SplitHash hash;
+  u64 acc = 0;
+  auto add = [&](int i) { acc ^= hash(a[i - 1]); };
+  auto rem = [&](int i) { acc ^= hash(a[i - 1]); };
   auto get = [&](int j) { ans[j] = acc; };
   Mos mos(q);                   // O(m*(log m + log n))
   mos.visit(add, rem, get, 1);  // O(m*sqrt n)

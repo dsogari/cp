@@ -1,11 +1,12 @@
 /**
- * https://codeforces.com/contest/2000/submission/276309353
+ * https://codeforces.com/contest/2000/submission/282642441
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using u64 = uint64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -29,6 +30,15 @@ struct Str : string {
   Str() { cin >> *this; }
 };
 
+struct SplitHash {
+  size_t operator()(u64 x) const {
+    x += (u64)this + 0x9e3779b97f4a7c15;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+    return x ^ (x >> 31);
+  }
+};
+
 constexpr int lowerlatin = 'z' - 'a' + 1;
 
 void solve(int t) {
@@ -42,7 +52,7 @@ void solve(int t) {
     }
     array<int, lowerlatin> dict;
     dict.fill(INT_MAX);
-    unordered_set<int> used;
+    unordered_set<int, SplitHash> used;
     for (int i = 0; i < n; i++) {
       char ch = str[i] - 'a';
       if (dict[ch] != a[i]) {

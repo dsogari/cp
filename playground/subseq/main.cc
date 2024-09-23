@@ -39,10 +39,9 @@ template <typename T> struct FenTree {
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      _apply(i, val);
+      nodes[i] = f(nodes[i], val);
     }
   }
-  void _apply(int i, const T &val) { nodes[i] = f(nodes[i], val); }
 };
 
 void solveEasy(const vector<int> &a) { // O(n)
@@ -57,7 +56,9 @@ void solveEasy(const vector<int> &a) { // O(n)
   println(ans);
 }
 
-const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
+template <typename T> struct Max {
+  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+};
 
 void solve(int t) {
   Int n;
@@ -83,7 +84,7 @@ void solve(int t) {
   for (int i = 1; i < m; i++) { // O(n*log n)
     diff[b2[i] - (b1[i] - b1[0])] = i;
   }
-  FenTree<int> fen(diff.size(), tmax);
+  FenTree<int> fen(diff.size(), Max<int>{});
   int j = fen.n - 1;
   for (auto &[_, i] : diff) { // O(n*log n)
     fen.update(j, i);

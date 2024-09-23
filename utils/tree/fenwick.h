@@ -22,10 +22,9 @@ template <typename T> struct FenTree {
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      _apply(i, val);
+      nodes[i] = f(nodes[i], val);
     }
   }
-  void _apply(int i, const T &val) { nodes[i] = f(nodes[i], val); }
 };
 
 /**
@@ -36,10 +35,10 @@ template <typename T> struct FenTreePlus : FenTree<T> {
   void update_from(int l, auto it) { // [l, n] O(n)
     assert(l >= 0);
     for (l++; l <= this->n; l++, it++) {
-      this->_apply(l, *it);
+      this->nodes[l] = this->f(this->nodes[l], *it);
       int r = l + (l & -l);
       if (r <= this->n) {
-        this->_apply(r, *it);
+        this->nodes[r] = this->f(this->nodes[r], *it);
       }
     }
   }

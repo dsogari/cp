@@ -6,14 +6,15 @@
 /**
  * Hilbert Curve 2-to-1D Mapping
  */
-u64 hilbert(int x, int y) { // O(log max(x,y))
-  const unsigned mx = max(x, y) * 2 + 1;
-  const int logn = (bit_width(mx) - 1) | 1;
-  const int maxn = (1ull << logn) - 1;
+u64 hilbert(unsigned x, unsigned y) { // O(log max(x,y))
+  const unsigned maxr = max(x, y) * 2 + 1;
+  const unsigned logn = (bit_width(maxr) - 1) | 1;
+  const unsigned maxn = (1 << logn) - 1;
+  const unsigned tran[2][2] = {{0, 3}, {1, 2}};
   u64 ans = 0;
-  for (int s = 1ull << (logn - 1); s; s >>= 1) {
+  for (unsigned s = 1 << (logn - 1); s; s >>= 1) {
     bool rx = x & s, ry = y & s;
-    ans = (ans << 2) | (rx ? ry ? 2 : 1 : ry ? 3 : 0);
+    ans = (ans << 2) | tran[rx][ry];
     if (!rx) {
       if (ry) {
         x ^= maxn, y ^= maxn;
@@ -27,13 +28,12 @@ u64 hilbert(int x, int y) { // O(log max(x,y))
 /**
  * Mo's algorithm
  */
-struct Mos {
+template <typename T> struct Mos {
+  const T &q;
   vector<int> idx;
   vector<u64> ord;
-  function<bool(int, int)> cmp = [&](int i, int j) { return ord[i] < ord[j]; };
-  void build(auto &&q) { // O(m*log m)
-    idx.resize(q.size());
-    ord.resize(q.size());
+  Mos(const T &q) : q(q), idx(q.size()), ord(q.size()) { // O(m*(log m + log n))
+    auto cmp = [&](int i, int j) { return ord[i] < ord[j]; };
     iota(idx.begin(), idx.end(), 0);
     for (int i = 0; i < q.size(); i++) {
       auto [l, r] = q[i];
@@ -41,9 +41,8 @@ struct Mos {
     }
     ranges::sort(idx, cmp);
   }
-  void visit(auto &&q, auto &&add, auto &&rem, auto &&get,
-             int from = 0) const { // O((n + m)*s)
-    for (int i = 0, L = from, R = from - 1; i < idx.size(); i++) {
+  void visit(auto &&add, auto &&rem, auto &&get, int from = 0) const {
+    for (int i = 0, L = from, R = from - 1; i < q.size(); i++) { // O(m*sqrt n)
       auto [l, r] = q[idx[i]];
       while (L > l) {
         add(--L);

@@ -8,7 +8,7 @@
  */
 Mint distinct_subseq(const string &s) {
   vector<Mint> cnt(s.size() + 1);
-  array<int, 'z' - 'a' + 1> pos;
+  array<int, lowerlatin> pos;
   pos.fill(-1);
   for (int i = 0; i < s.size(); i++) { // O(n)
     auto &j = pos[s[i] - 'a'];

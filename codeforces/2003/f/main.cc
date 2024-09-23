@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2003/submission/280516513
+ * https://codeforces.com/contest/2003/submission/282649722
  *
  * (c) 2024 Diego Sogari
  */
@@ -42,17 +42,20 @@ template <typename T> struct FenTree {
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      _apply(i, val);
+      nodes[i] = f(nodes[i], val);
     }
   }
-  void _apply(int i, const T &val) { nodes[i] = f(nodes[i], val); }
 };
 
-const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
-
-mt19937 rng{random_device{}()};
+template <typename T> struct Max {
+  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+};
 
 auto now() { return chrono::high_resolution_clock::now(); }
+
+seed_seq seq{(u64)now().time_since_epoch().count(),
+             (u64)make_unique<char>().get()};
+mt19937 rng(seq);
 
 #ifdef ONLINE_JUDGE
 constexpr auto limit = 2.5;
@@ -69,7 +72,7 @@ void solve(int t) {
     for (auto &&id : ids) {
       id = rng() % m;
     }
-    vector dp(m - 1, FenTree<int>(n, tmax, -1));
+    vector dp(m - 1, FenTree<int>(n, Max<int>{}, -1));
     for (int i = 0; i < n; i++) {
       auto ord = ids[b[i] - 1];
       auto val = ord ? dp[ord - 1].query(a[i] - 1) : 0;

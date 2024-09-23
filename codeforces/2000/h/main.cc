@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/282387291
+ * https://codeforces.com/contest/2000/submission/282543965
  *
  * (c) 2024 Diego Sogari
  */
@@ -34,7 +34,8 @@ template <typename T> struct SegTree {
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
-  const T &full() const { return nodes[1]; }    // O(1)
+  T full() const { return _node(1); }           // O(1)
+  T get(int i) const { return _node(i + n); }   // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
   void update(int i, bool single) { _check(i, i), _build(i + n, single); }
@@ -45,9 +46,9 @@ template <typename T> struct SegTree {
     }
   }
   T _query(int l, int r) const { // [l, r] O(log n)
-    return l == r   ? nodes[l]
-           : l & 1  ? f(nodes[l], _query(l + 1, r))
-           : ~r & 1 ? f(_query(l, r - 1), nodes[r])
+    return l == r   ? _node(l)
+           : l & 1  ? f(_node(l), _query(l + 1, r))
+           : ~r & 1 ? f(_query(l, r - 1), _node(r))
                     : _query(l >> 1, r >> 1);
   }
   virtual T _node(int i) const { return nodes[i]; }
@@ -63,9 +64,12 @@ int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
   return e; // last such that f is true
 }
 
-const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
+template <typename T> struct Max {
+  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+};
+
 constexpr int mxa = 2e6;
-SegTree<int> gaps(mxa + 2, tmax);
+SegTree<int> gaps(mxa + 2, Max<int>{});
 auto set_gap = [](auto it) { // O(log n)
   auto x = *it + 1;
   gaps[x] = *next(it) - x;

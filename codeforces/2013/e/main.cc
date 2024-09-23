@@ -31,7 +31,7 @@ void solve(int t) {
   vector<Int> a(n);
   i64 ans = 0;
   int l = 0, prev = 0;
-  for (int r = n; l < r; l++) { // O(n*log V)
+  for (int r = n; l < r; l++) { // O(n*log^2 V)
     auto cur = prev;
     for (int i = l; i < r; i++) {
       auto d = gcd<int, int>(prev, a[i]);

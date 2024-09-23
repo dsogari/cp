@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2005/submission/281926943
+ * https://codeforces.com/contest/2005/submission/282548881
  *
  * (c) 2024 Diego Sogari
  */
@@ -39,18 +39,18 @@ void solve(int t) {
   Int l, n, m;
   vector<Int> a(l);
   Mat<Int> b(n, m);
-  unordered_map<int, int> pos;
-  for (int i = 0; i < l && pos.emplace(a[i], i).second; i++)
-    ;
+  vector<int> pos(n * m + 1, -1);
+  for (int i = 0; i < l && pos[a[i]] < 0; i++) {
+    pos[a[i]] = i;
+  }
   vector<array<int, 2>> dp0(m + 1, {INT_MAX, INT_MAX});
   auto dp1 = dp0;
   for (int i = n - 1; i >= 0; i--) { // O(n*m)
     for (int j = m - 1; j >= 0; j--) {
       dp1[j][0] = min(dp0[j][0], dp1[j + 1][0]);
       dp1[j][1] = min(dp0[j][1], dp1[j + 1][1]);
-      auto it = pos.find(b[i][j]);
-      if (it != pos.end()) {
-        auto k = it->second;
+      auto k = pos[b[i][j]];
+      if (k >= 0) {
         if (k < dp1[j][0] && k % 2 == 0 && k + 1 < dp0[j + 1][1]) {
           dp1[j][0] = k;
         }

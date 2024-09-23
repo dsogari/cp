@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1996/submission/278412215
+ * https://codeforces.com/contest/1996/submission/282544166
  *
  * (c) 2024 Diego Sogari
  */
@@ -42,7 +42,8 @@ template <typename T> struct SegTree {
   vector<T> nodes;
   function<T(const T &, const T &)> f;
   SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
-  const T &full() const { return nodes[1]; }    // O(1)
+  T full() const { return _node(1); }           // O(1)
+  T get(int i) const { return _node(i + n); }   // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
   void update(int i, bool single) { _check(i, i), _build(i + n, single); }
@@ -101,12 +102,10 @@ struct Seg {
   Seg add(int x) const { return {mn + x, cnt}; }
 };
 
-const auto tadd = [](auto &lhs, auto &rhs) { return lhs + rhs; };
-
 void solve(int t) {
   Int n, m;
   Graph g(n, m);
-  LazySegTree<Seg, int> segtree(n, &Seg::join, &Seg::add, tadd, {0, 1}, 0);
+  LazySegTree<Seg, int> segtree(n, &Seg::join, &Seg::add, plus<int>{}, {0, 1});
   segtree.update(n - 1, false);  // build the tree
   for (int u = 1; u <= n; u++) { // O(n + m*log n)
     for (auto &v : g[u]) {

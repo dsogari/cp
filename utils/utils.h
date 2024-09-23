@@ -29,20 +29,6 @@ constexpr int upperlatin = 'Z' - 'A' + 1;
 const string vowels = "aeiou";
 
 /**
- * Common associative operations
- */
-const auto tadd = [](auto &lhs, auto &rhs) { return lhs + rhs; };
-const auto tmul = [](auto &lhs, auto &rhs) { return lhs * rhs; };
-const auto txor = [](auto &lhs, auto &rhs) { return lhs ^ rhs; };
-
-/**
- * Common associative idempotent operations
- */
-const auto tmin = [](auto &lhs, auto &rhs) { return min(lhs, rhs); };
-const auto tmax = [](auto &lhs, auto &rhs) { return max(lhs, rhs); };
-// for gcd, use gcd<int, int>
-
-/**
  * Timing utilities
  */
 auto now() { return chrono::high_resolution_clock::now(); }

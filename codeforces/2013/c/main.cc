@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2013/submission/282080555
+ * https://codeforces.com/contest/2013/submission/282646934
  *
  * (c) 2024 Diego Sogari
  */
@@ -33,8 +33,6 @@ int simulate(const string &pass, const string &s) {
   return pass.find(s) != string::npos;
 }
 
-mt19937 rng(random_device{}());
-
 void solve(int t) {
   Int n;
 #ifndef ONLINE_JUDGE
@@ -51,33 +49,23 @@ void solve(int t) {
 #endif
   };
   string ans;
+  auto f = [&](const string &s) {
+    auto r = query(s);
+    assert(r >= 0);
+    if (r > 0) {
+      ans = s;
+    }
+    return r;
+  };
   bool right = false;
   while (ans.size() < n) {
     if (!right) {
-      auto r = query(ans + "0");
-      if (r < 0) {
-        return;
-      }
-      if (r) {
-        ans += "0";
-        continue;
-      }
-      r = query(ans + "1");
-      if (r < 0) {
-        return;
-      }
-      if (r) {
-        ans += "1";
+      if (f(ans + "0") || f(ans + "1")) {
         continue;
       }
       right = true;
     }
-    auto r = query("0" + ans);
-    if (r < 0) {
-      return;
-    }
-    if (r) {
-      ans = "0" + ans;
+    if (f("0" + ans)) {
       continue;
     }
     ans = "1" + ans;

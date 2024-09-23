@@ -2,6 +2,7 @@
  * (c) 2024 Diego Sogari
  */
 #include "io.h"
+#include "math/order.h"
 #include "math/prefix.h"
 #include "tree/segment.h"
 
@@ -18,8 +19,8 @@ void solve(int t) {
       swap(q[i][1], q[i][2]); // [l, r]
     }
   }
-  Pref<int> pref(n, tmax);
-  AssignSegTree<int, int> segtree(n, tmax);
+  Pref<int> pref(n, Max<int>{});
+  AssignSegTree<int, int> segtree(n, Max<int>{});
   for (int i = 0; i < n; i++) {
     pref[i] = segtree[i] = rand() % mx;
   }

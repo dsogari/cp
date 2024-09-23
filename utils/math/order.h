@@ -4,6 +4,20 @@
 #include "utils.h"
 
 /**
+ * Maximum (function object)
+ */
+template <typename T> struct Max {
+  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+};
+
+/**
+ * Minimum (function object)
+ */
+template <typename T> struct Min {
+  T operator()(const T &lhs, const T &rhs) const { return min(lhs, rhs); }
+};
+
+/**
  * Vector Indices
  */
 struct Iota : vector<int> {
@@ -39,10 +53,10 @@ double binsearch(auto &&f, double s, double e, int iter) {
 vector<int> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
   vector<int> ans;
   for (int i = s; i < e; i++) {
-    if (inc.empty() || f(inc.back(), i)) {
-      inc.push_back(i);
+    if (ans.empty() || f(ans.back(), i)) {
+      ans.push_back(i);
     } else {
-      *ranges::lower_bound(inc, i, f) = i;
+      *ranges::lower_bound(ans, i, f) = i;
     }
   }
   return ans;

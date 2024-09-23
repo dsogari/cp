@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2005/submission/281925657
+ * https://codeforces.com/contest/2005/submission/282548600
  *
  * (c) 2024 Diego Sogari
  */
@@ -39,10 +39,11 @@ void solve(int t) {
   Int l, n, m;
   vector<Int> a(l);
   Mat<Int> b(n, m);
-  unordered_set<int> valid;
+  vector<bool> valid(8);
   int mx = 0;
-  for (; mx < l && valid.insert(a[mx]).second; mx++)
-    ;
+  for (; mx < l && !valid[a[mx]]; mx++) {
+    valid[a[mx]] = true;
+  }
   Mat<bool> dp0(n + 1, m + 1), dp1(n + 1, m + 1);
   for (int k = mx - 1; k >= 0; k--) { // O(n*m*l)
     for (int i = n - 1; i >= 0; i--) {

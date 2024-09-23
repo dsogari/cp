@@ -17,34 +17,14 @@ struct SplitHash {
 };
 
 /**
- * Custom hashing function using CRC32
- * https://rigtorp.se/notes/hashing/
+ * Compound hashing function (for arrays and vectors)
  */
-struct CRC32Hash {
-  size_t operator()(auto x) const noexcept {
-    return _mm_crc32_u64((size_t)this, x);
-  }
-};
-
-/**
- * Custom hashing function using Murmur Hash
- * https://github.com/aappleby/smhasher
- */
-struct MurmurHash {
-  size_t operator()(auto x) const {
-    return _Hash_bytes(&x, sizeof(x), (size_t)this);
-  }
-};
-
-/**
- * Array hashing function
- */
-struct ArrayHash {
-  const SplitHash hash;
+template <typename F> struct CompoundHash {
+  const F f;
   size_t operator()(const auto &a) const {
     u64 z = 0;
     for (auto x : a) {
-      z ^= hash(x) << 1;
+      z ^= f(x) << 1;
     }
     return z;
   }

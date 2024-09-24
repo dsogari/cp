@@ -47,7 +47,14 @@ void solve(int t) {
   t1 = now();
   assert(ans == ans1);
   chrono::duration<double, milli> ms2 = t1 - t0;
-  println("OK", ms1.count(), ms2.count());
+  mos.sort(q, [](int l, int r) { return hilbert(l, r - l); });
+  t0 = now();
+  acc = 0;
+  mos.visit(q, add, rem, get, 0);
+  t1 = now();
+  assert(ans == ans1);
+  chrono::duration<double, milli> ms3 = t1 - t0;
+  println("OK", ms1.count(), ms2.count(), ms3.count());
 }
 
 int main() {

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2014/submission/282696711
+ * https://codeforces.com/contest/2014/submission/282821307
  *
  * (c) 2024 Diego Sogari
  */
@@ -28,38 +28,29 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int n, m, k;
-  vector<array<Int, 2>> da(n);
-  vector<int> expiry = {0};
-  vector<i64> milk = {0};
-  int ans = 0;
-  auto f = [&](int day) { // O(log k)
-    auto sum = milk.back();
-    auto i = ranges::upper_bound(expiry, day) - expiry.begin();
-    auto j = ranges::upper_bound(milk, sum - m) - milk.begin();
-    if (i <= j && j < milk.size()) {
-      milk[j] = sum - m;
-      if (milk[j] > milk[j - 1]) {
-        j++;
+  vector<array<Int, 2>> a(n);
+  vector<array<int, 2>> milk;
+  a.push_back({a.back()[0] + k, 0});
+  int ans = 0, day = 1;
+  for (auto [d, c] : a) { // O(n)
+    i64 total = 0, mx = i64(d - day) * m;
+    while (total < mx && milk.size()) {
+      auto &[e, l] = milk.back();
+      i64 diff = e - day - total / m;
+      if (diff > 0) {
+        auto drink = min<i64>({l, mx - total, diff * m});
+        total += drink;
+        l -= drink;
+        if (!l || total < mx) {
+          milk.pop_back();
+        }
+      } else {
+        milk.clear();
       }
-      ans++;
-    } else {
-      j = 1;
     }
-    expiry.resize(j);
-    milk.resize(j);
-  };
-  int day = 1, mx = 0;
-  for (auto [d, c] : da) { // O(n*log k)
-    while (day < d && milk.size() > 1) {
-      f(day++);
-    }
+    ans += total / m;
+    milk.push_back({d + k, c});
     day = d;
-    expiry.push_back(d + k);
-    milk.push_back(milk.back() + c);
-    mx = d + k;
-  }
-  while (day < mx && milk.size() > 1) {
-    f(day++);
   }
   println(ans);
 }

@@ -15,7 +15,7 @@ struct NodeInfo {
  */
 struct Subtree : vector<NodeInfo> {
   Subtree(const Graph &g, int s) : vector<NodeInfo>(g.size()) { dfs(g, s, s); }
-  void dfs(const Graph &g, int u, int p, int d = 1) {
+  void dfs(const Graph &g, int u, int p, int d = 1) { // O(n)
     auto &cur = (*this)[u] = {p, d, 1, 1};
     for (auto &v : g[u]) {
       if (v != p) {

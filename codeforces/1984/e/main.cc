@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/273048029
+ * https://codeforces.com/contest/1984/submission/282874163
  *
  * Inspired by jiangly's solution:
  * https://codeforces.com/contest/1984/submission/264894399
@@ -40,14 +40,10 @@ struct Graph : vector<vector<int>> {
 
 struct Match : vector<int> {
   int count = 0;
-  vector<bool> vis;
-  Match(const Graph &g, int s) : vector<int>(g.size(), -1), vis(g.size()) {
-    dfs(g, s, s);
-  }
+  Match(const Graph &g, int s) : vector<int>(g.size(), -1) { dfs(g, s, s); }
   void dfs(const Graph &g, int u, int p) {
-    vis[u] = true;
     for (auto v : g[u]) {
-      if (v != p && !vis[v]) {
+      if (v != p) {
         dfs(g, v, u); // post-order (visit leaves first)
         if ((*this)[u] == (*this)[v]) {
           (*this)[u] = v;

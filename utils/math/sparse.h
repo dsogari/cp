@@ -4,14 +4,14 @@
 #include "utils.h"
 
 /**
- * Sparse Table
+ * Sparse Table (for range minimum queries)
  */
 template <typename T> struct Sparse {
   int k, n;
   vector<vector<T>> nodes;
   function<T(const T &, const T &)> f;
   Sparse(int n, auto &&f)
-      : k(bit_width(unsigned(n))), n(n), f(f), nodes(k, vector<T>(n)) {}
+      : k(bit_width<unsigned>(n)), n(n), f(f), nodes(k, vector<T>(n)) {}
   T &operator[](int i) { return nodes[0][i]; } // O(1)
   void build() {                               // O(n*log n)
     for (int i = 0; i < k - 1; i++) {
@@ -20,27 +20,34 @@ template <typename T> struct Sparse {
       }
     }
   }
-  T query(int l, int r) const { // [l, r] O(log n)
+  T query(int l, int r) const { // [l, r] O(1)
     _check(l, r);
-    T ans = {};
-    for (int i = k - 1; i >= 0; i--) {
-      if ((1 << i) <= r - l + 1) {
-        ans = f(ans, nodes[i][l]);
-        l += 1 << i;
-      }
-    }
-    return ans;
-  }
-  T min(int l, int r) const { // [l, r] O(1)
-    _check(l, r);
-    int i = bit_width(unsigned(r - l + 1)) - 1;
+    int i = bit_width<unsigned>(r - l + 1) - 1;
     return f(nodes[i][l], nodes[i][r - (1 << i) + 1]);
   }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 /**
- * Disjoint Sparse Table
+ * Sparse Table (for arbitrary range queries)
+ */
+template <typename T> struct Sparse2 : Sparse<T> {
+  using Sparse<T>::Sparse;
+  T query(int l, int r) const { // [l, r] O(log n)
+    this->_check(l, r);
+    T ans = {};
+    for (int i = this->k - 1; i >= 0; i--) {
+      if ((1 << i) <= r - l + 1) {
+        ans = this->f(ans, this->nodes[i][l]);
+        l += 1 << i;
+      }
+    }
+    return ans;
+  }
+};
+
+/**
+ * Disjoint Sparse Table (for arbitrary range queries)
  */
 template <typename T> struct DST {
   int k, n;

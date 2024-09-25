@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2014/submission/282316572
+ * https://codeforces.com/contest/2014/submission/283166955
  *
  * (c) 2024 Diego Sogari
  */
@@ -32,7 +32,7 @@ void solve(int t) {
     println(-1);
     return;
   }
-  ranges::sort(a);
+  ranges::nth_element(a, a.begin() + n / 2);
   auto sum = reduce(a.begin(), a.end(), 0ll);
   auto y = a[n / 2]; // y < (sum + x) / (2 * n)
   auto ans = max(0ll, 2ll * n * y - sum + 1);

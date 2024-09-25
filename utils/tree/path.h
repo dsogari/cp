@@ -8,7 +8,7 @@
  */
 struct Path : vector<int> {
   Path(const Graph &g, int s, int e) { dfs(g, s, e, s); }
-  int dfs(const Graph &g, int a, int b, int p) {
+  int dfs(const Graph &g, int a, int b, int p) { // O(n)
     push_back(a);
     if (a == b) {
       return true;

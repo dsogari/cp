@@ -1,9 +1,12 @@
 /**
+ * https://codeforces.com/contest/2014/submission/282891993
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -25,9 +28,8 @@ using Int = Num<int>;
 
 struct Graph : vector<vector<int>> {
   const int n, m;
-  vector<array<Int, 2>> e;
-  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), e(m) {
-    for (auto &[u, v] : e) {
+  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
+    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
       add(u, v);
     }
   }
@@ -39,34 +41,19 @@ void solve(int t) {
   Int n, c;
   vector<Int> a(n);
   Graph g(n, n - 1);
-  vector<int> idx(n), cnt(n);
-  iota(idx.begin(), idx.end(), 0);
-  auto cmp = [&](int i, int j) {
-    return a[i] > a[j] || (a[i] == a[j] && cnt[i] < cnt[j]);
-  };
-  vector<bool> vis(n + 1);
-  for (int i = 0; i < n; i++) { // O(n*log n)
-    ranges::sort(idx.begin() + i, idx.end(), cmp);
-    auto u = idx[i] + 1;
-    int k = 0;
+  auto f = [&](auto &self, int u, int p) -> array<i64, 2> { // O(n)
+    array<i64, 2> ans = {0, a[u - 1]};
     for (auto &&v : g[u]) {
-      k += vis[v];
-    }
-    if (a[u - 1] > k * c) {
-      vis[u] = true;
-      for (auto &&v : g[u]) {
-        a[v - 1] -= c;
-        cnt[v - 1]++;
+      if (v != p) {
+        auto [c1, c2] = self(self, v, u);
+        ans[0] += max(c1, c2);
+        ans[1] += max(c1, c2 - 2 * c);
       }
     }
-  }
-  int ans = 0;
-  for (int i = 1; i <= n; i++) { // O(n)
-    if (vis[i]) {
-      ans += a[i - 1];
-    }
-  }
-  println(ans);
+    return ans;
+  };
+  auto [c1, c2] = f(f, 1, 1); // O(n)
+  println(max(c1, c2));
 }
 
 int main() {

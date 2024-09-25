@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2013/submission/282194464
+ * https://codeforces.com/contest/2013/submission/282953644
  *
  * (c) 2024 Diego Sogari
  */
@@ -36,29 +36,60 @@ struct Graph : vector<vector<int>> {
   void _add(int u, int v) { (*this)[u].push_back(v); }
 };
 
+struct Path : vector<int> {
+  Path(const Graph &g, int s, int e) { dfs(g, s, e, s); }
+  int dfs(const Graph &g, int a, int b, int p) { // O(n)
+    push_back(a);
+    if (a == b) {
+      return true;
+    }
+    for (auto &v : g[a]) {
+      if (v != p && dfs(g, v, b, a)) {
+        return true;
+      }
+    }
+    pop_back();
+    return false;
+  }
+};
+
 void solve(int t) {
   Int n;
   Graph g(n, n - 1);
   Int u, v;
   assert(u == v);
+  Path path(g, 1, u);
   vector<bool> vis(n + 1);
-  auto f = [&](auto &self, int a, int b, bool turn) -> bool {
-    bool ans = turn;
-    for (auto &&v : g[turn ? b : a]) {
-      if (!vis[v]) {
-        vis[v] = true;
-        auto alicewins = self(self, turn ? a : v, turn ? v : b, !turn);
-        vis[v] = false;
-        if (turn ^ alicewins) {
-          ans = !ans;
-          break;
-        }
+  for (auto &&x : path) {
+    vis[x] = true;
+  }
+  auto f = [&](auto &self, int x, int p) -> int { // O(n)
+    int ans = 0;
+    for (auto &&y : g[x]) {
+      if (y != p && !vis[y]) {
+        ans = max(ans, self(self, y, x) + 1);
       }
     }
     return ans;
   };
-  vis[1] = vis[u] = true;
-  auto ans = f(f, 1, u, 0) ? "Alice" : "Bob";
+  int m = path.size();
+  vector<int> depth(m);
+  for (int i = 0; i < m; i++) {
+    depth[i] = f(f, path[i], path[i]);
+  }
+  string ans;
+  for (int l = 0, r = m - 1, turn = 1; l <= r; turn = !turn) { // O(n)
+    bool wins = true;
+    for (int i = l + turn; i < r + turn && wins; i++) {
+      wins = turn ? l + depth[l] > m - i - 1 + depth[i]
+                  : i + depth[i] <= m - r - 1 + depth[r];
+    }
+    if (wins) {
+      ans = turn ? "Alice" : "Bob";
+      break;
+    }
+    turn ? l++ : r--;
+  }
   println(ans);
 }
 

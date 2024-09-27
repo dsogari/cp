@@ -12,6 +12,8 @@ using namespace std;
 init();
 #endif
 
+void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
+
 template <typename T> struct Num {
   T x;
   Num() { cin >> x; }
@@ -20,8 +22,6 @@ template <typename T> struct Num {
   operator T() const { return x; }
 };
 using Int = Num<int>;
-
-void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
 void solve(int t) {
   Int l, r;

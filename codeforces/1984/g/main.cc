@@ -114,7 +114,7 @@ void solve(int t) {
     if (n % 2 == 0) {
       ans -= inv % 2;
       int m = n - ans;
-      auto it = find(a.begin(), a.end(), int(n));
+      auto it = find(a.begin(), a.end(), n);
       int i = it - a.begin() + 1, k = (n - i) % m;
       if (k > 0) {
         int j = max(0, i - ans);
@@ -130,7 +130,7 @@ void solve(int t) {
       n -= inv % 2;
     }
     const array<int, 2> fwd1{2, 1}, bwd1{1, 2}, fwd2{3, 1}, bwd2{1, 3};
-    Mint::mod = int(n);
+    Mint::mod = +n;
     Mint c = n - 1;
     auto findpos = [&](int i, int d) {
       int k = 0;

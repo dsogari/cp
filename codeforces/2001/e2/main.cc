@@ -67,7 +67,7 @@ using Mint = Mod<int>;
 
 void solve(int t) {
   Int n, k, p;
-  Mint::mod = int(p);
+  Mint::mod = +p;
   vector<Mint> gt(k + 1, 1), lt(k + 1, 1), gt2(k + 1, 1), sum(k + 1);
   gt[0] = gt2[0] = 0;
   for (int i = 1; i < n; i++) {   // O(n*k^2)

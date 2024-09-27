@@ -51,7 +51,7 @@ void solve(int t) {
   i64 ans = 0;
   for (int i = 0; i < n; i++) {
     int j = ids[i], k = ids[i + 1];
-    int ck = a[k] - a[j] == 1 ? int(c[k]) : 0;
+    int ck = a[k] - a[j] == 1 ? +c[k] : 0;
     ans = max(ans, maxsum(a[j], c[j], a[k], ck, m));
   }
   println(ans);

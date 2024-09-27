@@ -49,8 +49,8 @@ template <typename T> array<T, 5> diophantine(T a, T b, T c) {
 void solve(int t) { // O(log^2 max(n,m))
   Int n, m, xi, yi, vx, vy;
   if (!vx || !vy) {
-    vx && (yi % m == 0)   ? println(vx > 0 ? int(n) : 0, yi)
-    : vy && (xi % n == 0) ? println(xi, vy > 0 ? int(m) : 0)
+    vx && (yi % m == 0)   ? println(vx > 0 ? +n : 0, yi)
+    : vy && (xi % n == 0) ? println(xi, vy > 0 ? +m : 0)
                           : println(-1);
     return; // degenerate case
   }

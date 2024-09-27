@@ -37,8 +37,8 @@ void solve(int t) {
     if (j == a.size()) {
       return b.back();
     }
-    int a0 = j ? (int)a[j - 1] : 0;
-    int b0 = j ? (int)b[j - 1] : 0;
+    int a0 = j ? +a[j - 1] : 0;
+    int b0 = j ? +b[j - 1] : 0;
     return b0 + (i64(d - a0) * (b[j] - b0)) / (a[j] - a0);
   };
   vector<int> ans(q);

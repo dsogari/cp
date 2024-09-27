@@ -42,10 +42,10 @@ void solve(int t) {
   Mat<Int> a(n, m);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      auto u = i > 0 ? (int)a[i - 1][j] : 0;
-      auto l = j > 0 ? (int)a[i][j - 1] : 0;
-      auto d = i < n - 1 ? (int)a[i + 1][j] : 0;
-      auto r = j < m - 1 ? (int)a[i][j + 1] : 0;
+      auto u = i > 0 ? +a[i - 1][j] : 0;
+      auto l = j > 0 ? +a[i][j - 1] : 0;
+      auto d = i < n - 1 ? +a[i + 1][j] : 0;
+      auto r = j < m - 1 ? +a[i][j + 1] : 0;
       auto mx = max(u, max(l, max(d, r)));
       auto &cell = a[i][j];
       if (cell > mx) {

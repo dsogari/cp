@@ -42,10 +42,10 @@ void solve(int t) {
   Int n, k;
   vector<Int> a(n);
   auto cmp1 = [&](int i, int j) { return a[i] < a[j]; };
-  Iota idx(n, cmp1);              // indices of a in non-decreasing order
-  int m = n % k ? n % k : int(k); // length of resulting array
-  auto f = [&](int x) {           // O(n)
-    vector<int> dp(m + 1);        // count of ai greater or equal to x
+  Iota idx(n, cmp1);          // indices of a in non-decreasing order
+  int m = n % k ? n % k : +k; // length of resulting array
+  auto f = [&](int x) {       // O(n)
+    vector<int> dp(m + 1);    // count of ai greater or equal to x
     for (int i = 0; i < n; i++) {
       int j = i % k; // index of ai in resulting array
       if (j < m) {   // if ai occurs in resulting array, include it in the count

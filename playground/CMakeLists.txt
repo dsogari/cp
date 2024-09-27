@@ -1,5 +1,4 @@
 add_executable(982_E 982_E/main.cc)
-add_executable(absecutive absecutive/main.cc)
 add_executable(bookcase bookcase/main.cc)
 add_executable(mos mos/main.cc)
 add_executable(pairsum pairsum/main.cc)

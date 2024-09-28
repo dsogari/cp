@@ -120,7 +120,7 @@ In the second test case, there are two largest groups, namely, $\{1,1,4,5\}$ and
 
 ### Code
 
-## C. Stringy
+## C. Inc Match 2
 
 - Category: Strings
 - Expected difficulty: 1500
@@ -132,9 +132,13 @@ Su is eager to play a game with her beloved students. She will give each student
 
 - a student can choose any **occurrence** of a letter which is not $\text{\lq z\rq}$ and replace it with the subsequent letter of the alphabet.
 
-After each operation, while two or more **adjacent** characters are equal, they are deleted from the string. The first student to make their string empty wins.
+And, after each operation:
 
-In anticipation of the game, she wants to know the fewest number of operations required to make the string empty.
+- while two or more **adjacent** characters are equal, they are deleted from the string.
+
+Finally, whoever makes their string empty with the fewest operations wins.
+
+In anticipation of the game, she wants to know the least such number of operations.
 
 ### Input
 

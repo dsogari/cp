@@ -25,8 +25,10 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int l, r;
-  int a = max(0, +r), b = -min(0, +l);
-  int ans = (r - l) + 2 * min(a, b) - (a && b) - (a == b);
+  int ans = r - l;
+  if (l < 0 && r > 0) {
+    ans += min(-l, r - 1) + min(-l - 1, +r);
+  }
   println(ans);
 }
 

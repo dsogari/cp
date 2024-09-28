@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -25,7 +26,7 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int l, r;
-  int ans = r - l;
+  i64 ans = r - l;
   if (l < 0 && r > 0) {
     for (int i = l; i < 0; i++) {
       ans += (abs(i - 1) <= r) + (i < -1 && abs(i + 1) <= r);

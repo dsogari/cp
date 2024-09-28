@@ -130,7 +130,7 @@ In the second test case, there are two largest groups, namely, $\{1,1,4,5\}$ and
 
 Su is eager to play a game with her beloved students. She will give each student a copy of a string of lowercase Latin letters. Then, she will ask students to perform operations on their string, according to the following rule:
 
-- a student can choose any **occurrence** of a letter which is not $\text{\lq z\rq}$ and replace it with the subsequent letter of the alphabet.
+- a student can choose any **occurrence** of a letter which is not $\text{`z'}$ and replace it with the subsequent letter of the alphabet.
 
 And, after each operation:
 

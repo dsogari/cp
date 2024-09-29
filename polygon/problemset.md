@@ -1,52 +1,12 @@
 # My Contest
 
-## A. Absecutive
+## Piggy
 
-- Category: Math Teaser
-- Expected difficulty: 500
-- Expected time complexity: $O(1)$
+- Category: Greedy
+- Expected difficulty: 1000
+- Expected time complexity: $O(n)$
 
-### Statement
-
-Su is preparing a lesson on integers for her beloved students. She will give each student a **consecutive** integer starting from $l$ and ending at $r$. Then, she will ask students to form pairs according to the following rule:
-
-- two students can form a pair only if the magnitudes of their numbers differ by one.
-
-In anticipation of the class, she wants to know how many (possibly **non-disjoint**) pairs could be formed.
-
-### Input
-
-The first line of the input contains a single integer, $t$ ($1 \le t \le 10^4$) — the number of test cases.
-
-The only line of each test case contains two integers, $l$ and $r$ ($-10^9 \le l \le r \le 10^9$) — the lower and upper bounds of the interval, respectively.
-
-### Output
-
-For each test case, output a single integer — the number of pairs of integers within the interval $[l, r]$, such that their magnitudes differ by one.
-
-### Note
-
-In the first test case, there can be no pairs.
-
-In the second test case, only one pair can be formed, namely, $(0,1)$. Note that the pair $(1,0)$ is equivalent.
-
-In the third test case, two pairs can be formed: $(-1,0)$ and $(0,1)$.
-
-### Solution
-
-First, notice that the result will have at least $r - l$ good pairs. Then, if $l < 0$ and $r > 0$, there will be additional pairs:
-
-- one for each negative value whose magnitude is one less than a positive value; and
-- one for each positive value that is one less than the magnitude of a negative value.
-
-### Code
-
-```cpp
-int ans = r - l;
-if (l < 0 && r > 0) {
-  ans += min(-l, r - 1) + min(-l - 1, r);
-}
-```
+Piggy is speeding through a circular track of length $n$ at a constant speed of $1$. There's an Oracle that can answer at most $n$ queries of the form `? x`, where $x$ is a track position. It will answer `1` if Piggy is currently at that position, or `0` otherwise. Find out the direction in which Piggy is moving. Output the answer in the form `! 1` if he is moving forwards, or `0` otherwise.
 
 ## B1. Longest Interesting Subsequence (Easy)
 

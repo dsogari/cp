@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2020/submission/283670882
+ * https://codeforces.com/contest/2020/submission/283685777
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,7 +29,7 @@ using I64 = Num<i64>;
 
 void solve(int t) {
   I64 b, c, d;
-  auto ans = (b ^ d) & (c ^ d);
+  auto ans = (b & c) ^ d;
   if ((ans | b) != d + (ans & c)) {
     ans = -1;
   }

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1985/submission/280690135
+ * https://codeforces.com/contest/1985/submission/283681873
  *
  * (c) 2024 Diego Sogari
  */
@@ -27,9 +27,7 @@ using Int = Num<int>;
 
 struct DSU {
   vector<int> par, siz;
-  DSU(int n) : par(n, -1), siz(n) {}
-  bool has(int v) const { return par[v] != -1; }                      // O(1)
-  int add(int v) { return siz[v] = 1, par[v] = v; }                   // O(1)
+  DSU(int n) : par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
   int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(1)
   int merge(int a, int b) { // O(1) amortized
     a = find(a), b = find(b);
@@ -56,7 +54,6 @@ void solve(int t) {
     for (int j = 0; j < m; j++) {
       if (g[i][j] == '#') {
         auto v = i * m + j;
-        dsu.add(v);
         if (i > 0 && g[i - 1][j] == '#') {
           dsu.merge(v, v - m);
         }

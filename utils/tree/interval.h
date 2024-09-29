@@ -9,7 +9,7 @@
 template <typename T> struct Interval {
   T mid;
   list<array<T, 2>> contained;
-  void insert(T l, T r) { contained.push_back({l, r}); } // O(1)
+  void insert(T l, T r) { contained.push_back({l, r}); } // [l, r) O(1)
   void visit(T x, auto &&f) {                            // O(n)
     for (auto it = contained.begin(); it != contained.end();) {
       auto [l, r] = *it;

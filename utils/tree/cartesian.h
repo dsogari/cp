@@ -47,9 +47,9 @@ struct Treap {
 };
 
 /**
- * Cartesian Tree (using a map)
+ * Sparse Cartesian Tree
  */
-template <typename T> struct TreapMap {
+template <typename T> struct SparseTreap {
   struct Info {
     T par, left, right, start, end; // [start,end] of subtree
   };
@@ -58,7 +58,7 @@ template <typename T> struct TreapMap {
   function<bool(const T &, const T &)> f;
   const Info empty;
   T top, end, def;
-  TreapMap(auto &&f, T def) : f(f), top(def), end(def), def(def) {}
+  SparseTreap(auto &&f, T def) : f(f), top(def), end(def), def(def) {}
   void push(T x) { // O(1) amortized / x must be pushed in order
     assert(above.empty() || above.top() < x);
     nodes.emplace(x, Info{def, def, def, x, def});

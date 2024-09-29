@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2020/submission/283574283
+ * https://codeforces.com/contest/2020/submission/283664339
  *
  * (c) 2024 Diego Sogari
  */
@@ -34,12 +34,8 @@ void solve(int t) {
   int ans = 0;
   while (n) {
     auto d = div(n, k);
-    if (d.rem) {
-      ans += d.rem;
-      n -= d.rem;
-    } else {
-      n = d.quot;
-    }
+    ans += d.rem;
+    n = d.quot;
   }
   println(ans);
 }

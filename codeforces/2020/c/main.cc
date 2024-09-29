@@ -1,9 +1,12 @@
 /**
+ * https://codeforces.com/contest/2020/submission/283670882
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -22,8 +25,16 @@ template <typename T> struct Num {
   operator T() const { return x; }
 };
 using Int = Num<int>;
+using I64 = Num<i64>;
 
-void solve(int t) {}
+void solve(int t) {
+  I64 b, c, d;
+  auto ans = (b ^ d) & (c ^ d);
+  if ((ans | b) != d + (ans & c)) {
+    ans = -1;
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

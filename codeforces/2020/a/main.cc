@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2020/submission/283574283
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,24 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n, k;
+  if (k == 1) {
+    println(n);
+    return;
+  }
+  int ans = 0;
+  while (n) {
+    auto d = div(n, k);
+    if (d.rem) {
+      ans += d.rem;
+      n -= d.rem;
+    } else {
+      n = d.quot;
+    }
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

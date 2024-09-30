@@ -50,7 +50,7 @@ void solve(int t) {
   auto f = [&](int x, int y) {
     int c = 0;
     for (int i = 0; i <= n; i += x) {
-      auto j = min<int>(n + 1, i + y);
+      auto j = min(n + 1, i + y);
       c += cnt[j - 1] - (i ? cnt[i - 1] : 0);
     }
     return c <= n / 2;

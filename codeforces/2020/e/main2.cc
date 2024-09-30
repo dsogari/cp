@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1992/submission/283833188
+ * https://codeforces.com/contest/2020/submission/283696245
  *
  * (c) 2024 Diego Sogari
  */
@@ -54,49 +54,26 @@ struct Mod {
 };
 using Mint = Mod<u32, 1000000007u>;
 
-struct Fact : vector<Mint> {
-  Fact() : vector<Mint>(1, 1) {}
-  Mint operator[](int n) { // O(1) amortized (use reserve if necessary)
-    while (size() <= n) {
-      push_back(back() * size());
-    }
-    return vector<Mint>::operator[](n);
-  }
-};
-
-struct Binom : Fact {
-  vector<Mint> inv;
-  Mint operator()(int n, int k) { // O(1) amortized
-    assert(k >= 0 && k <= n);
-    auto ans = (*this)[n]; // updates the factorial up to n
-    int s = inv.size();
-    if (s <= n) {
-      inv.reserve(capacity());
-      inv.resize(size());
-      inv[n] = Mint(1) / ans;
-      for (int i = n; i > s; i--) {
-        inv[i - 1] = inv[i] * i;
-      }
-    }
-    return ans * inv[k] * inv[n - k];
-  }
-};
-
-Binom binom;
+constexpr int maxa = 1024, maxp = 1e4;
 
 void solve(int t) {
   Int n;
-  binom.reserve(n);
-  Mint ans = 2 * (n + 1); // empty and n-ary sets
-  for (int i = 1; 2 * i < n; i++) {
-    for (int j = 0; j <= i; j++) {
-      int m = j + i + 1; // result of mex
-      ans += binom(m - 1, j) * binom(n - m, i - j) * m;
+  vector<Int> a(n), p(n);
+  vector<Mint> dp(maxa);
+  dp[0] = 1;
+  for (int i = 0; i < n; i++) { // O(n*max(a))
+    vector<Mint> dp2(maxa);
+    for (int j = 0; j < maxa; j++) {
+      dp2[j] += dp[j] * (maxp - p[i]);
+      dp2[j ^ a[i]] += dp[j] * p[i];
     }
+    swap(dp, dp2);
   }
-  for (int i = (n + 1) / 2; i < n; i++) {
-    ans += binom(n, i) * (2 * i + 1);
+  Mint ans = 0;
+  for (int i = 1; i < maxa; i++) {
+    ans += dp[i] * i * i;
   }
+  ans /= Mint(maxp).pow(n);
   println(ans);
 }
 

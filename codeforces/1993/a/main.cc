@@ -42,7 +42,7 @@ void solve(int t) {
   }
   int ans = 0;
   for (int i = 0; i < M; i++) {
-    ans += min<int>(n, cnt[i]);
+    ans += min(+n, cnt[i]);
   }
   println(ans);
 }

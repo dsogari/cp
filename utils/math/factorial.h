@@ -6,12 +6,12 @@
 /**
  * (Modular) Factorial
  */
-template <typename T> struct Fac : vector<Mod<T>> {
-  Fac() : vector<Mod<T>>(1, 1) {}
-  Mod<T> operator[](int n) {
-    while (this->size() <= n) {
-      this->push_back(this->back() * this->size());
+struct Fact : vector<Mint> {
+  Fact() : vector<Mint>(1, 1) {}
+  Mint operator[](int n) { // O(1) amortized (use reserve if necessary)
+    while (size() <= n) {
+      push_back(back() * size());
     }
-    return vector<Mod<T>>::operator[](n);
+    return vector<Mint>::operator[](n);
   }
 };

@@ -34,7 +34,7 @@ void solve(int t) {
   for (int r = n; l < r; l++) { // O(n*log^2 V)
     auto cur = prev;
     for (int i = l; i < r; i++) {
-      auto d = gcd<int, int>(prev, a[i]);
+      auto d = gcd(prev, +a[i]);
       if (cur == 0 || d < cur) {
         cur = d;
         swap(a[i], a[l]);
@@ -46,7 +46,7 @@ void solve(int t) {
     ans += cur;
   }
   for (int i = l; i < n; i++) { // O(n*log V)
-    prev = gcd<int, int>(prev, a[i]);
+    prev = gcd(prev, +a[i]);
     ans += prev;
   }
   println(ans);

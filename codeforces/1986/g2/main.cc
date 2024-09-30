@@ -43,7 +43,7 @@ void solve(int t) {
   vector<vector<int>> num(n + 1), den(n + 1);
   int amx = 0, bmx = 0;
   for (int i = 1; i <= n; i++) {
-    auto g = gcd<int>(a[i], i);
+    auto g = gcd(+a[i], i);
     auto x = a[i] / g, y = i / g;
     num[x].push_back(y);
     den[y].push_back(x);

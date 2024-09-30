@@ -33,7 +33,7 @@ void solve(int t) {
   i64 sum = 0;
   for (auto &&ai : a) {
     sum += ai;
-    mx = max<int>(mx, ai);
+    mx = max(mx, +ai);
     if (sum == 2 * mx) {
       ++ans;
     }

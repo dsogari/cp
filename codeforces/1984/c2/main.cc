@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/277676502
+ * https://codeforces.com/contest/1984/submission/283833351
  *
  * (c) 2024 Diego Sogari
  */
@@ -7,6 +7,7 @@
 
 using namespace std;
 using i64 = int64_t;
+using u32 = uint32_t;
 using u64 = uint64_t;
 
 #ifdef ONLINE_JUDGE
@@ -27,45 +28,31 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Barret {
-  u64 mod, div;
-  Barret(u64 m) : mod(m), div(-1llu / m) {}
-  operator u64() const { return mod; }
-  i64 operator()(i64 x) const {
-#ifdef __SIZEOF_INT128__
-    x -= (x >= 0 ? __uint128_t(x) * div >> 64 : x / i64(mod)) * mod;
-#else
-    x %= i64(mod);
-#endif
-    return x < 0 ? x + mod : x < mod ? x : x - mod;
-  }
-};
-
-template <typename T> struct Mod {
-  inline static Barret mod = 998244353;
-  static i64 inv(i64 x, i64 m) { // O(log^2 m) / x and m must be coprime
-    return x < 0 ? inv(x % m + m, m) : x > 1 ? m - inv(m % x, x) * m / x : 1;
-  } // https://codeforces.com/blog/entry/23365
+template <typename T, auto M>
+  requires unsigned_integral<T>
+struct Mod {
+  static T inv(T x, u64 m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  static T norm(T x) { return rotl(x, 1) & 1 ? x + M : x < M ? x : x - M; }
   T x;
-  Mod(i64 y = 0) { x = mod(y); }
+  Mod(i64 y = 0) : x(norm(y % i64(M))) {}
   operator T() const { return x; }
-  Mod operator+(auto y) const { return Mod(x) += y; }
-  Mod operator-(auto y) const { return Mod(x) -= y; }
-  Mod operator*(auto y) const { return Mod(x) *= y; }
-  Mod operator/(auto y) const { return Mod(x) /= y; }
-  Mod &operator+=(i64 y) { return x = mod(x + y), *this; }
-  Mod &operator-=(i64 y) { return x = mod(x - y), *this; }
-  Mod &operator*=(i64 y) { return x = mod(x * y), *this; }
-  Mod &operator/=(i64 y) { return *this *= inv(y, mod); }
-  Mod pow(auto y) const { // O(log y) / 0^(-inf,0] -> 1
-    Mod ans(1), base(y < 0 ? inv(x, mod) : x);
+  Mod operator+(auto rhs) const { return Mod(*this) += rhs; }
+  Mod operator-(auto rhs) const { return Mod(*this) -= rhs; }
+  Mod operator*(auto rhs) const { return Mod(*this) *= rhs; }
+  Mod operator/(auto rhs) const { return Mod(*this) /= rhs; }
+  Mod &operator+=(Mod rhs) { return x = norm(x + rhs.x), *this; }
+  Mod &operator-=(Mod rhs) { return x = norm(x - rhs.x), *this; }
+  Mod &operator*=(Mod rhs) { return x = u64(x) * rhs.x % M, *this; }
+  Mod &operator/=(Mod rhs) { return *this *= inv(rhs.x, M); }
+  Mod pow(i64 y) const { // O(log y) / 0^(-inf,0] -> 1
+    Mod ans(1), base(y < 0 ? inv(x, M) : x);
     for (y = abs(y); y; y >>= 1, base *= base) {
       y & 1 ? ans *= base : ans;
     }
     return ans;
   }
 };
-using Mint = Mod<int>;
+using Mint = Mod<u32, 998244353u>;
 
 void solve(int t) {
   Int n;

@@ -28,7 +28,7 @@ using Int = Num<int>;
 void solve(int t) { // O(n*log n + log V)
   Int n, a, b;
   vector<Int> c(n);
-  auto d = gcd<int, int>(a, b); // O(log V)
+  auto d = gcd(+a, +b); // O(log V)
   for (auto &&ci : c) {
     ci %= d;
   }

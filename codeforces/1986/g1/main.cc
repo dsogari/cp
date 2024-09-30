@@ -33,7 +33,7 @@ void solve(int t) {
   map<int, map<int, int>> num, den;
   int mx = 0;
   for (int i = 1; i <= n; i++) {
-    auto g = gcd<int>(a[i], i);
+    auto g = gcd(+a[i], i);
     auto x = a[i] / g, y = i / g;
     num[x][y]++, den[y][x]++;
     mx = max(mx, x);

@@ -31,10 +31,10 @@ void solve(int t) {
   vector<int> dp(k + 1, INT_MAX);
   dp[0] = 0;
   for (auto &[w, h] : rect) { // O(n*k^2)
-    vector<int> cost(min<int>(k, w + h) + 1);
+    vector<int> cost(min(+k, w + h) + 1);
     for (int x = 1; x < cost.size(); x++) {
       auto extra = w + h - x;
-      auto side = min<int>({w, h, extra / 2}); // maximize area to be cleared
+      auto side = min({+w, +h, extra / 2}); // maximize area to be cleared
       cost[x] = w * h - side * (extra - side);
     }
     for (int j = k; j > 0; j--) {

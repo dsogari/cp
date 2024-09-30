@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1993/submission/274490644
+ * https://codeforces.com/contest/1993/submission/283827144
  *
  * (c) 2024 Diego Sogari
  */
@@ -30,10 +30,10 @@ void solve(int t) {
   Int n;
   vector<Int> a(n);
   vector<int> even;
-  i64 mxodd = 0;
+  int mxodd = 0;
   for (auto &ai : a) {
     if (ai % 2) {
-      mxodd = max<int>(mxodd, ai);
+      mxodd = max(mxodd, +ai);
     } else {
       even.push_back(ai);
     }
@@ -43,8 +43,8 @@ void solve(int t) {
     ans = even.size();
     ranges::sort(even);
     int i = 0;
-    for (; i < ans && mxodd > even[i]; i++) {
-      mxodd += even[i];
+    for (i64 c = mxodd; i < ans && c > even[i]; i++) {
+      c += even[i];
     }
     ans += i < ans;
   }

@@ -21,7 +21,7 @@ using Int = Num<int>;
 using Chr = Num<char>;
 using I64 = Num<i64>;
 using U64 = Num<u64>;
-using F64 = Num<f64>;
+using F64 = Num<double>;
 
 /**
  * Input string

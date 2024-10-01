@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/283833279
+ * https://codeforces.com/contest/1984/submission/283841996
  *
  * (c) 2024 Diego Sogari
  */
@@ -9,7 +9,7 @@ using namespace std;
 using i64 = int64_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
-using f64 = double;
+using u128 = __uint128_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -32,10 +32,12 @@ using Int = Num<int>;
 template <typename T, auto M>
   requires unsigned_integral<T>
 struct Mod {
-  static T inv(T x, u64 m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  using U = conditional<is_same<T, u64>::value, u128, u64>::type;
+  static T inv(T x, U m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   static T norm(T x) { return rotl(x, 1) & 1 ? x + M : x < M ? x : x - M; }
   T x;
-  Mod(i64 y = 0) : x(norm(y % i64(M))) {}
+  Mod() : x(0) {}
+  Mod(i64 y) : x(norm(y % i64(M))) {}
   operator T() const { return x; }
   Mod operator+(auto rhs) const { return Mod(*this) += rhs; }
   Mod operator-(auto rhs) const { return Mod(*this) -= rhs; }
@@ -43,7 +45,7 @@ struct Mod {
   Mod operator/(auto rhs) const { return Mod(*this) /= rhs; }
   Mod &operator+=(Mod rhs) { return x = norm(x + rhs.x), *this; }
   Mod &operator-=(Mod rhs) { return x = norm(x - rhs.x), *this; }
-  Mod &operator*=(Mod rhs) { return x = u64(x) * rhs.x % M, *this; }
+  Mod &operator*=(Mod rhs) { return x = U(x) * rhs.x % M, *this; }
   Mod &operator/=(Mod rhs) { return *this *= inv(rhs.x, M); }
   Mod pow(i64 y) const { // O(log y) / 0^(-inf,0] -> 1
     Mod ans(1), base(y < 0 ? inv(x, M) : x);
@@ -88,7 +90,7 @@ template <typename T = int> struct Point {
   auto dot(const Point<T> &p) const { return x * p.x + y * p.y; }
   auto norm2() const { return dot(*this); }
   auto norm() const { return sqrt(norm2()); }
-  auto slope() const { return y / f64(x); }
+  auto slope() const { return y / double(x); }
   auto angle() const { return atan2(y, x); }
   auto operator<=>(const Point &p) const { return tie(x, y) <=> tie(p.x, p.y); }
 };
@@ -125,8 +127,8 @@ template <typename T = int> struct Triangle {
     i64 n1 = v1.norm2(), n2 = v2.norm2();
     auto ux = v2.y * n1 - v1.y * n2;
     auto uy = v1.x * n2 - v2.x * n1;
-    auto u = Point<f64>(ux, uy) / (2.0 * v1.cross(v2));
-    return Circle<f64>(u.norm(), u + Point<f64>(a.x, a.y));
+    auto u = Point<double>(ux, uy) / (2.0 * v1.cross(v2));
+    return Circle<double>(u.norm(), u + Point<double>(a.x, a.y));
   }
   bool circum(const Point<T> &p) const {
     auto a1 = a - p, b1 = b - p, c1 = c - p;

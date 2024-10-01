@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1998/submission/275668585
+ * https://codeforces.com/contest/1998/submission/283959609
  *
  * (c) 2024 Diego Sogari
  */
@@ -31,12 +31,12 @@ struct Iota : vector<int> {
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
 };
 
-int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
-  while (s < e) {
-    auto m = s + (e - s + 1) / 2;
-    f(m) ? s = m : e = m - 1;
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e; // last such that f is true
+  return s; // first such that f is false
 }
 
 void solve(int t) {
@@ -61,9 +61,9 @@ void solve(int t) {
             available -= x - a[idx[i]];
           }
         }
-        return 2 * cnt > n - 1;
+        return 2 * cnt <= n - 1;
       };
-      auto mid = binsearch(f, a[idx[0]], a[idx[n - 2]] + k);
+      auto mid = binsearch(f, a[idx[n - 2]] + k, a[idx[0]]);
       ans = max(ans, i64(mid) + a[idx[n - 1]]);
     }
   }

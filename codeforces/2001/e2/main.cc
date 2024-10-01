@@ -7,6 +7,7 @@ using namespace std;
 using i64 = int64_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
+using u128 = __uint128_t;
 
 #ifdef ONLINE_JUDGE
 #define debug
@@ -27,27 +28,25 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 struct Barret {
-  static inline u64 mod, mu;
-  static void set(u64 m) { mod = m, mu = u64(-1) / m; }
-  operator u64() const { return mod; }
-  static u64 div(u64 x) {
-#ifdef __SIZEOF_INT128__
-    x -= (__uint128_t(x) * mu >> 64) * mod;
-#else
-    x %= mod;
-#endif
-    return x < mod ? x : x - mod;
-  }
-  friend u64 operator%(u64 x, const Barret &rhs) { return rhs.div(x); }
+  static inline u32 den;
+  static inline u64 mu;
+  operator u32() const { return den; }
+  static void set(u32 d) { den = d, mu = u64(-1) / d; }
+  static u64 div(u64 x) { return u128(x) * mu >> 64; }
+  static u32 mod(u64 x) { return x -= div(x) * den, x < den ? x : x - den; }
+  friend u64 operator/(u64 x, const Barret &rhs) { return rhs.div(x); }
+  friend u32 operator%(u64 x, const Barret &rhs) { return rhs.mod(x); }
 };
 
 template <typename T, auto M>
   requires unsigned_integral<T>
 struct Mod {
-  static T inv(T x, u64 m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  using U = conditional<is_same<T, u64>::value, u128, u64>::type;
+  static T inv(T x, U m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   static T norm(T x) { return rotl(x, 1) & 1 ? x + M : x < M ? x : x - M; }
   T x;
-  Mod(i64 y = 0) : x(norm(y % i64(M))) {}
+  Mod() : x(0) {}
+  Mod(i64 y) : x(norm(y % i64(M))) {}
   operator T() const { return x; }
   Mod operator+(auto rhs) const { return Mod(*this) += rhs; }
   Mod operator-(auto rhs) const { return Mod(*this) -= rhs; }
@@ -55,7 +54,7 @@ struct Mod {
   Mod operator/(auto rhs) const { return Mod(*this) /= rhs; }
   Mod &operator+=(Mod rhs) { return x = norm(x + rhs.x), *this; }
   Mod &operator-=(Mod rhs) { return x = norm(x - rhs.x), *this; }
-  Mod &operator*=(Mod rhs) { return x = u64(x) * rhs.x % M, *this; }
+  Mod &operator*=(Mod rhs) { return x = U(x) * rhs.x % M, *this; }
   Mod &operator/=(Mod rhs) { return *this *= inv(rhs.x, M); }
   Mod pow(i64 y) const { // O(log y) / 0^(-inf,0] -> 1
     Mod ans(1), base(y < 0 ? inv(x, M) : x);

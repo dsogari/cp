@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/282543965
+ * https://codeforces.com/contest/2000/submission/283959707
  *
  * (c) 2024 Diego Sogari
  */
@@ -56,12 +56,12 @@ template <typename T> struct SegTree {
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
-int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
   for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = s + (e - s + inc) / 2; // |e - s| < 2^31-1
-    f(m) ? s = m : e = m - inc;
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e; // last such that f is true
+  return s; // first such that f is false
 }
 
 template <typename T> struct Max {
@@ -108,8 +108,8 @@ void solve(int t) { // O((n + m)*log n)
   };
   vector<int> ans;
   function<void(int)> rep = [&](int k) { // O(log^2 n)
-    auto f = [&](int x) { return gaps.query(0, x) >= k; };
-    auto x = binsearch(f, mxa + 2, 1);
+    auto f = [&](int x) { return gaps.query(0, x) < k; };
+    auto x = binsearch(f, 1, mxa + 2);
     ans.push_back(x);
   };
   for (auto &&[type, x] : ops) { // O(m*log^2 n)

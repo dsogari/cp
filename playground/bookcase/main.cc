@@ -42,12 +42,12 @@ struct Digraph : vector<vector<int>> {
   void add(int u, int v) { (*this)[u].push_back(v); }
 };
 
-int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
   for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = s + (e - s + inc) / 2; // |e - s| < 2^31-1
-    f(m) ? s = m : e = m - inc;
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e; // last such that f is true
+  return s; // first such that f is false
 }
 
 array<vector<int>, 2> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
@@ -117,10 +117,10 @@ int len2(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
       vis[u] = false;
       return ans;
     };
-    return dfs(dfs, 0, 1, 1);
+    return !dfs(dfs, 0, 1, 1);
   };
   assert(k > 0 && k <= n);
-  return binsearch(f, mxlen + 1, n / k);
+  return binsearch(f, n / k, mxlen + 1);
 }
 
 int len3(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)

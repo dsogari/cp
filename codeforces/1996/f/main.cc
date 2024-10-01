@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1996/submission/273970965
+ * https://codeforces.com/contest/1996/submission/283959503
  *
  * (c) 2024 Diego Sogari
  */
@@ -17,12 +17,12 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-int binsearch(auto &&f, int s, int e) {
-  while (s < e) {
-    auto m = (s + e + 1) / 2;
-    f(m) ? s = m : e = m - 1;
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e; // last such that f is true
+  return s; // first such that f is false
 }
 
 template <typename T> struct Num {
@@ -48,9 +48,9 @@ void solve(int t) {
     }
     return {cnt, sum};
   };
-  auto chk = [&](int x) { return f(x).first >= k; };
+  auto chk = [&](int x) { return f(x).first < k; };
   int amx = *ranges::max_element(a);
-  int best = binsearch(chk, 0, amx); // O(n*log amx)
+  int best = binsearch(chk, amx, 0); // O(n*log amx)
   auto [cnt, sum] = f(best);
   i64 ans = sum - (cnt - k) * best;
   println(ans);

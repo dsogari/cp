@@ -15,12 +15,13 @@ using namespace std;
 using namespace placeholders;
 
 /**
- * Common types
+ * Integral types
  */
 using i64 = int64_t;
+using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
-using f64 = double;
+using u128 = __uint128_t;
 
 /**
  * Common constants

@@ -28,12 +28,12 @@ struct Iota : vector<int> {
 /**
  * Binary Search
  */
-int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
   for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = s + (e - s + inc) / 2; // |e - s| < 2^31-1
-    f(m) ? s = m : e = m - inc;
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e; // last such that f is true
+  return s; // first such that f is false
 }
 
 /**

@@ -29,8 +29,8 @@ template <typename T = int> struct Triangle {
     i64 n1 = v1.norm2(), n2 = v2.norm2();
     auto ux = v2.y * n1 - v1.y * n2;
     auto uy = v1.x * n2 - v2.x * n1;
-    auto u = Point<f64>(ux, uy) / (2.0 * v1.cross(v2));
-    return Circle<f64>(u.norm(), u + Point<f64>(a.x, a.y));
+    auto u = Point<double>(ux, uy) / (2.0 * v1.cross(v2));
+    return Circle<double>(u.norm(), u + Point<double>(a.x, a.y));
   }
   bool circum(const Point<T> &p) const {
     auto a1 = a - p, b1 = b - p, c1 = c - p;

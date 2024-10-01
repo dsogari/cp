@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1990/submission/278439686
+ * https://codeforces.com/contest/1990/submission/283959146
  *
  * (c) 2024 Diego Sogari
  */
@@ -53,12 +53,12 @@ struct Subtree : vector<NodeInfo> {
   }
 };
 
-int binsearch(auto &&f, int s, int e) {
-  while (s < e) {
-    auto m = (s + e + 1) / 2;
-    f(m) ? s = m : e = m - 1;
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e;
+  return s; // first such that f is false
 }
 
 int simulate(Subtree &s, int &mole, int x) {
@@ -81,7 +81,7 @@ void solve(int t) {
   Graph g(n, n - 1);
   Subtree s(g, 1);
   int rem = 300, limit = n / 300;
-  auto q = [&](int x) {
+  auto query = [&](int x) {
     assert(rem--);
     println('?', x);
 #ifndef ONLINE_JUDGE
@@ -98,14 +98,14 @@ void solve(int t) {
       if (v != p) {
         if (s[v].hei + 1 == s[u].hei) {
           test.push_back(v);
-        } else if (s[v].hei > limit && q(v)) {
+        } else if (s[v].hei > limit && query(v)) {
           return self(self, v, u);
         }
       }
     }
     bool check = test.size() > 1;
     for (auto &v : test) {
-      if (!check || (s[v].hei > limit && q(v))) {
+      if (!check || (s[v].hei > limit && query(v))) {
         return self(self, v, u);
       }
     }
@@ -113,16 +113,16 @@ void solve(int t) {
   if (s[1].hei > limit) {
     f(f, 1, 1);
   }
-  while (limit && !q(n)) {
+  while (limit && !query(n)) {
     limit--;
   }
   int ans = n;
   if (!limit) {
     ans = 1;
     if (path.size()) {
-      auto q2 = [&](int i) { return q(path[i]); };
-      int i = binsearch(q2, 0, path.size() - 1);
-      while (i > 0 && !q(path[i])) {
+      auto q2 = [&](int i) { return !query(path[i]); };
+      int i = binsearch(q2, path.size() - 1, 0);
+      while (i > 0 && !query(path[i])) {
         i -= 2;
       }
       ans = path[max(0, i)];

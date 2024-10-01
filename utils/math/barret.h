@@ -5,18 +5,15 @@
 
 /**
  * Barrett Reduction
+ * https://en.algorithmica.org/hpc/arithmetic/division/#barrett-reduction
  */
 struct Barret {
-  static inline u64 mod, mu;
-  static void set(u64 m) { mod = m, mu = u64(-1) / m; }
-  operator u64() const { return mod; }
-  static u64 div(u64 x) {
-#ifdef __SIZEOF_INT128__
-    x -= (__uint128_t(x) * mu >> 64) * mod;
-#else
-    x %= mod;
-#endif
-    return x < mod ? x : x - mod;
-  }
-  friend u64 operator%(u64 x, const Barret &rhs) { return rhs.div(x); }
+  static inline u32 den;
+  static inline u64 mu;
+  operator u32() const { return den; }
+  static void set(u32 d) { den = d, mu = u64(-1) / d; }
+  static u64 div(u64 x) { return u128(x) * mu >> 64; }
+  static u32 mod(u64 x) { return x -= div(x) * den, x < den ? x : x - den; }
+  friend u64 operator/(u64 x, const Barret &rhs) { return rhs.div(x); }
+  friend u32 operator%(u64 x, const Barret &rhs) { return rhs.mod(x); }
 };

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2008/submission/280778219
+ * https://codeforces.com/contest/2008/submission/283959824
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,12 +29,12 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-int binsearch(auto &&f, int s, int e) { // (s, e] O(log n)
-  while (s < e) {
-    auto m = s + (e - s + 1) / 2; // 0 < e - s < 2^31-1
-    f(m) ? s = m : e = m - 1;
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e; // last such that f is true
+  return s; // first such that f is false
 }
 
 void solve(int t) {
@@ -53,11 +53,11 @@ void solve(int t) {
       auto j = min(n + 1, i + y);
       c += cnt[j - 1] - (i ? cnt[i - 1] : 0);
     }
-    return c <= n / 2;
+    return c > n / 2;
   };
   for (auto &x : q) {
     if (memo[x] < 0) {
-      memo[x] = binsearch(bind(f, x, _1), 0, x);
+      memo[x] = binsearch(bind(f, x, _1), x, 0);
     }
     ans.push_back(memo[x]);
   }

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1968/submission/278552169
+ * https://codeforces.com/contest/1968/submission/283958393
  *
  * (c) 2024 Diego Sogari
  */
@@ -46,19 +46,19 @@ struct Zfn : vector<int> {
   }
 };
 
-int binsearch(auto &&f, int s, int e) {
-  while (s < e) {
-    auto m = (s + e + 1) / 2;
-    f(m) ? s = m : e = m - 1;
+int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
+  for (int inc = s < e ? 1 : -1; s != e;) {
+    auto m = midpoint(s, e);
+    f(m) ? s = m + inc : e = m;
   }
-  return e;
+  return s; // first such that f is false
 }
 
 void solve(int t) {
   Int n, l, r;
   Str s;
   Zfn z(s);
-  auto f = [&](int x) {
+  auto f1 = [&](int x) {
     int ans = 1;
     for (int i = x; i <= n - x; i++) {
       if (z[i] >= x) {
@@ -68,14 +68,14 @@ void solve(int t) {
     }
     return ans;
   };
-  auto g = [&f](int k, int m) { return f(m) >= k; };
   int m = sqrt<int>(n);
   vector<int> lcp(n + 1);
   for (int x = 1; x <= m; x++) {
-    lcp[f(x)] = x;
+    lcp[f1(x)] = x;
   }
   for (int k = 1; k <= m; k++) {
-    lcp[k] = binsearch(bind(g, k, placeholders::_1), 0, n);
+    auto f2 = [&](int x) { return f1(x) < k; };
+    lcp[k] = binsearch(f2, n, 0);
   }
   for (int i = n - 1; i > 0; i--) {
     lcp[i] = max(lcp[i], lcp[i + 1]);

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1986/submission/273050506
+ * https://codeforces.com/contest/1986/submission/283938075
  *
  * (c) 2024 Diego Sogari
  */
@@ -26,8 +26,8 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Div : vector<vector<int>> {
-  Div(int n) : vector<vector<int>>(n + 1) {
+struct Divisors : vector<vector<int>> {
+  Divisors(int n) : vector<vector<int>>(n + 1) {
     for (int i = 1; i <= n; i++) {
       for (int j = i; j <= n; j += i) {
         (*this)[j].push_back(i);
@@ -50,7 +50,7 @@ void solve(int t) {
     amx = max(amx, x);
     bmx = max(bmx, y);
   }
-  Div div(amx);
+  Divisors divisors(amx);
   vector<int> c(bmx + 1);
   i64 ans = -den[1].size();
   for (int bi = 1; bi <= n; bi++) {
@@ -61,7 +61,7 @@ void solve(int t) {
         }
       }
       for (auto &ai : den[bi]) {
-        for (auto &bj : div[ai]) {
+        for (auto &bj : divisors[ai]) {
           if (bj <= bmx) {
             ans += c[bj];
           }

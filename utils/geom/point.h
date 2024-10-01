@@ -29,7 +29,7 @@ template <typename T = int> struct Point {
   auto dot(const Point<T> &p) const { return x * p.x + y * p.y; }
   auto norm2() const { return dot(*this); }
   auto norm() const { return sqrt(norm2()); }
-  auto slope() const { return y / f64(x); }
+  auto slope() const { return y / double(x); }
   auto angle() const { return atan2(y, x); }
   auto operator<=>(const Point &p) const { return tie(x, y) <=> tie(p.x, p.y); }
 };

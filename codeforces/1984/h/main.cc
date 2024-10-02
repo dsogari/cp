@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/283841996
+ * https://codeforces.com/contest/1984/submission/284233026
  *
  * (c) 2024 Diego Sogari
  */
@@ -57,13 +57,29 @@ struct Mod {
 };
 using Mint = Mod<u32, 998244353u>;
 
-struct Fact : vector<Mint> {
-  Fact() : vector<Mint>(1, 1) {}
-  Mint operator[](int n) { // O(1) amortized (use reserve if necessary)
-    while (size() <= n) {
-      push_back(back() * size());
+struct Binom {
+  vector<Mint> fac, inv;
+  Binom() : fac(1, 1), inv(1, 1) {}
+  Mint permute(int n) { return update(n), fac.at(n); }               // O(1)
+  Mint commute(int n) { return update(n), inv.at(n); }               // O(1)
+  Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
+  Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
+  Mint arrange(int n, int k) { return permute(n) * commute(n - k); } // O(1)
+  Mint combine(int n, int k) { return arrange(n, k) * commute(k); }  // O(1)
+  void reserve(int n) { fac.reserve(n), inv.reserve(n); }            // O(n)
+  void update(int n) { // O(1) amortized
+    int s = fac.size();
+    if (s <= n) {
+      fac.resize(n + 1);
+      inv.resize(n + 1);
+      for (int i = s; i <= n; i++) {
+        fac[i] = fac[i - 1] * i;
+      }
+      inv[n] = Mint(1) / fac[n];
+      for (int i = n; i > s; i--) {
+        inv[i - 1] = inv[i] * i;
+      }
     }
-    return vector<Mint>::operator[](n);
   }
 };
 
@@ -95,7 +111,7 @@ template <typename T = int> struct Point {
   auto operator<=>(const Point &p) const { return tie(x, y) <=> tie(p.x, p.y); }
 };
 
-int sign(auto x) { return (x > 0) - (x < 0); };
+constexpr auto sign(auto x) { return (x > 0) - (x < 0); };
 
 template <typename T = int> struct Circle {
   T r;
@@ -163,7 +179,7 @@ struct Hull : vector<int> {
   }
 };
 
-Fact fact;
+Binom binom;
 
 void solve(int t) {
   Int n;
@@ -204,7 +220,7 @@ void solve(int t) {
   };
   auto s0 = f(f, p0, p1);
   auto s1 = f(f, p1, p0);
-  ans = s0 || s1 ? fact[m - 2] / ans : Mint(0);
+  ans = s0 || s1 ? binom.permute(m - 2) / ans : Mint(0);
   println(ans);
 }
 

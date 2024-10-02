@@ -7,7 +7,7 @@
  * Element-wise assigment sum of static array
  */
 template <typename T, size_t N>
-array<T, N> &operator+=(array<T, N> &lhs, const array<T, N> &rhs) {
+array<T, N> &operator+=(array<T, N> &lhs, const array<T, N> &rhs) { // O(N)
   for (int i = 0; i < N; i++) {
     lhs[i] += rhs[i];
   }
@@ -18,7 +18,7 @@ array<T, N> &operator+=(array<T, N> &lhs, const array<T, N> &rhs) {
  * Element-wise sum of static array
  */
 template <typename T, size_t N>
-array<T, N> operator+(const array<T, N> &lhs, const array<T, N> &rhs) {
+array<T, N> operator+(const array<T, N> &lhs, const array<T, N> &rhs) { // O(N)
   array<T, N> ans;
   for (int i = 0; i < N; i++) {
     ans[i] = lhs[i] + rhs[i];
@@ -29,20 +29,26 @@ array<T, N> operator+(const array<T, N> &lhs, const array<T, N> &rhs) {
 /**
  * Bhaskara formula
  */
-auto bhaskara(auto a, auto b, auto c) {
+auto bhaskara(auto a, auto b, auto c) { // O(log n)
   return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
 }
 
 /**
- * Sum of arithmetic/geometric progressions
+ * Sum of arithmetic progressions
  */
-auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; }
-auto gpsum(auto a, auto r, auto n) { return a * (1 - pow(r, n)) / (1 - r); }
+auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; } // O(1)
 
 /**
- * Number of times that y divides x
+ * Sum of geometric progressions
  */
-int countdiv(int x, int y) {
+auto gpsum(auto a, auto r, auto n) { // O(log n)
+  return a * (1 - pow(r, n)) / (1 - r);
+}
+
+/**
+ * Number of times that y divides x evenly
+ */
+int countdiv(int x, int y) { // O(log x)
   assert(y > 1);
   int c = 0;
   for (div_t d = {}; !d.rem && x > 1; c += !d.rem) {
@@ -55,7 +61,7 @@ int countdiv(int x, int y) {
 /**
  * Choices satisfying equality x + y == m, for a1 <= x <= a2 and b1 <= y <= b2
  */
-i64 choices_eq(int a1, int a2, int b1, int b2, i64 m) {
+i64 choices_eq(int a1, int a2, int b1, int b2, i64 m) { // O(1)
   assert(a1 <= a2 && b1 <= b2);
   auto d1 = m - a1, d2 = m - a2;
   return b1 <= d1 && b2 >= d2 ? min<i64>(b2, d1) - max<i64>(b1, d2) + 1 : 0;
@@ -64,7 +70,7 @@ i64 choices_eq(int a1, int a2, int b1, int b2, i64 m) {
 /**
  * Choices satisfying inequality x + y <= m, for a1 <= x <= a2 and b1 <= y <= b2
  */
-i64 choices_lte(int a1, int a2, int b1, int b2, i64 m) {
+i64 choices_lte(int a1, int a2, int b1, int b2, i64 m) { // O(a2-a1)
   assert(a1 <= a2 && b1 <= b2);
   i64 ans = 0;
   for (int i = min<i64>(a2, m - b1); i >= a1; i--) {
@@ -76,7 +82,7 @@ i64 choices_lte(int a1, int a2, int b1, int b2, i64 m) {
 /**
  * Maximum sum satisfying inequality a * x + b * y <= m, for x <= ca and y <= cb
  */
-i64 maxsum(int a, int ca, int b, int cb, i64 m) {
+i64 maxsum(int a, int ca, int b, int cb, i64 m) { // O(1)
   assert(a > 0 && a < b);
   auto ua = min<i64>(ca, m / a);
   auto ub = min<i64>(cb, (m - ua * a) / b);

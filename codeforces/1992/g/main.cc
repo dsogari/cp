@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1992/submission/283953366
+ * https://codeforces.com/contest/1992/submission/284233074
  *
  * (c) 2024 Diego Sogari
  */
@@ -57,31 +57,29 @@ struct Mod {
 };
 using Mint = Mod<u32, 1000000007u>;
 
-struct Fact : vector<Mint> {
-  Fact() : vector<Mint>(1, 1) {}
-  Mint operator[](int n) { // O(1) amortized (use reserve if necessary)
-    while (size() <= n) {
-      push_back(back() * size());
-    }
-    return vector<Mint>::operator[](n);
-  }
-};
-
-struct Binom : Fact {
-  vector<Mint> inv;
-  Mint operator()(int n, int k) { // O(1) amortized
-    assert(k >= 0 && k <= n);
-    auto ans = (*this)[n]; // updates the factorial up to n
-    int s = inv.size();
+struct Binom {
+  vector<Mint> fac, inv;
+  Binom() : fac(1, 1), inv(1, 1) {}
+  Mint permute(int n) { return update(n), fac.at(n); }               // O(1)
+  Mint commute(int n) { return update(n), inv.at(n); }               // O(1)
+  Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
+  Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
+  Mint arrange(int n, int k) { return permute(n) * commute(n - k); } // O(1)
+  Mint combine(int n, int k) { return arrange(n, k) * commute(k); }  // O(1)
+  void reserve(int n) { fac.reserve(n), inv.reserve(n); }            // O(n)
+  void update(int n) { // O(1) amortized
+    int s = fac.size();
     if (s <= n) {
-      inv.reserve(capacity());
-      inv.resize(size());
-      inv[n] = Mint(1) / ans;
+      fac.resize(n + 1);
+      inv.resize(n + 1);
+      for (int i = s; i <= n; i++) {
+        fac[i] = fac[i - 1] * i;
+      }
+      inv[n] = Mint(1) / fac[n];
       for (int i = n; i > s; i--) {
         inv[i - 1] = inv[i] * i;
       }
     }
-    return ans * inv[k] * inv[n - k];
   }
 };
 
@@ -94,11 +92,11 @@ void solve(int t) {
   for (int i = 1; 2 * i < n; i++) {
     for (int j = 0; j <= i; j++) {
       int m = j + i + 1; // result of mex
-      ans += binom(m - 1, j) * binom(n - m, i - j) * m;
+      ans += binom.combine(m - 1, j) * binom.combine(n - m, i - j) * m;
     }
   }
   for (int i = (n + 1) / 2; i < n; i++) {
-    ans += binom(n, i) * (2 * i + 1);
+    ans += binom.combine(n, i) * (2 * i + 1);
   }
   println(ans);
 }

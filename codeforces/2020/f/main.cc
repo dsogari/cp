@@ -1,10 +1,13 @@
 /**
+ * https://codeforces.com/contest/2020/submission/284113238
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
 using i64 = int64_t;
+using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
 using u128 = __uint128_t;
@@ -55,71 +58,76 @@ struct Mod {
 };
 using Mint = Mod<u32, 1000000007u>;
 
-struct Primes {
-  static constexpr int N = 1 << 16;
-  array<u64, 6542> magic = {}; // ~51KB
-  constexpr Primes() {         // O(N*log log N) = O(2^18)
-    array<bool, N> vis = {};
-    for (int i = 2, cnt = 0; i < N; i++) {
-      if (!vis[i]) {
-        magic[cnt++] = u64(-1) / i + 1;
-        for (int j = 2 * i; j < N; j += i)
-          vis[j] = true;
+struct Binom {
+  vector<Mint> fac, inv;
+  Binom() : fac(1, 1), inv(1, 1) {}
+  Mint permute(int n) { return update(n), fac.at(n); }               // O(1)
+  Mint commute(int n) { return update(n), inv.at(n); }               // O(1)
+  Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
+  Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
+  Mint arrange(int n, int k) { return permute(n) * commute(n - k); } // O(1)
+  Mint combine(int n, int k) { return arrange(n, k) * commute(k); }  // O(1)
+  void reserve(int n) { fac.reserve(n), inv.reserve(n); }            // O(n)
+  void update(int n) { // O(1) amortized
+    int s = fac.size();
+    if (s <= n) {
+      fac.resize(n + 1);
+      inv.resize(n + 1);
+      for (int i = s; i <= n; i++) {
+        fac[i] = fac[i - 1] * i;
+      }
+      inv[n] = Mint(1) / fac[n];
+      for (int i = n; i > s; i--) {
+        inv[i - 1] = inv[i] * i;
       }
     }
   }
-  vector<u32> factors(u32 n) const { // O(sqrt n/log n)
-    vector<u32> ans = {1};
-    auto mx = u64(-1) / u64(sqrt(n)) + 1;
-    for (auto m : magic) {
-      if (m * n < m) {
-        ans.push_back(u64(-1) / m + 1);
-      } else if (m < mx) {
-        break;
+};
+
+Binom binom;
+
+struct Primes : array<u16, 6542> { // ~13KB
+  constexpr Primes() {             // O(N*log log N) = O(2^18)
+    array<bool, 1 << 16> vis = {};
+    for (int i = 2, cnt = 0; i < vis.size(); i++) {
+      if (!vis[i]) {
+        (*this)[cnt++] = i;
+        for (int j = i; j < vis.size(); j += i) {
+          vis[j] = true;
+        }
       }
     }
-    return ans;
   }
 };
 
 constexpr Primes primes;
 
-int countdiv(int x, int y) {
-  assert(y > 1);
-  int c = 0;
-  for (div_t d = {}; !d.rem && x > 1; c += !d.rem) {
-    d = div(x, y);
-    x = d.quot;
-  }
-  return c;
-}
-
-struct Str : string {
-  using string::string;
-  Str() { cin >> *this; }
-};
-
 void solve(int t) {
   Int n, k, d;
-  vector<Mint> pref(bit_width<unsigned>(n), 1);
-  for (int j = 0; j < d; j++) { // O(d*log n)
-    for (int i = 1; i < pref.size(); i++) {
-      pref[i] += pref[i - 1];
-    }
+  int m = bit_width<unsigned>(n); // maximum number of factors
+  binom.reserve(m * k + d + 1);
+  vector<Mint> sum(m + 1);
+  for (int i = m; i >= 0; i--) { // O(log n)
+    sum[i] = binom.pascald(i * k, d);
   }
-  Mint ans;
-  for (int i = 1; i <= n; i++) { // O(n*log k + n*sqrt n/log n)
-    Mint prod = 1;
-    auto factors = primes.factors(i);
-    for (auto &&factor : factors) { // O(log i)
-      if (factor != 1) {
-        auto c = countdiv(i, factor);
-        assert(c > 0);
-        prod *= pref[c];
+  auto f = [&](auto &self, int x, int i, int cnt, Mint prod) -> Mint { // O(n)
+    auto cur = prod * sum[cnt]; // f(x^k,d)
+    auto ans = cur;
+    for (int j = i; j < primes.size(); j++) {
+      auto y = u64(x) * primes[j]; // next number
+      if (y * primes[j] > n) {
+        int pi = ranges::upper_bound(primes, n / x) - primes.begin();
+        ans += cur * sum[1] * (max(0, pi - 1) - max(i, j - 1));
+        if (j == i && y <= n) {
+          ans += prod * sum[cnt + 1];
+        }
+        break;
       }
+      ans += self(self, y, j, j == i ? cnt + 1 : 1, j == i ? prod : cur);
     }
-    ans += prod.pow(k);
-  }
+    return ans;
+  };
+  auto ans = f(f, 1, 0, 0, 1);
   println(ans);
 }
 

@@ -40,6 +40,19 @@ auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; }
 auto gpsum(auto a, auto r, auto n) { return a * (1 - pow(r, n)) / (1 - r); }
 
 /**
+ * Number of times that y divides x
+ */
+int countdiv(int x, int y) {
+  assert(y > 1);
+  int c = 0;
+  for (div_t d = {}; !d.rem && x > 1; c += !d.rem) {
+    d = div(x, y);
+    x = d.quot;
+  }
+  return c;
+}
+
+/**
  * Choices satisfying equality x + y == m, for a1 <= x <= a2 and b1 <= y <= b2
  */
 i64 choices_eq(int a1, int a2, int b1, int b2, i64 m) {

@@ -5,6 +5,7 @@
 
 /**
  * Modular integer
+ * LLDB: type summary add --summary-string "${var.x}" -x "^Mod<"
  */
 template <typename T, auto M>
   requires unsigned_integral<T>

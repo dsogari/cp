@@ -5,6 +5,7 @@
 
 /**
  * Input number
+ * LLDB: type summary add --summary-string "${var.x}" -x "^Num<"
  */
 template <typename T> struct Num {
   T x;
@@ -25,8 +26,10 @@ using F64 = Num<double>;
 
 /**
  * Input string
+ * LLDB: type summary add --summary-string "${var._M_dataplus._M_p}" Str
  */
 struct Str : string {
+  using string::string;
   Str() { cin >> *this; }
 };
 

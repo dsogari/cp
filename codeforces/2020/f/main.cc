@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2020/submission/284113238
+ * https://codeforces.com/contest/2020/submission/284387751
  *
  * (c) 2024 Diego Sogari
  */
@@ -82,52 +82,73 @@ struct Binom {
       }
     }
   }
-};
+} binom;
 
-Binom binom;
-
-struct Primes : array<u16, 6542> { // ~13KB
-  constexpr Primes() {             // O(N*log log N) = O(2^18)
+constexpr struct SmallPrimes : array<u16, 6542> { // ~13KB
+  constexpr SmallPrimes() {                       // O(N*log log N) = O(2^18)
     array<bool, 1 << 16> vis = {};
     for (int i = 2, cnt = 0; i < vis.size(); i++) {
       if (!vis[i]) {
         (*this)[cnt++] = i;
-        for (int j = i; j < vis.size(); j += i) {
+        for (int j = 2 * i; j < vis.size(); j += i) {
           vis[j] = true;
         }
       }
     }
   }
+} primes;
+
+struct Lucy : vector<int> {
+  int n, s, m;
+  Lucy(int n, auto &&f) : n(n), s(sqrt(n)), m(2 * this->s) { // O(n^0.75)
+    vector<int> v(m);
+    for (int i = 0; i < m; i++) {
+      v[i] = i < s ? i + 1 : n / (m - i);
+      push_back(f(v[i]));
+    }
+    for (int p = 2; p <= s; p++) {
+      if ((*this)[p - 1] != (*this)[p - 2]) { // p is prime
+        for (int i = m - 1; i >= 0 && p * p <= v[i]; i--) {
+          (*this)[i] -= get(v[i] / p) - (*this)[p - 2];
+        }
+      }
+    }
+  }
+  int get(int x) const { return (*this)[x <= s ? x - 1 : m - n / x]; }; // O(1)
 };
 
-constexpr Primes primes;
-
-void solve(int t) {
-  Int n, k, d;
-  int m = bit_width<unsigned>(n); // maximum number of factors
-  binom.reserve(m * k + d + 1);
-  vector<Mint> sum(m + 1);
-  for (int i = m; i >= 0; i--) { // O(log n)
-    sum[i] = binom.pascald(i * k, d);
-  }
-  auto f = [&](auto &self, int x, int i, int cnt, Mint prod) -> Mint { // O(n)
-    auto cur = prod * sum[cnt]; // f(x^k,d)
+Mint black(int n, auto &&unit, auto &&sum) { // O(n)
+  Lucy lucy(n, [](int x) { return x - 1; });
+  auto dfs = [&](auto &self, int x, int i, int e, Mint prod) -> Mint {
+    auto cur = prod * unit(i, e); // f(x*p^e)
     auto ans = cur;
     for (int j = i; j < primes.size(); j++) {
       auto y = u64(x) * primes[j]; // next number
       if (y * primes[j] > n) {
-        int pi = ranges::upper_bound(primes, n / x) - primes.begin();
-        ans += cur * sum[1] * (max(0, pi - 1) - max(i, j - 1));
+        ans += cur * sum(max(i + 1, j), lucy.get(n / x) - 1);
         if (j == i && y <= n) {
-          ans += prod * sum[cnt + 1];
+          ans += prod * unit(i, e + 1);
         }
         break;
       }
-      ans += self(self, y, j, j == i ? cnt + 1 : 1, j == i ? prod : cur);
+      ans += self(self, y, j, j == i ? e + 1 : 1, j == i ? prod : cur);
     }
     return ans;
   };
-  auto ans = f(f, 1, 0, 0, 1);
+  return dfs(dfs, 1, 0, 0, 1);
+}
+
+void solve(int t) {
+  Int n, k, d;
+  int m = bit_width<unsigned>(n); // maximum number of factors
+  binom.reserve(m * k + d + 1);   // avoid memory reallocations
+  vector<Mint> memo(m + 1);
+  for (int i = m; i >= 0; i--) { // O(log n)
+    memo[i] = binom.pascald(i * k, d);
+  }
+  auto unit = [&](int i, int e) { return memo[e]; };
+  auto sum = [&](int l, int r) { return memo[1] * max(0, r - l + 1); };
+  auto ans = black(n, unit, sum);
   println(ans);
 }
 

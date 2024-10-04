@@ -36,15 +36,15 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Barret {
+struct Barrett {
   static inline u32 den;
   static inline u64 mu;
   operator u32() const { return den; }
   static void set(u32 d) { den = d, mu = u64(-1) / d; }
   static u64 div(u64 x) { return u128(x) * mu >> 64; }
   static u32 mod(u64 x) { return x -= div(x) * den, x < den ? x : x - den; }
-  friend u64 operator/(u64 x, const Barret &rhs) { return rhs.div(x); }
-  friend u32 operator%(u64 x, const Barret &rhs) { return rhs.mod(x); }
+  friend u64 operator/(u64 x, const Barrett &rhs) { return rhs.div(x); }
+  friend u32 operator%(u64 x, const Barrett &rhs) { return rhs.mod(x); }
 };
 
 template <typename T, auto M>
@@ -73,7 +73,7 @@ struct Mod {
     return ans;
   }
 };
-using Mint = Mod<u32, Barret{}>;
+using Mint = Mod<u32, Barrett{}>;
 
 int invcount(auto &&f, int s, int e) { // [s, e) O(n^2)
   int ans = 0;
@@ -131,7 +131,7 @@ void solve(int t) {
       n -= inv % 2;
     }
     const array<int, 2> fwd1{2, 1}, bwd1{1, 2}, fwd2{3, 1}, bwd2{1, 3};
-    Barret::set(n);
+    Barrett::set(n);
     Mint c = n - 1;
     auto findpos = [&](int i, int d) {
       int k = 0;

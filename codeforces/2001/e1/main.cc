@@ -29,15 +29,15 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Barret {
+struct Barrett {
   static inline u32 den;
   static inline u64 mu;
   operator u32() const { return den; }
   static void set(u32 d) { den = d, mu = u64(-1) / d; }
   static u64 div(u64 x) { return u128(x) * mu >> 64; }
   static u32 mod(u64 x) { return x -= div(x) * den, x < den ? x : x - den; }
-  friend u64 operator/(u64 x, const Barret &rhs) { return rhs.div(x); }
-  friend u32 operator%(u64 x, const Barret &rhs) { return rhs.mod(x); }
+  friend u64 operator/(u64 x, const Barrett &rhs) { return rhs.div(x); }
+  friend u32 operator%(u64 x, const Barrett &rhs) { return rhs.mod(x); }
 };
 
 template <typename T, auto M>
@@ -66,11 +66,11 @@ struct Mod {
     return ans;
   }
 };
-using Mint = Mod<u32, Barret{}>;
+using Mint = Mod<u32, Barrett{}>;
 
 void solve(int t) {
   Int n, k, p;
-  Barret::set(p);
+  Barrett::set(p);
   vector<Mint> gt(k + 1, 1), lt(k + 1, 1);
   gt[0] = 0;
   for (int i = 1; i < n; i++) {         // O(n*k^2)

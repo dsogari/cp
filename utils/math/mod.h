@@ -35,4 +35,4 @@ struct Mod {
 };
 using Mint = Mod<u32, 1000000007u>;
 // using Mint = Mod<u32, 998244353u>;
-// using Mint = Mod<u32, Barret{}>;
+// using Mint = Mod<u32, Barrett{}>;

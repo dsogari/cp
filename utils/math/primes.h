@@ -13,7 +13,7 @@ struct Sieve : vector<int> {
     for (int i = 2; i <= mx; i++) { // O(mx*log log mx)
       if (!vis[i]) {
         push_back(i);
-        for (int j = i; j <= mx; j += i) {
+        for (int j = 2 * i; j <= mx; j += i) {
           vis[j] = true;
         }
       }
@@ -22,17 +22,38 @@ struct Sieve : vector<int> {
 };
 
 /**
- * Sieve of Prime numbers (up to 2^16)
- * https://en.algorithmica.org/hpc/algorithms/factorization/
+ * Sieve of Small Prime numbers (up to 2^16) - ~13KB
  */
-struct Primes : array<u16, 6542> { // ~13KB
-  constexpr Primes() {             // O(N*log log N) = O(2^18)
+constexpr struct SmallPrimes : array<u16, 6542> {
+  constexpr SmallPrimes() { // O(N*log log N) = O(2^18)
     array<bool, 1 << 16> vis = {};
     for (int i = 2, cnt = 0; i < vis.size(); i++) {
       if (!vis[i]) {
         (*this)[cnt++] = i;
-        for (int j = i; j < vis.size(); j += i) {
+        for (int j = 2 * i; j < vis.size(); j += i) {
           vis[j] = true;
+        }
+      }
+    }
+  }
+} primes;
+
+/**
+ * Segmented Prime Sieve (from 2^16 up to 2^32)
+ */
+struct SegSieve : vector<int> {
+  SegSieve(int mx) { // O(mx*log log mx)
+    reserve(max<int>(0, mx / log(mx) - primes.size()));
+    for (int l = 1 << 16; l <= mx; l += 1 << 16) {
+      array<bool, 1 << 16> vis = {};
+      for (auto p : primes) {
+        for (int j = (p - (l % p)) % p; j < vis.size(); j += p) {
+          vis[j] = true;
+        }
+      }
+      for (int i = 0; i < vis.size(); i++) {
+        if (!vis[i]) {
+          push_back(l + i);
         }
       }
     }
@@ -40,26 +61,21 @@ struct Primes : array<u16, 6542> { // ~13KB
 };
 
 /**
- * Prime Factors of a number (up to 2^32)
+ * Prime Factors of a number (up to 2^32) - ~51KB
  * https://en.algorithmica.org/hpc/algorithms/factorization/
  */
-struct Factors : Primes {
-  array<u64, 6542> magic;          // ~51KB
-  constexpr Factors() : Primes() { // O(N*log log N) = O(2^18)
-    for (int i = 0; i < magic.size(); i++) {
-      magic[i] = u64(-1) / (*this)[i] + 1;
+struct Factors : array<u64, 6542> {
+  constexpr Factors() { // O(N*log log N) = O(2^18)
+    for (int i = 0; i < size(); i++) {
+      (*this)[i] = u64(-1) / primes[i] + 1;
     }
   }
-  vector<u32> get(u32 x) const { // O(min(6542,x/log x))
-    vector<u32> ans = {1};
-    auto mx = u64(-1) / u64(x) + 1;
-    for (auto m : magic) {
+  u32 find(u32 x) const { // O(min(6542,x/log x))
+    for (auto m : *this) {
       if (m * x < m) {
-        ans.push_back(u64(-1) / m + 1);
-      } else if (m < mx) {
-        break;
+        return u64(-1) / m + 1;
       }
     }
-    return ans;
+    return 1;
   }
 };

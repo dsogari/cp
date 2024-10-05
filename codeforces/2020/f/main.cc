@@ -146,6 +146,7 @@ void solve(int t) {
   for (int i = m; i >= 0; i--) { // O(log n)
     memo[i] = binom.pascald(i * k, d);
   }
+  debug(memo);
   auto unit = [&](int i, int e) { return memo[e]; };
   auto sum = [&](int l, int r) { return memo[1] * max(0, r - l + 1); };
   auto ans = black(n, unit, sum);

@@ -1,13 +1,18 @@
 /**
  * (c) 2024 Diego Sogari
  */
-using filesystem::path;
+#include <cpp-dump.hpp>
 
-#define debug println
+/**
+ * Pretty-prints variables
+ * https://github.com/philip82148/cpp-dump
+ */
+#define debug cpp_dump
 
 /**
  * Loads the input file
  */
 #define init()                                                                 \
   auto _ =                                                                     \
-      freopen(path(__FILE__).replace_filename("input").c_str(), "r", stdin);
+      freopen(filesystem::path(__FILE__).replace_filename("input").c_str(),    \
+              "r", stdin);

@@ -1,3 +1,6 @@
 [submodule "testlib"]
 	path = testlib
 	url = https://github.com/MikeMirzayanov/testlib.git
+[submodule "cpp-dump"]
+	path = cpp-dump
+	url = https://github.com/philip82148/cpp-dump.git

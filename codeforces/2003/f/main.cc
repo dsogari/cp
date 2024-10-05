@@ -10,7 +10,7 @@ using u32 = uint32_t;
 using u64 = uint64_t;
 
 #ifdef ONLINE_JUDGE
-#define debug
+#define debug(...)
 #else
 #include "debug.h"
 init();

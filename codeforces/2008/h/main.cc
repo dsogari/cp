@@ -9,7 +9,7 @@ using namespace std;
 using namespace placeholders;
 
 #ifdef ONLINE_JUDGE
-#define debug
+#define debug(...)
 #else
 #include "debug.h"
 init();

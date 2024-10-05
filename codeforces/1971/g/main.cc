@@ -9,7 +9,7 @@ using namespace std;
 using MinHeap = priority_queue<int, vector<int>, greater<int>>;
 
 #ifdef ONLINE_JUDGE
-#define debug
+#define debug(...)
 #else
 #include "debug.h"
 init();

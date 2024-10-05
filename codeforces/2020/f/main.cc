@@ -13,7 +13,7 @@ using u64 = uint64_t;
 using u128 = __uint128_t;
 
 #ifdef ONLINE_JUDGE
-#define debug
+#define debug(...)
 #else
 #include "debug.h"
 init();

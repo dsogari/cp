@@ -7,7 +7,7 @@ using namespace std;
 using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
-#define debug
+#define debug(...)
 #else
 #include "debug.h"
 init();

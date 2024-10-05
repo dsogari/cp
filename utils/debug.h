@@ -13,6 +13,6 @@
  * Loads the input file
  */
 #define init()                                                                 \
-  auto _ =                                                                     \
+  const auto _ =                                                               \
       freopen(filesystem::path(__FILE__).replace_filename("input").c_str(),    \
               "r", stdin);

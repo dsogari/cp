@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1993/submission/283959411
+ * https://codeforces.com/contest/1993/submission/284497435
  *
  * (c) 2024 Diego Sogari
  */
@@ -30,12 +30,8 @@ struct Iota : vector<int> {
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
 };
 
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
 void solve(int t) {
@@ -52,11 +48,11 @@ void solve(int t) {
         dp[j + 1] = max(dp[j + 1], dp[j] + (a[i] >= a[idx[x]]));
       }
     }
-    return dp[m] <= m / 2; // does x lie to the right of median?
+    return dp[m] > m / 2; // does x lie to the left of median?
   };
   auto cmp2 = [&](int i, int j) { return a[i] == a[j]; };
   int e = ranges::unique(idx, cmp2).begin() - idx.begin(); // remove duplicates
-  int ans = binsearch(f, e - 1, 0);                        // O(n*log n)
+  int ans = first_false(f, 1, e) - 1;                      // O(n*log n)
   println(a[idx[ans]]);
 }
 

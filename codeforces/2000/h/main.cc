@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/283959707
+ * https://codeforces.com/contest/2000/submission/284497261
  *
  * (c) 2024 Diego Sogari
  */
@@ -56,12 +56,8 @@ template <typename T> struct SegTree {
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
 template <typename T> struct Max {
@@ -109,7 +105,7 @@ void solve(int t) { // O((n + m)*log n)
   vector<int> ans;
   function<void(int)> rep = [&](int k) { // O(log^2 n)
     auto f = [&](int x) { return gaps.query(0, x) < k; };
-    auto x = binsearch(f, 1, mxa + 2);
+    auto x = first_false(f, 1, mxa + 2);
     ans.push_back(x);
   };
   for (auto &&[type, x] : ops) { // O(m*log^2 n)

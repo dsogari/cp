@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1968/submission/283958393
+ * https://codeforces.com/contest/1968/submission/284496737
  *
  * (c) 2024 Diego Sogari
  */
@@ -46,12 +46,8 @@ struct Zfn : vector<int> {
   }
 };
 
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
 void solve(int t) {
@@ -74,8 +70,8 @@ void solve(int t) {
     lcp[f1(x)] = x;
   }
   for (int k = 1; k <= m; k++) {
-    auto f2 = [&](int x) { return f1(x) < k; };
-    lcp[k] = binsearch(f2, n, 0);
+    auto f2 = [&](int x) { return f1(x) >= k; };
+    lcp[k] = first_false(f2, 1, n + 1) - 1;
   }
   for (int i = n - 1; i > 0; i--) {
     lcp[i] = max(lcp[i], lcp[i + 1]);

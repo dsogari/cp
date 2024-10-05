@@ -26,14 +26,10 @@ struct Iota : vector<int> {
 };
 
 /**
- * Binary Search
+ * Binary Search (first such that f is false)
  */
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
 /**

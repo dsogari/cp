@@ -42,12 +42,8 @@ struct Digraph : vector<vector<int>> {
   void add(int u, int v) { (*this)[u].push_back(v); }
 };
 
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
 array<vector<int>, 2> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
@@ -120,7 +116,7 @@ int len2(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
     return !dfs(dfs, 0, 1, 1);
   };
   assert(k > 0 && k <= n);
-  return binsearch(f, n / k, mxlen + 1);
+  return first_false(f, n / k, mxlen + 1);
 }
 
 int len3(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)

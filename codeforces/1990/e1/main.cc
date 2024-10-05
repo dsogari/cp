@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1990/submission/283959146
+ * https://codeforces.com/contest/1990/submission/284496882
  *
  * (c) 2024 Diego Sogari
  */
@@ -53,12 +53,8 @@ struct Subtree : vector<NodeInfo> {
   }
 };
 
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
 int simulate(Subtree &s, int &mole, int x) {
@@ -120,8 +116,8 @@ void solve(int t) {
   if (!limit) {
     ans = 1;
     if (path.size()) {
-      auto q2 = [&](int i) { return !query(path[i]); };
-      int i = binsearch(q2, path.size() - 1, 0);
+      auto q2 = [&](int i) { return query(path[i]); };
+      int i = first_false(q2, 1, (int)path.size()) - 1;
       while (i > 0 && !query(path[i])) {
         i -= 2;
       }

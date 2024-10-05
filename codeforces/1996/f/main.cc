@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1996/submission/283959503
+ * https://codeforces.com/contest/1996/submission/284497617
  *
  * (c) 2024 Diego Sogari
  */
@@ -17,14 +17,6 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-int binsearch(auto &&f, int s, int e) { // [s, e) O(log n)
-  for (int inc = s < e ? 1 : -1; s != e;) {
-    auto m = midpoint(s, e);
-    f(m) ? s = m + inc : e = m;
-  }
-  return s; // first such that f is false
-}
-
 template <typename T> struct Num {
   T x;
   Num() { cin >> x; }
@@ -33,6 +25,10 @@ template <typename T> struct Num {
   operator T() const { return x; }
 };
 using Int = Num<int>;
+
+constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
+  return *ranges::partition_point(ranges::views::iota(s, e), f);
+}
 
 void solve(int t) {
   Int n, k;
@@ -48,9 +44,9 @@ void solve(int t) {
     }
     return {cnt, sum};
   };
-  auto chk = [&](int x) { return f(x).first < k; };
+  auto chk = [&](int x) { return f(x).first >= k; };
   int amx = *ranges::max_element(a);
-  int best = binsearch(chk, amx, 0); // O(n*log amx)
+  int best = first_false(chk, 1, amx + 1) - 1; // O(n*log amx)
   auto [cnt, sum] = f(best);
   i64 ans = sum - (cnt - k) * best;
   println(ans);

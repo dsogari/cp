@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1984/submission/284233026
+ * https://codeforces.com/contest/1984/submission/284706722
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,33 +29,31 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-template <typename T, auto M>
-  requires unsigned_integral<T>
-struct Mod {
-  using U = conditional<is_same<T, u64>::value, u128, u64>::type;
-  static T inv(T x, U m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
-  static T norm(T x) { return rotl(x, 1) & 1 ? x + M : x < M ? x : x - M; }
-  T x;
+template <typename T, auto M> struct Mod {
+  using V = conditional_t<is_same_v<make_unsigned_t<T>, u64>, u128, u64>;
+  static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  make_unsigned_t<T> x;
   Mod() : x(0) {}
-  Mod(i64 y) : x(norm(y % i64(M))) {}
+  Mod(auto y) : x(y % i64(M)) { x >= M ? x += M : x; }
   operator T() const { return x; }
+  Mod operator-() const { return Mod() -= *this; }
   Mod operator+(auto rhs) const { return Mod(*this) += rhs; }
   Mod operator-(auto rhs) const { return Mod(*this) -= rhs; }
   Mod operator*(auto rhs) const { return Mod(*this) *= rhs; }
   Mod operator/(auto rhs) const { return Mod(*this) /= rhs; }
-  Mod &operator+=(Mod rhs) { return x = norm(x + rhs.x), *this; }
-  Mod &operator-=(Mod rhs) { return x = norm(x - rhs.x), *this; }
-  Mod &operator*=(Mod rhs) { return x = U(x) * rhs.x % M, *this; }
-  Mod &operator/=(Mod rhs) { return *this *= inv(rhs.x, M); }
-  Mod pow(i64 y) const { // O(log y) / 0^(-inf,0] -> 1
-    Mod ans(1), base(y < 0 ? inv(x, M) : x);
-    for (y = abs(y); y; y >>= 1, base *= base) {
-      y & 1 ? ans *= base : ans;
+  Mod &operator+=(Mod rhs) { return (x += rhs.x) >= M ? x -= M : x, *this; }
+  Mod &operator-=(Mod rhs) { return (x -= rhs.x) >= M ? x += M : x, *this; }
+  Mod &operator*=(Mod rhs) { return x = x * V(rhs.x) % M, *this; }
+  Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
+  Mod pow(auto y) const { // O(log y) | 0^(-inf,0] -> 1
+    Mod ans(1), base(*this);
+    for (auto e = y < 0 ? ~y + 1ull : +y; e; e >>= 1, base *= base) {
+      e & 1 ? ans *= base : ans;
     }
-    return ans;
+    return y < 0 ? Mod(1) /= ans : ans;
   }
 };
-using Mint = Mod<u32, 998244353u>;
+using Mint = Mod<int, 998244353>;
 
 struct Binom {
   vector<Mint> fac, inv;

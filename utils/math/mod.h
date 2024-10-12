@@ -8,7 +8,7 @@
  * LLDB: type summary add --summary-string "${var.x}" -x "^Mod<"
  */
 template <typename T, auto M> struct Mod {
-  using V = conditional_t<is_same_v<make_unsigned_t<T>, u64>, u128, u64>;
+  using V = conditional_t<sizeof(T) <= 4, u64, u128>;
   static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   make_unsigned_t<T> x;
   Mod() : x(0) {}
@@ -33,4 +33,4 @@ template <typename T, auto M> struct Mod {
 };
 using Mint = Mod<int, 1000000007>;
 // using Mint = Mod<int, 998244353>;
-// using Mint = Mod<int, Barrett{}>;
+// using Mint = Mod<int, Barrett<int>{}>;

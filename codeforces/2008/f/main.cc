@@ -30,7 +30,7 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 template <typename T, auto M> struct Mod {
-  using V = conditional_t<is_same_v<make_unsigned_t<T>, u64>, u128, u64>;
+  using V = conditional_t<sizeof(T) <= 4, u64, u128>;
   static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   make_unsigned_t<T> x;
   Mod() : x(0) {}

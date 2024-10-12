@@ -7,13 +7,21 @@
  * Barrett Reduction
  * https://en.algorithmica.org/hpc/arithmetic/division/#barrett-reduction
  */
-struct Barrett {
-  static inline u32 den; // the original modulus
-  static inline u64 mu;  // the precomputed approximation of 2^64/d
-  operator u32() const { return den; }
-  static void set(u32 d) { den = d, mu = u64(-1) / d; }
-  static u64 div(u64 x) { return u128(x) * mu >> 64; }
-  static u32 mod(u64 x) { return x -= div(x) * den, x < den ? x : x - den; }
-  friend u64 operator/(u64 x, const Barrett &rhs) { return rhs.div(x); }
-  friend u32 operator%(u64 x, const Barrett &rhs) { return rhs.mod(x); }
+template <typename T> struct Barrett {
+  using V = conditional_t<sizeof(T) <= 4, u64, u128>;
+  static inline V m, u; // u = 2^(8*sizeof(V))/m
+  static void set(T y) { m = y, u = V(-1) / m; }
+  operator T() const { return m; }
+  friend V operator/(V x, const Barrett &rhs) {
+    V q;
+    if constexpr (sizeof(T) <= 4) {
+      q = u128(x) * u >> 64;
+    } else {
+      u128 xl = u64(x), ul = u64(u), xh = x >> 64, uh = u >> 64;
+      u128 a = xl * ul, b = xl * uh, c = ul * xh, d = xh * uh;
+      q = d + (b >> 64) + (c >> 64) + (((a >> 64) + u64(b) + u64(c)) >> 64);
+    }
+    return q + (x >= (q + 1) * m);
+  }
+  friend T operator%(V x, const Barrett &rhs) { return x - (x / rhs) * rhs.m; }
 };

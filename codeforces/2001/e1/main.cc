@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2001/submission/285653051
+ * https://codeforces.com/contest/2001/submission/285967114
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,19 +29,29 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Barrett {
-  static inline u64 m, u; // u = 2^64/m
-  static void set(u32 y) { m = y, u = -1 / m; }
-  operator u32() const { return m; }
-  friend auto operator/(auto x, const Barrett &) {
-    if constexpr (sizeof(x) > 8) {
+template <typename T> struct Barrett {
+  static inline conditional_t<sizeof(T) <= 4, u64, u128> m, u;
+  static void set(T y) { m = y, u = -1 / m; } // u = 2^(16*sizeof(T))/m
+  operator T() const { return m; }
+  static u64 div(u128 x) requires(sizeof(T) <= 4) { return x * u >> 64; }
+  static u128 div(u128 x) requires(sizeof(T) > 4) {
+    u128 xl = u64(x), ul = u64(u), xh = x >> 64, uh = u >> 64;
+    auto a = xl * ul, b = xl * uh, c = ul * xh, d = xh * uh;
+    return d + (b >> 64) + (c >> 64) + (((a >> 64) + u64(b) + u64(c)) >> 64);
+  }
+  friend auto operator/(auto x, const Barrett &) -> decltype(x) {
+    if constexpr (sizeof(x) > sizeof(u)) {
       return x / m;
     }
-    auto q = u128(x < 0 ? ~x + u128(1) : x) * u >> 64;
-    return decltype(x)(x < 0 ? ~q + (x != ~q * m) : q + (x == (q + 1) * m));
+    auto q = x < 0 ? ~div(~x + u128(1)) : div(x);
+    return q + (x < 0 ? x > q * m : x >= (q + 1) * m);
   }
-  friend auto operator%(auto x, const Barrett &rhs) {
-    return decltype(x)(x - (x / rhs) * m);
+  friend auto operator%(auto x, const Barrett &) -> decltype(x) {
+    if constexpr (sizeof(x) > sizeof(u)) {
+      return x % m;
+    }
+    auto q = x < 0 ? ~div(~x + u128(1)) : div(x);
+    return x -= q * m, x < 0 || x < m ? x : x - m;
   }
 };
 
@@ -69,11 +79,11 @@ template <typename T, auto M> struct Mod {
     return y < 0 ? Mod(1) /= ans : ans;
   }
 };
-using Mint = Mod<int, Barrett{}>;
+using Mint = Mod<int, Barrett<int>{}>;
 
 void solve(int t) {
   Int n, k, p;
-  Barrett::set(p);
+  Barrett<int>::set(p);
   vector<Mint> gt(k + 1, 1), lt(k + 1, 1);
   gt[0] = 0;
   for (int i = 1; i < n; i++) {         // O(n*k^2)

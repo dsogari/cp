@@ -33,4 +33,4 @@ template <typename T, auto M> struct Mod {
 };
 using Mint = Mod<int, 1000000007>;
 // using Mint = Mod<int, 998244353>;
-// using Mint = Mod<int, Barrett{}>;
+// using Mint = Mod<int, Barrett<int>{}>;

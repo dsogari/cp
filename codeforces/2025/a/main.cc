@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2025/submission/285848238
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,24 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Str : string {
+  using string::string;
+  Str() { cin >> *this; }
+};
+
+void solve(int t) {
+  Str a, b;
+  int mx = 0;
+  for (int i = 0; i < a.size(); i++) {
+    if (a[i] == b[i]) {
+      mx++;
+    } else {
+      break;
+    }
+  }
+  mx += a.size() + b.size() - 2 * mx + (mx > 0);
+  println(mx);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

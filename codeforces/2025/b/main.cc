@@ -1,9 +1,16 @@
 /**
+ * https://codeforces.com/contest/2025/submission/285868907
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
+using u16 = uint16_t;
+using u32 = uint32_t;
+using u64 = uint64_t;
+using u128 = __uint128_t; // available on 64-bit targets
 
 #ifdef ONLINE_JUDGE
 #define debug(...)
@@ -23,12 +30,41 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+template <typename T, auto M> struct Mod {
+  using V = conditional_t<sizeof(T) <= 4, u64, u128>;
+  static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  make_unsigned_t<T> x;
+  Mod() : x(0) {}
+  Mod(auto y) : x(y % M) { x >= M ? x += M : x; }
+  operator T() const { return x; }
+  Mod operator-() const { return Mod() -= *this; }
+  Mod operator+(auto rhs) const { return Mod(*this) += rhs; }
+  Mod operator-(auto rhs) const { return Mod(*this) -= rhs; }
+  Mod operator*(auto rhs) const { return Mod(*this) *= rhs; }
+  Mod operator/(auto rhs) const { return Mod(*this) /= rhs; }
+  Mod &operator+=(Mod rhs) { return (x += rhs.x) >= M ? x -= M : x, *this; }
+  Mod &operator-=(Mod rhs) { return (x -= rhs.x) >= M ? x += M : x, *this; }
+  Mod &operator*=(Mod rhs) { return x = x * V(rhs.x) % M, *this; }
+  Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
+  Mod pow(auto y) const { // O(log y) | 0^(-inf,0] -> 1
+    Mod ans(1), base(*this);
+    for (auto e = y < 0 ? ~y + u128(1) : +y; e; e >>= 1, base *= base) {
+      e & 1 ? ans *= base : ans;
+    }
+    return y < 0 ? Mod(1) /= ans : ans;
+  }
+};
+using Mint = Mod<int, 1000000007>;
+
+void solve(int t) {
+  vector<Int> a(t), b(t);
+  for (int i = 0; i < t; i++) {
+    println(Mint(2).pow(b[i]));
+  }
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
   Int t;
-  for (int i = 1; i <= t; i++) {
-    solve(i);
-  }
+  solve(t);
 }

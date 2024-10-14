@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2025/submission/285887322
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,32 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n, k;
+  vector<Int> a(n);
+  map<int, int> cnt;
+  for (auto &&ai : a) {
+    cnt[ai]++;
+  }
+  list<int> window;
+  int ans = 0, cur = 0, prev = 0;
+  for (auto &&[ai, c] : cnt) {
+    if (prev == 0 || ai == prev + 1) {
+      window.push_back(c);
+      cur += c;
+      if (window.size() > k) {
+        cur -= window.front();
+        window.pop_front();
+      }
+    } else {
+      window = {c};
+      cur = c;
+    }
+    ans = max(ans, cur);
+    prev = ai;
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

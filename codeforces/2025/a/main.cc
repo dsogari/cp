@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2025/submission/285848238
+ * https://codeforces.com/contest/2025/submission/285939589
  *
  * (c) 2024 Diego Sogari
  */
@@ -32,16 +32,12 @@ struct Str : string {
 
 void solve(int t) {
   Str a, b;
-  int mx = 0;
-  for (int i = 0; i < a.size(); i++) {
-    if (a[i] == b[i]) {
-      mx++;
-    } else {
-      break;
-    }
+  int i = 0;
+  while (i < a.size() && a[i] == b[i]) { // O(|a|) a/b has null-terminator
+    i++;
   }
-  mx += a.size() + b.size() - 2 * mx + (mx > 0);
-  println(mx);
+  int ans = a.size() + b.size() - i + (i > 0);
+  println(ans);
 }
 
 int main() {

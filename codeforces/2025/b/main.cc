@@ -1,14 +1,11 @@
 /**
- * https://codeforces.com/contest/2025/submission/285868907
+ * https://codeforces.com/contest/2025/submission/285936217
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
-using i64 = int64_t;
-using u16 = uint16_t;
-using u32 = uint32_t;
 using u64 = uint64_t;
 using u128 = __uint128_t; // available on 64-bit targets
 
@@ -58,8 +55,9 @@ using Mint = Mod<int, 1000000007>;
 
 void solve(int t) {
   vector<Int> a(t), b(t);
-  for (int i = 0; i < t; i++) {
-    println(Mint(2).pow(b[i]));
+  Mint two = 2;
+  for (auto &&bi : b) { // O(t*log max(k))
+    println(two.pow(bi));
   }
 }
 

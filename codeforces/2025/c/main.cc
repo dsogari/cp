@@ -29,12 +29,12 @@ void solve(int t) {
   Int n, k;
   vector<Int> a(n);
   map<int, int> cnt;
-  for (auto &&ai : a) {
+  for (auto &&ai : a) { // O(n*log n)
     cnt[ai]++;
   }
   list<int> window;
   int ans = 0, cur = 0, prev = 0;
-  for (auto &&[ai, c] : cnt) {
+  for (auto &&[ai, c] : cnt) { // O(n)
     if (prev == 0 || ai == prev + 1) {
       window.push_back(c);
       cur += c;

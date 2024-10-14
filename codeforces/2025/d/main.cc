@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2025/submission/285935063
+ * https://codeforces.com/contest/2025/submission/285935817
  *
  * (c) 2024 Diego Sogari
  */
@@ -40,7 +40,7 @@ void solve(int t) {
     ranges::sort(checks[i][0]);
     ranges::sort(checks[i][1]);
   }
-  vector dp(m + 1, vector<int>(m + 1));
+  vector<int> dp0(m + 1), dp1(m + 1);
   int ans = 0;
   for (int i = 0; i <= m; i++) { // O(m^2*log n)
     for (int j = 0; j <= m; j++) {
@@ -48,12 +48,11 @@ void solve(int t) {
         auto &[a, b] = checks[i + j];
         int cnta = ranges::upper_bound(a, i) - a.begin();
         int cntb = ranges::upper_bound(b, j) - b.begin();
-        auto prev1 = i > 0 ? dp[i - 1][j] : 0;
-        auto prev2 = j > 0 ? dp[i][j - 1] : 0;
-        dp[i][j] = max(prev1, prev2) + cnta + cntb;
+        dp1[j] = max(dp0[j], j > 0 ? dp1[j - 1] : 0) + cnta + cntb;
       }
     }
-    ans = max(ans, dp[i][m - i]);
+    ans = max(ans, dp1[m - i]);
+    swap(dp0, dp1);
   }
   println(ans);
 }

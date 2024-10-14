@@ -27,7 +27,11 @@ void solve(int t) {}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);
+#ifdef ONLINE_JUDGE
+  int t = 1;
+#else
   Int t;
+#endif
   for (int i = 1; i <= t; i++) {
     solve(i);
   }

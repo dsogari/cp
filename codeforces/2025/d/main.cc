@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2025/submission/285935063
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -38,7 +40,7 @@ void solve(int t) {
     ranges::sort(checks[i][0]);
     ranges::sort(checks[i][1]);
   }
-  vector dp(m + 1, vector<array<int, 2>>(m + 1));
+  vector dp(m + 1, vector<int>(m + 1));
   int ans = 0;
   for (int i = 0; i <= m; i++) { // O(m^2*log n)
     for (int j = 0; j <= m; j++) {
@@ -46,15 +48,12 @@ void solve(int t) {
         auto &[a, b] = checks[i + j];
         int cnta = ranges::upper_bound(a, i) - a.begin();
         int cntb = ranges::upper_bound(b, j) - b.begin();
-        dp[i][j][0] =
-            max(i > 0 ? dp[i - 1][j][0] : 0, j > 0 ? dp[i][j - 1][0] : 0) +
-            cnta;
-        dp[i][j][1] =
-            max(i > 0 ? dp[i - 1][j][1] : 0, j > 0 ? dp[i][j - 1][1] : 0) +
-            cntb;
-        ans = max(ans, dp[i][j][0] + dp[i][j][1]);
+        auto prev1 = i > 0 ? dp[i - 1][j] : 0;
+        auto prev2 = j > 0 ? dp[i][j - 1] : 0;
+        dp[i][j] = max(prev1, prev2) + cnta + cntb;
       }
     }
+    ans = max(ans, dp[i][m - i]);
   }
   println(ans);
 }

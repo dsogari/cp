@@ -36,23 +36,20 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-template <typename T> struct Barrett {
-  using V = conditional_t<sizeof(T) <= 4, u64, u128>;
-  static inline V m, u; // u = 2^(8*sizeof(V))/m
-  static void set(T y) { m = y, u = V(-1) / m; }
-  operator T() const { return m; }
-  friend V operator/(V x, const Barrett &rhs) {
-    V q;
-    if constexpr (sizeof(T) <= 4) {
-      q = u128(x) * u >> 64;
-    } else {
-      u128 xl = u64(x), ul = u64(u), xh = x >> 64, uh = u >> 64;
-      u128 a = xl * ul, b = xl * uh, c = ul * xh, d = xh * uh;
-      q = d + (b >> 64) + (c >> 64) + (((a >> 64) + u64(b) + u64(c)) >> 64);
+struct Barrett {
+  static inline u64 m, u; // u = 2^64/m
+  static void set(u32 y) { m = y, u = -1 / m; }
+  operator u32() const { return m; }
+  friend auto operator/(auto x, const Barrett &) {
+    if constexpr (sizeof(x) > 8) {
+      return x / m;
     }
-    return q + (x >= (q + 1) * m);
+    auto q = u128(x < 0 ? ~x + u128(1) : x) * u >> 64;
+    return decltype(x)(x < 0 ? ~q + (x != ~q * m) : q + (x == (q + 1) * m));
   }
-  friend T operator%(V x, const Barrett &rhs) { return x - (x / rhs) * rhs.m; }
+  friend auto operator%(auto x, const Barrett &rhs) {
+    return decltype(x)(x - (x / rhs) * m);
+  }
 };
 
 template <typename T, auto M> struct Mod {
@@ -60,7 +57,7 @@ template <typename T, auto M> struct Mod {
   static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   make_unsigned_t<T> x;
   Mod() : x(0) {}
-  Mod(auto y) : x(y % i64(M)) { x >= M ? x += M : x; }
+  Mod(auto y) : x(y % M) { x >= M ? x += M : x; }
   operator T() const { return x; }
   Mod operator-() const { return Mod() -= *this; }
   Mod operator+(auto rhs) const { return Mod(*this) += rhs; }
@@ -73,13 +70,13 @@ template <typename T, auto M> struct Mod {
   Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
   Mod pow(auto y) const { // O(log y) | 0^(-inf,0] -> 1
     Mod ans(1), base(*this);
-    for (auto e = y < 0 ? ~y + 1ull : +y; e; e >>= 1, base *= base) {
+    for (auto e = y < 0 ? ~y + u128(1) : +y; e; e >>= 1, base *= base) {
       e & 1 ? ans *= base : ans;
     }
     return y < 0 ? Mod(1) /= ans : ans;
   }
 };
-using Mint = Mod<int, Barrett<int>{}>;
+using Mint = Mod<int, Barrett{}>;
 
 int invcount(auto &&f, int s, int e) { // [s, e) O(n^2)
   int ans = 0;
@@ -137,7 +134,7 @@ void solve(int t) {
       n -= inv % 2;
     }
     const array<int, 2> fwd1{2, 1}, bwd1{1, 2}, fwd2{3, 1}, bwd2{1, 3};
-    Barrett<int>::set(n);
+    Barrett::set(n);
     Mint c = n - 1;
     auto findpos = [&](int i, int d) {
       int k = 0;

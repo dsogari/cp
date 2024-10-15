@@ -37,19 +37,13 @@ template <typename T> struct Barrett {
     auto a = xl * ul, b = xl * uh, c = ul * xh, d = xh * uh;
     return d + (b >> 64) + (c >> 64) + (((a >> 64) + u64(b) + u64(c)) >> 64);
   }
-  friend auto operator/(auto x, const Barrett &) -> decltype(x) {
-    if constexpr (sizeof(x) > sizeof(u)) {
-      return x / m;
-    }
+  friend auto operator/(auto x, Barrett) requires(sizeof(x) <= sizeof(u)) {
     auto q = x < 0 ? ~div(~x + u128(1)) : div(x);
-    return q + (x < 0 ? x > q * m : x >= (q + 1) * m);
+    return decltype(x)(q + (x < 0 ? x > q * m : x >= (q + 1) * m));
   }
-  friend auto operator%(auto x, const Barrett &) -> decltype(x) {
-    if constexpr (sizeof(x) > sizeof(u)) {
-      return x % m;
-    }
+  friend auto operator%(auto x, Barrett) requires(sizeof(x) <= sizeof(u)) {
     auto q = x < 0 ? ~div(~x + u128(1)) : div(x);
-    return x -= q * m, x < 0 || x < m ? x : x - m;
+    return x -= q * m, decltype(x)(x < 0 || x < m ? x : x - m);
   }
 };
 

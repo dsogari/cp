@@ -31,7 +31,13 @@ using Int = Num<int>;
 
 template <typename T, auto M> struct Mod {
   using V = conditional_t<sizeof(T) <= 4, u64, u128>;
-  static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  // static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
+  static V inv(V x, V m) { // O(log^2 m) | x and m coprime
+    for (V a = exchange(x, 1), b = exchange(m, 0); b; a = exchange(b, a % b)) {
+      x = exchange(m, x - (a / b) * m);
+    }
+    return x >= M ? x + M : x;
+  }
   make_unsigned_t<T> x;
   Mod() : x(0) {}
   Mod(auto y) : x(y % M) { x >= M ? x += M : x; }

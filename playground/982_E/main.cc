@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/982/submission/277217255
+ * https://codeforces.com/contest/982/submission/286193063
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,9 +29,9 @@ template <typename T> array<T, 3> exgcd(T m, T n) { // O(log^2 max(m,n))
   T a = 0, b = 1, u = 1, v = 0;
   while (n) {
     T q = m / n;
-    m -= q * n, swap(m, n); // (m, n) = (n, m - q * n)
-    u -= q * a, swap(u, a); // (u, a) = (a, u - q * a)
-    v -= q * b, swap(v, b); // (v, b) = (b, v - q * b)
+    m = exchange(n, m - q * n);
+    u = exchange(a, u - q * a);
+    v = exchange(b, v - q * b);
   }
   return {u, v, m}; // u*m + v*n == gcd(m,n)
 }

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2025/submission/286300042
+ * https://codeforces.com/contest/2025/submission/285935817
  *
  * (c) 2024 Diego Sogari
  */
@@ -28,28 +28,27 @@ using Int = Num<int>;
 void solve(int t) {
   Int n, m;
   vector<Int> r(n);
-  vector checks(m + 1, vector<array<int, 2>>(m + 1));
+  vector<array<vector<int>, 2>> checks(m + 1);
   for (int i = 0, j = 0; i < n; i++) { // O(n)
     if (r[i] == 0) {
       j++;
     } else {
-      checks[j][abs(r[i])][r[i] < 0]++;
+      checks[j][r[i] < 0].push_back(abs(r[i]));
     }
   }
-  for (int i = 0; i <= m; i++) { // O(m^2)
-    for (int j = 0; j < m; j++) {
-      checks[i][j + 1][0] += checks[i][j][0];
-      checks[i][j + 1][1] += checks[i][j][1];
-    }
+  for (int i = 0; i <= m; i++) { // O(n*log n)
+    ranges::sort(checks[i][0]);
+    ranges::sort(checks[i][1]);
   }
   vector<int> dp0(m + 1), dp1(m + 1);
   int ans = 0;
-  for (int i = 0; i <= m; i++) { // O(m^2)
+  for (int i = 0; i <= m; i++) { // O(m^2*log n)
     for (int j = 0; j <= m; j++) {
       if (i + j <= m) {
-        int ca = checks[i + j][i][0];
-        int cb = checks[i + j][j][1];
-        dp1[j] = max(dp0[j], j > 0 ? dp1[j - 1] : 0) + ca + cb;
+        auto &[a, b] = checks[i + j];
+        int cnta = ranges::upper_bound(a, i) - a.begin();
+        int cntb = ranges::upper_bound(b, j) - b.begin();
+        dp1[j] = max(dp0[j], j > 0 ? dp1[j - 1] : 0) + cnta + cntb;
       }
     }
     ans = max(ans, dp1[m - i]);

@@ -13,6 +13,7 @@ struct Binom {
   Mint commute(int n) { return update(n), inv.at(n); }               // O(1)
   Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
   Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
+  Mint catalan(int n) { return combine(2 * n, n) * invert(n + 1); }  // O(1)
   Mint arrange(int n, int k) { return permute(n) * commute(n - k); } // O(1)
   Mint combine(int n, int k) { return arrange(n, k) * commute(k); }  // O(1)
   void reserve(int n) { fac.reserve(n), inv.reserve(n); }            // O(n)

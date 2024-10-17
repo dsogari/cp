@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2025/submission/286300042
+ * https://codeforces.com/contest/2025/submission/286363048
  *
  * (c) 2024 Diego Sogari
  */
@@ -28,33 +28,29 @@ using Int = Num<int>;
 void solve(int t) {
   Int n, m;
   vector<Int> r(n);
-  vector checks(m + 1, vector<array<int, 2>>(m + 1));
-  for (int i = 0, j = 0; i < n; i++) { // O(n)
+  r.push_back(0);
+  vector<int> checks(m + 1), diff(m + 1);
+  for (int i = 0, k = 0; i <= n; i++) { // O(m^2+n)
     if (r[i] == 0) {
-      j++;
-    } else {
-      checks[j][abs(r[i])][r[i] < 0]++;
-    }
-  }
-  for (int i = 0; i <= m; i++) { // O(m^2)
-    for (int j = 0; j < m; j++) {
-      checks[i][j + 1][0] += checks[i][j][0];
-      checks[i][j + 1][1] += checks[i][j][1];
-    }
-  }
-  vector<int> dp0(m + 1), dp1(m + 1);
-  int ans = 0;
-  for (int i = 0; i <= m; i++) { // O(m^2)
-    for (int j = 0; j <= m; j++) {
-      if (i + j <= m) {
-        int ca = checks[i + j][i][0];
-        int cb = checks[i + j][j][1];
-        dp1[j] = max(dp0[j], j > 0 ? dp1[j - 1] : 0) + ca + cb;
+      for (int j = 0; j < k; j++) {
+        diff[j + 1] += diff[j];
+      }
+      for (int j = 0; j <= k; j++) {
+        checks[j] += exchange(diff[j], 0);
+      }
+      for (int j = ++k; j > 0; j--) {
+        checks[j] = max(checks[j], checks[j - 1]);
+      }
+    } else if (abs(r[i]) <= k) {
+      if (r[i] > 0) {
+        diff[r[i]]++;
+      } else {
+        diff[0]++;
+        diff[k + r[i] + 1]--;
       }
     }
-    ans = max(ans, dp1[m - i]);
-    swap(dp0, dp1);
   }
+  int ans = *ranges::max_element(checks);
   println(ans);
 }
 

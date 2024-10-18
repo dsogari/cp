@@ -57,3 +57,20 @@ struct WGraph : vector<vector<array<int, 2>>> {
   void add(int u, int v, int w) { _add(u, v, w), _add(v, u, w); }
   void _add(int u, int v, int w) { (*this)[u].push_back({v, w}); }
 };
+
+/**
+ * Undirected Graph with labeled edges
+ */
+struct LGraph : vector<vector<array<int, 2>>> {
+  const int n, m;
+  vector<array<Int, 2>> edges;
+  LGraph(int n, int m = 0)
+      : vector<vector<array<int, 2>>>(n + 1), n(n), m(m), edges(m) {
+    for (int i = 0; i < m; i++) {
+      auto [u, v] = edges[i];
+      add(u, v, i);
+    }
+  }
+  void add(int u, int v, int id) { _add(u, v, id), _add(v, u, id); }
+  void _add(int u, int v, int id) { (*this)[u].push_back({v, id}); }
+};

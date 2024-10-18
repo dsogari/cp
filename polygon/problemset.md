@@ -1,41 +1,5 @@
 # My Contest
 
-## C1. Longest Interesting Subsequence (Easy)
-
-- Category: Greedy
-- Expected difficulty: 1000
-- Expected time complexity: $O(n\log n)$
-
-### Statement
-
-Su is preparing another lesson for her beloved students. She will give each student a **distinct** integer. Then, she will ask students to form groups according to the following rule:
-
-- two or more students can form a group only if the difference between the maximum and minimum numbers in the group equals the group's size.
-
-In anticipation of the class, she wants to know the size of the largest possible group.
-
-### Input
-
-The first line of the input contains a single integer, $t$ ($1 \le t \le 10^4$) — the number of test cases.
-
-The first line of each test case contains a single integer, $n$ ($1 \le n \le 2 \cdot 10^5$) — the number of students.
-
-The second line of each test case contains $n$ integers, $a_1, a_2, \ldots, a_n$ ($1 \le a_i \le 10^9$) — the number assigned to each student.
-
-### Output
-
-For each test case, output a single integer — the size of the largest group, such that the difference between its maximum and minimum elements equals its size; or $0$ if there is no such group.
-
-### Note
-
-In the first test case, there is no valid group.
-
-In the second test case, the largest group is $\{3,5,6,7\}$.
-
-### Solution
-
-### Code
-
 ## C2. Longest Interesting Subsequence (Hard)
 
 - Category: Greedy

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2025/submission/286451930
+ * https://codeforces.com/contest/2025/submission/286458885
  *
  * (c) 2024 Diego Sogari
  */
@@ -84,22 +84,21 @@ void solve(int t) {
   Int n, m;
   binom.reserve(m);
   int k = m / 2; // number of matchings in a suit
-  vector<Mint> memo(k + 2), dp(k + 1);
-  for (int i = 0; i <= k; i++) { // O(m)
-    memo[i + 1] = binom.combine(m, i);
-    dp[k - i] = memo[i + 1] - memo[i];
+  vector<Mint> memo(k + 2);
+  for (int i = k; i >= 0; i--) { // O(m)
+    memo[i] = binom.combine(m, i);
+    memo[i + 1] -= memo[i]; // catalan: lattice paths from (0,0) to (i,m-i)
   }
-  for (int s = 1; s < n; s++) { // O(n*m^2)
-    vector<Mint> dp1(k + 1);
-    for (int i = 0; i <= k; i++) { // leaving i matchings of trump suit
-      auto c = memo[k - i + 1] - memo[k - i];
-      for (int j = i; j <= k; j++) { // using j matchings of suit s
-        dp1[j - i] += dp[j] * c;
+  auto dp = memo;
+  for (int s = 1; s < n; s++) {    // O(n*m^2)
+    for (int i = k; i >= 0; i--) { // having i matchings of trump suit
+      dp[i] *= memo[k];
+      for (int j = 0; j < i; j++) { // using j matchings of trump suit
+        dp[i] += dp[j] * memo[k - (i - j)];
       }
     }
-    swap(dp, dp1);
   }
-  println(dp[0]);
+  println(dp[k]);
 }
 
 int main() {

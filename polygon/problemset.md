@@ -3,15 +3,15 @@
 ## Piggy
 
 - Category: Greedy
-- Expected difficulty: 1000
+- Expected difficulty: 750
 - Expected time complexity: $O(n)$
 
-Piggy is speeding through a circular track of length $n$ at a constant speed of $1$. There's an Oracle that can answer at most $n$ queries of the form `? x`, where $x$ is a track position. It will answer `1` if Piggy is currently at that position, or `0` otherwise. Find out the direction in which Piggy is moving. Output the answer in the form `! 1` if he is moving forwards, or `0` otherwise.
+Piggy is speeding through a circular track of length $n$ at a constant speed of $1$. There's an Oracle that can answer at most $n$ queries of the form `? p`, where $p$ is a track position. It will answer `1` if Piggy is currently at that position, or `0` otherwise. Find out the direction in which Piggy is moving. Output the answer in the form `! d`, where $d$ is 1 if he is moving forwards, or 0 otherwise.
 
 ## B1. Longest Interesting Subsequence (Easy)
 
 - Category: Greedy
-- Expected difficulty: 750
+- Expected difficulty: 1000
 - Expected time complexity: $O(n\log n)$
 
 ### Statement

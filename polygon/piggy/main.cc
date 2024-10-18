@@ -23,7 +23,32 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+bool simulate(int n, int &x, int d, int p) {
+  return p == exchange(x, d ? x % n + 1 : n - (n - x + 1) % n);
+}
+
+void solve(int t) {
+  Int n;
+#ifndef ONLINE_JUDGE
+  Int x, d;
+#endif
+  int rem = n;
+  auto query = [&](int p) -> bool {
+    assert(rem--);
+    println('?', p);
+#ifndef ONLINE_JUDGE
+    return simulate(n, x, d, p);
+#else
+    return Int();
+#endif
+  };
+  bool found = false;
+  while (rem > 2 && !found) {
+    found = query(1);
+  }
+  auto ans = !found && query(n) || query(2);
+  println('!', ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

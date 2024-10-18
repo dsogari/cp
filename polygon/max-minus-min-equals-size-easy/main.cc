@@ -30,8 +30,8 @@ void solve(int t) {
   int ans = 0;
   for (int i = 0, j = 1; j < n;) {
     auto diff = a[j] - a[i], len = j - i + 1;
-    if (diff == len) {
-      ans = max(ans, len);
+    if (diff <= len && diff > 1) {
+      ans = max(ans, diff);
     }
     diff > len ? i++ : j++;
   }

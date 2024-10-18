@@ -1,14 +1,6 @@
 # My Contest
 
-## Piggy
-
-- Category: Greedy
-- Expected difficulty: 750
-- Expected time complexity: $O(n)$
-
-Piggy is speeding through a circular track of length $n$ at a constant speed of $1$. There's an Oracle that can answer at most $n$ queries of the form `? p`, where $p$ is a track position. It will answer `1` if Piggy is currently at that position, or `0` otherwise. Find out the direction in which Piggy is moving. Output the answer in the form `! d`, where $d$ is 1 if he is moving forwards, or 0 otherwise.
-
-## B1. Longest Interesting Subsequence (Easy)
+## C1. Longest Interesting Subsequence (Easy)
 
 - Category: Greedy
 - Expected difficulty: 1000
@@ -44,7 +36,7 @@ In the second test case, the largest group is $\{3,5,6,7\}$.
 
 ### Code
 
-## B2. Longest Interesting Subsequence (Hard)
+## C2. Longest Interesting Subsequence (Hard)
 
 - Category: Greedy
 - Expected difficulty: 1250
@@ -80,7 +72,7 @@ In the second test case, there are two largest groups, namely, $\{1,1,4,5\}$ and
 
 ### Code
 
-## C. Inc Match 2
+## D. Inc Match 2
 
 - Category: Strings
 - Expected difficulty: 1500
@@ -118,7 +110,7 @@ For each test case, output a single integer — the minimum number of operations
 
 ### Code
 
-## D. Tarzan
+## E. Tarzan
 
 - Category: Trees, Graphs
 - Expected difficulty: 2000
@@ -152,7 +144,7 @@ Then, on the next line, output $m$ integers — the indices of the trees visited
 
 ### Code
 
-## E1. Bookcase (Easy)
+## F1. Bookcase (Easy)
 
 - Category: Sorting & Searching
 - Expected difficulty: 1500
@@ -200,7 +192,7 @@ for (auto [w, h] : a) {
 cout << heights.size() - 1 << endl;
 ```
 
-## E2. Bookcase (Hard)
+## F2. Bookcase (Hard)
 
 - Category: Combinatorial Optimization
 - Expected difficulty: 2500

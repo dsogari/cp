@@ -3,7 +3,7 @@
  */
 #include "testlib.h"
 
-constexpr int maxt = 1e3, maxn = 1e5;
+constexpr int maxt = 1e3, maxn = 1e4;
 
 int main(int argc, char *argv[]) {
   registerValidation(argc, argv);

@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   registerGen(argc, argv, 1);
   int t = opt<int>(1, maxt);
   int N = opt<int>(2, maxn);
-  int minn = opt<int>(2, 1);
+  int minn = opt<int>(3, 1);
   auto lengths = rnd.partition(t, N, minn);
   println(t);
   for (int i = 0; i < t; i++) {

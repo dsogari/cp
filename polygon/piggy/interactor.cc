@@ -5,7 +5,7 @@
 
 using namespace std;
 
-constexpr int maxt = 1e3, maxn = 1e5;
+constexpr int maxt = 1e3, maxn = 1e4;
 
 int check(int n, int x, int d) {
   cout << n << endl;

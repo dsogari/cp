@@ -34,9 +34,8 @@ int main(int argc, char *argv[]) {
     auto d = inf.readInt(0, 1, "d");
     auto v = check(n, x, d);
     if (v < 0) {
-      quitf(_fail, "couldn't guess the answer in %d queries", n);
-    }
-    if (!v) {
+      quitf(_wa, "couldn't guess the answer in %d queries", n);
+    } else if (!v) {
       quit(_wa, "");
     }
   }

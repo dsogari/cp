@@ -81,7 +81,9 @@ void solve(int t) {
     auto it = diff.lower_bound(c2);
     if (it != diff.end()) {
       auto x = fen.query(it->second);
-      ans = max(ans, b1[x] - b1[i]);
+      if (b1[x] - b1[i] > 1) {
+        ans = max(ans, b1[x] - b1[i]);
+      }
     }
     c1 += b1[i + 1] - b1[i];
     c2 = b2[i] - c1;

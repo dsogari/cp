@@ -1,41 +1,5 @@
 # My Contest
 
-## C2. Longest Interesting Subsequence (Hard)
-
-- Category: Greedy
-- Expected difficulty: 1250
-- Expected time complexity: $O(n\log n)$
-
-### Statement
-
-Su is preparing another lesson for her beloved students. She will give each student an **arbitrary** integer. Then, she will ask students to form groups according to the following rule:
-
-- two or more students can form a group only if the difference between the maximum and minimum numbers in the group equals the group's size.
-
-In anticipation of the class, she wants to know the size of the largest possible group.
-
-### Input
-
-The first line of the input contains a single integer, $t$ ($1 \le t \le 10^4$) — the number of test cases.
-
-The first line of each test case contains a single integer, $n$ ($1 \le n \le 2 \cdot 10^5$) — the number of students.
-
-The second line of each test case contains $n$ integers, $a_1, a_2, \ldots, a_n$ ($1 \le a_i \le 10^9$) — the number assigned to each student.
-
-### Output
-
-For each test case, output a single integer — the size of the largest group, such that the difference between its maximum and minimum elements equals its size; or $0$ if there is no such group.
-
-### Note
-
-In the first test case, the largest group is $\{5,5,9,9,10\}$. Note that the group $\{5,5,9,9\}$ is also valid, but smaller.
-
-In the second test case, there are two largest groups, namely, $\{1,1,4,5\}$ and $\{4,5,8,8\}$.
-
-### Solution
-
-### Code
-
 ## D. Inc Match 2
 
 - Category: Strings

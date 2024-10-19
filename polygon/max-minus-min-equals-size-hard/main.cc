@@ -55,12 +55,14 @@ void solve(int t) {
   for (auto &&ai : a) { // O(n*log n)
     cnt[ai]++;
   }
+  int m = cnt.size();
   vector<int> b1, b2;
+  b1.reserve(m);
+  b2.reserve(m);
   for (auto &&[ai, c] : cnt) { // O(n)
     b1.push_back(ai);
     b2.push_back(c);
   }
-  int m = cnt.size();
   for (int i = 1; i < m; i++) { // O(n)
     b2[i] += b2[i - 1];
   }
@@ -75,7 +77,7 @@ void solve(int t) {
     i = j--;
   }
   int ans = 0;
-  for (int i = 0, c1 = 0, c2 = 0; i < n - 1; i++) { // O(n*log n)
+  for (int i = 0, c1 = 0, c2 = 0; i < m - 1; i++) { // O(n*log n)
     auto it = diff.lower_bound(c2);
     if (it != diff.end()) {
       auto x = fen.query(it->second);

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2030/submission/286773726
+ * https://codeforces.com/contest/2030/submission/286829318
  *
  * (c) 2024 Diego Sogari
  */
@@ -33,10 +33,9 @@ struct Str : string {
 void solve(int t) {
   Int n;
   Str s;
-  auto ans =
-      s.starts_with("10") || s.ends_with("01") || s.find("11") != string::npos
-          ? "YES"
-          : "NO";
+  auto ans = s.front() == '1' || s.back() == '1' || s.find("11") != string::npos
+                 ? "YES"
+                 : "NO";
   println(ans);
 }
 

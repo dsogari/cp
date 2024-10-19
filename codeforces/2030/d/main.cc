@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2030/submission/286825436
+ * https://codeforces.com/contest/2030/submission/286827040
  *
  * (c) 2024 Diego Sogari
  */
@@ -35,32 +35,29 @@ void solve(int t) {
   vector<Int> p(n);
   Str s;
   vector<Int> q(m);
-  if (ranges::is_sorted(p)) {
-    for (int i = 0; i < m; i++) {
+  if (ranges::is_sorted(p)) {     // O(n)
+    for (int i = 0; i < m; i++) { // O(m)
       println("YES");
     }
     return;
   }
-  vector<int> mx(n), mn(n);
+  vector<int> mx(n);
   mx[0] = p[0];
-  mn[n - 1] = p[n - 1];
-  for (int i = 1, j = n - 2; i < n; i++, j--) {
+  for (int i = 1; i < n; i++) { // O(n)
     mx[i] = max(mx[i - 1], +p[i]);
-    mn[j] = min(mn[j + 1], +p[j]);
   }
-  vector<bool> bad(n);
+  auto f = [&](int i) {
+    return s[i - 1] == 'L' && s[i] == 'R' && mx[i - 1] > i;
+  };
   int badcnt = 0;
-  for (int i = 1; i < n; i++) {
-    bad[i] = s[i - 1] == 'L' && s[i] == 'R' && mx[i - 1] > mn[i];
-    badcnt += bad[i];
+  for (int i = 1; i < n; i++) { // O(n)
+    badcnt += f(i);
   }
-  for (auto &&i : q) {
+  for (auto &&i : q) { // O(m)
     i--;
-    badcnt -= bad[i] + bad[i + 1];
+    badcnt -= f(i) + f(i + 1);
     s[i] = s[i] == 'L' ? 'R' : 'L';
-    bad[i] = s[i - 1] == 'L' && s[i] == 'R' && mx[i - 1] > mn[i];
-    bad[i + 1] = s[i] == 'L' && s[i + 1] == 'R' && mx[i] > mn[i + 1];
-    badcnt += bad[i] + bad[i + 1];
+    badcnt += f(i) + f(i + 1);
     auto ans = badcnt ? "NO" : "YES";
     println(ans);
   }

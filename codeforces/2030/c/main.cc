@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2030/submission/286773726
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,20 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Str : string {
+  using string::string;
+  Str() { cin >> *this; }
+};
+
+void solve(int t) {
+  Int n;
+  Str s;
+  auto ans =
+      s.starts_with("10") || s.ends_with("01") || s.find("11") != string::npos
+          ? "YES"
+          : "NO";
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -29,20 +29,27 @@ array<T, N> operator+(const array<T, N> &lhs, const array<T, N> &rhs) { // O(N)
 /**
  * Bhaskara formula
  */
-auto bhaskara(auto a, auto b, auto c) { // O(log n)
+constexpr auto bhaskara(auto a, auto b, auto c) { // O(log n)
   return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
 }
 
 /**
  * Sum of arithmetic progressions
  */
-auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; } // O(1)
+constexpr auto apsum(auto a, auto b, auto n) { return n * (a + b) / 2; } // O(1)
 
 /**
  * Sum of geometric progressions
  */
-auto gpsum(auto a, auto r, auto n) { // O(log n)
+constexpr auto gpsum(auto a, auto r, auto n) { // O(log n)
   return a * (1 - pow(r, n)) / (1 - r);
+}
+
+/**
+ * Check if two intervals cross each other
+ */
+constexpr int crosses(int l1, int r1, int l2, int r2) {
+  return (l1 < l2 && l2 < r1 && r1 < r2) - (l2 < l1 && l1 < r2 && r2 < r1);
 }
 
 /**

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2033/submission/300533251
+ * https://codeforces.com/contest/2033/submission/300534227
  *
  * (c) 2024 Diego Sogari
  */
@@ -29,18 +29,16 @@ using Int = Num<int>;
 void solve(int t) {
   Int n;
   vector<Int> a(n);
-  vector<i64> pref(n + 1);
-  for (int i = 0; i < n; i++) {
-    pref[i + 1] = pref[i] + a[i];
-  }
-  set<i64> sums;
+  i64 sum = 0;
   int ans = 0;
-  for (int i = n; i > 0; i--) {
-    sums.insert(pref[i]);
-    if (sums.contains(pref[i - 1])) {
+  set<i64> sums = {0};
+  for (auto ai : a) {
+    sum += ai;
+    if (sums.contains(sum)) {
       sums.clear();
       ans++;
     }
+    sums.insert(sum);
   }
   println(ans);
 }

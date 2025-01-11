@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2033/submission/300556402
+ * https://codeforces.com/contest/2033/submission/300556742
  *
  * (c) 2024 Diego Sogari
  */
@@ -30,12 +30,11 @@ void solve(int t) {
   vector<Int> a(n);
   vector<bool> vis(n);
   int ans = 0;
-  for (int i = 0, c = 1; i < n; i++, c = 1) {
-    vis[i] = true;
-    for (int j = a[i] - 1; !vis[j]; j = a[j] - 1, c++) {
+  for (int i = 0, s = 0; i < n; i++, s = 0) {
+    for (int j = a[i] - 1; !vis[j]; j = a[j] - 1, s++) {
       vis[j] = true;
     }
-    ans += (c - 1) / 2;
+    ans += (s - 1) / 2;
   }
   println(ans);
 }

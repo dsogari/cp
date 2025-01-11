@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2033/submission/300556402
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,20 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n;
+  vector<Int> a(n);
+  vector<bool> vis(n);
+  int ans = 0;
+  for (int i = 0, c = 1; i < n; i++, c = 1) {
+    vis[i] = true;
+    for (int j = a[i] - 1; !vis[j]; j = a[j] - 1, c++) {
+      vis[j] = true;
+    }
+    ans += (c - 1) / 2;
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

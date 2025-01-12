@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2033/submission/300562510
+ * https://codeforces.com/contest/2033/submission/300574557
  *
  * (c) 2024 Diego Sogari
  */
@@ -58,7 +58,7 @@ using Mint = Mod<int, 1000000007>;
 void solve(int t) {
   I64 n, k;
   int freq = 1;
-  for (int a = 0, b = 1, c = 1; c % k; a = b, b = c % k, freq++) {
+  for (int a = 0, b = 1 % k, c; b; a = b, b = c % k, freq++) {
     c = a + b;
   }
   debug(freq);

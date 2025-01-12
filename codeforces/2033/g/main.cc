@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 

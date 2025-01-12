@@ -1,7 +1,7 @@
 /**
  * https://codeforces.com/contest/2033/submission/300534227
  *
- * (c) 2024 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 

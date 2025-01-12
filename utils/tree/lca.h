@@ -7,15 +7,15 @@
 /**
  * Lowest Common Ancestor (Tarjan's off-line algorithm)
  */
-struct LCA : vector<vector<int>> {
+struct Tarjan : vector<vector<int>> {
   DSU dsu;
   vector<int> anc;
-  LCA(const Graph &g, const vector<vector<int>> &q, int s)
-      : vector<vector<int>>(g.size()), dsu(g.size()), anc(g.size()) { // O(n)
-    dfs(g, q, s, s);
+  Tarjan(const Graph &g, const vector<vector<int>> &q, int s)
+      : vector<vector<int>>(g.size()), dsu(g.size()), anc(g.size(), -1) {
+    dfs(g, q, s, s); // O(n)
   }
   void dfs(const Graph &g, const vector<vector<int>> &q, int u, int p) {
-    anc[u] = dsu.add(u);
+    anc[u] = u;
     for (auto &v : g[u]) {
       if (v != p) {
         dfs(g, q, v, u);
@@ -23,7 +23,7 @@ struct LCA : vector<vector<int>> {
       }
     }
     for (auto &v : q[u]) {
-      (*this)[u].push_back(dsu.has(v) ? anc[dsu.find(v)] : -1);
+      (*this)[u].push_back(anc[dsu.find(v)]);
     }
   }
 };

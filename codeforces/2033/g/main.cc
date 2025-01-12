@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2033/submission/300764476
+ * https://codeforces.com/contest/2033/submission/300765554
  *
  * (c) 2025 Diego Sogari
  */
@@ -30,9 +30,8 @@ using Int = Num<int>;
 
 struct Graph : vector<vector<int>> {
   const int n, m;
-  vector<array<Int, 2>> e;
-  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), e(m) {
-    for (auto &[u, v] : e) {
+  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
+    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
       add(u, v);
     }
   }
@@ -62,20 +61,16 @@ struct Subtree : vector<NodeInfo> {
         cur.siz += child.siz;
         if (cur.diam < cur.hei + child.hei) {
           cur.diam = cur.hei + child.hei;
+          cur.far2 = child.far1;
           if (cur.hei <= child.hei) {
-            cur.far2 = cur.far1;
-            cur.far1 = child.far1;
-          } else {
-            cur.far2 = child.far1;
+            ::swap(cur.far1, cur.far2);
+            cur.hei = child.hei + 1;
           }
         }
         if (cur.diam < child.diam) {
           cur.diam = child.diam;
           cur.far1 = child.far1;
           cur.far2 = child.far2;
-        }
-        if (cur.hei <= child.hei) {
-          cur.hei = child.hei + 1;
         }
       }
     }

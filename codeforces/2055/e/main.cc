@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug(...)
@@ -23,7 +24,13 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n;
+  vector<array<Int, 2>> a(n);
+  int ans = 0;
+
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

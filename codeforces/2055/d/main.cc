@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2055/submission/300755131
+ * https://codeforces.com/contest/2055/submission/300768829
  *
  * (c) 2025 Diego Sogari
  */
@@ -28,10 +28,10 @@ using Int = Num<int>;
 void solve(int t) {
   Int n, k, l;
   vector<Int> a(n);
-  ranges::sort(a); // O(n*log n)
-  int ans = 2 * a[0], pos = 2 * k;
-  for (int i = 1; i < n && pos < 2 * l; i++) { // O(n)
-    int dist = 2 * a[i] - pos;                 // distance from next one
+  k *= 2, l *= 2;
+  int ans = 2 * a[0], pos = k;
+  for (int i = 1; i < n && pos < l; i++) { // O(n)
+    int dist = 2 * a[i] - pos;
     if (dist > 0) {
       dist -= min(ans, dist);
       dist /= 2;
@@ -39,9 +39,9 @@ void solve(int t) {
     } else {
       dist += min(ans, -dist);
     }
-    pos += dist + 2 * k;
+    pos += dist + k;
   }
-  ans += max(0, 2 * l - pos);
+  ans += max(0, l - pos);
   println(ans);
 }
 

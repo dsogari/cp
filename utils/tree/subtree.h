@@ -5,7 +5,7 @@
 
 struct NodeInfo {
   int tin, tout, dep, siz, hei, diam, far1, far2;
-  vector<int> par;
+  vector<int> par; // binary lifting
 };
 
 /**
@@ -28,20 +28,16 @@ struct Subtree : vector<NodeInfo> {
         cur.siz += child.siz;
         if (cur.diam < cur.hei + child.hei) {
           cur.diam = cur.hei + child.hei;
+          cur.far2 = child.far1;
           if (cur.hei <= child.hei) {
-            cur.far2 = cur.far1;
-            cur.far1 = child.far1;
-          } else {
-            cur.far2 = child.far1;
+            ::swap(cur.far1, cur.far2);
+            cur.hei = child.hei + 1;
           }
         }
         if (cur.diam < child.diam) {
           cur.diam = child.diam;
           cur.far1 = child.far1;
           cur.far2 = child.far2;
-        }
-        if (cur.hei <= child.hei) {
-          cur.hei = child.hei + 1;
         }
       }
     }

@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2033/submission/300764476
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -28,8 +30,9 @@ using Int = Num<int>;
 
 struct Graph : vector<vector<int>> {
   const int n, m;
-  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
-    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
+  vector<array<Int, 2>> e;
+  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), e(m) {
+    for (auto &[u, v] : e) {
       add(u, v);
     }
   }
@@ -48,7 +51,7 @@ struct Subtree : vector<NodeInfo> {
   }
   void dfs(const Graph &g, int u, int p, int &t, int d = 1) { // O(n*log n)
     auto &cur = (*this)[u] = {++t, 0, d, 1, 1, 1, u, u};
-    cur.par.assign(bit_ceil(g.size()) + 1, p);
+    cur.par.assign(bit_width(g.size()), p);
     for (int i = 1; i < cur.par.size(); ++i) {
       cur.par[i] = (*this)[cur.par[i - 1]].par[i - 1];
     }
@@ -108,7 +111,6 @@ struct Subtree : vector<NodeInfo> {
     int a = lca(u, v);
     int ua = (*this)[u].dep - (*this)[a].dep;
     int va = (*this)[v].dep - (*this)[a].dep;
-    // assert(0 <= k && 0 <= ua && 0 <= va && k <= ua + va);
     return k <= ua ? _from(u, k) : _from(v, ua + va - k);
   }
 };

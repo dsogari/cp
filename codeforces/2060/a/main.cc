@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/301744557
+ * https://codeforces.com/contest/2060/submission/301911892
  *
  * (c) 2025 Diego Sogari
  */
@@ -27,12 +27,8 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int a, b, c, d;
-  int x = a + b;
-  int ans = 1 + (b + x == c) + (x + c == d);
-  x = c - b;
-  ans = max(ans, 1 + (a + b == x) + (x + c == d));
-  x = d - c;
-  ans = max(ans, 1 + (a + b == x) + (b + x == c));
+  vector<int> cnt(300);
+  int ans = max({++cnt[99 + a + b], ++cnt[99 + c - b], ++cnt[99 + d - c]});
   println(ans);
 }
 

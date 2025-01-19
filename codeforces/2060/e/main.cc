@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/301888841
+ * https://codeforces.com/contest/2060/submission/301916091
  *
  * (c) 2025 Diego Sogari
  */
@@ -35,11 +35,12 @@ struct DSU {
       if (siz[a] < siz[b]) {
         swap(a, b);
       }
-      siz[a] += siz[b];
+      siz[a] += exchange(siz[b], 0);
       par[b] = a;
     }
     return a;
   }
+  int count() const { return siz.size() - ranges::count(siz, 0); } // O(n)
 };
 
 void solve(int t) {
@@ -57,12 +58,7 @@ void solve(int t) {
       dsu1.merge(u, v);
     }
   }
-  for (auto [u, v] : g) {
-    if (dsu1.find(u) != dsu1.find(v)) {
-      dsu1.merge(u, v);
-      ans++;
-    }
-  }
+  ans += dsu1.count() - dsu2.count();
   println(ans);
 }
 

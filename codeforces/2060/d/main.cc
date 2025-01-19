@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/301816342
+ * https://codeforces.com/contest/2060/submission/301907596
  *
  * (c) 2025 Diego Sogari
  */
@@ -33,9 +33,7 @@ void solve(int t) {
       println("NO");
       return;
     }
-    auto mn = min(a[i], a[i + 1]);
-    a[i] -= mn;
-    a[i + 1] -= mn;
+    a[i + 1] -= a[i];
   }
   println("YES");
 }

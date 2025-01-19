@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/301768003
+ * https://codeforces.com/contest/2060/submission/301908910
  *
  * (c) 2025 Diego Sogari
  */
@@ -43,14 +43,14 @@ void solve(int t) {
   Mat<Int> a(n, m);
   vector<int> ans(n);
   for (int i = 0; i < n; i++) {
-    ranges::sort(a[i]);
+    auto k = a[i][0] % n;
     for (int j = 1; j < m; j++) {
-      if ((a[i][j] - a[i][j - 1]) % n != 0) {
+      if (a[i][j] % n != k) {
         println(-1);
         return;
       }
     }
-    ans[a[i][0]] = i + 1;
+    ans[k] = i + 1;
   }
   println(ans);
 }

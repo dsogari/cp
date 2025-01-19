@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/301809674
+ * https://codeforces.com/contest/2060/submission/301900428
  *
  * (c) 2025 Diego Sogari
  */
@@ -28,17 +28,15 @@ using Int = Num<int>;
 void solve(int t) {
   Int n, k;
   vector<Int> a(n);
-  vector<int> cnt(n + 1);
+  vector<int> cnt(2 * n + 1);
   for (auto &&ai : a) {
     cnt[ai]++;
   }
-  int ans = 0;
-  for (int i = 1; i <= n; i++) {
-    if (1 <= k - i && k - i <= n) {
-      ans += min(cnt[i], cnt[k - i]);
-    }
+  int ans = 0, l = 0, r = k;
+  for (; l < r; l++, r--) {
+    ans += min(cnt[l], cnt[r]);
   }
-  ans /= 2;
+  ans += l == r ? cnt[l] / 2 : 0;
   println(ans);
 }
 

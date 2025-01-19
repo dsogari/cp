@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2060/submission/301744557
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,16 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int a, b, c, d;
+  int x = a + b;
+  int ans = 1 + (b + x == c) + (x + c == d);
+  x = c - b;
+  ans = max(ans, 1 + (a + b == x) + (x + c == d));
+  x = d - c;
+  ans = max(ans, 1 + (a + b == x) + (b + x == c));
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

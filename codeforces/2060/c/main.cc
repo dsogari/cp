@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2060/submission/301809674
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,22 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n, k;
+  vector<Int> a(n);
+  vector<int> cnt(n + 1);
+  for (auto &&ai : a) {
+    cnt[ai]++;
+  }
+  int ans = 0;
+  for (int i = 1; i <= n; i++) {
+    if (1 <= k - i && k - i <= n) {
+      ans += min(cnt[i], cnt[k - i]);
+    }
+  }
+  ans /= 2;
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

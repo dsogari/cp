@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2060/submission/301816342
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,20 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n;
+  vector<Int> a(n);
+  for (int i = 0; i < n - 1; i++) {
+    if (a[i] > a[i + 1]) {
+      println("NO");
+      return;
+    }
+    auto mn = min(a[i], a[i + 1]);
+    a[i] -= mn;
+    a[i + 1] -= mn;
+  }
+  println("YES");
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -16,6 +16,15 @@ template <typename T> struct Num {
 };
 
 /**
+ * Input string
+ * LLDB: type summary add --summary-string "${var._M_dataplus._M_p}" -x "^Str<"
+ */
+template <typename T> struct Str : basic_string<T> {
+  using basic_string<T>::basic_string;
+  Str() { cin >> *this; }
+};
+
+/**
  * Common input types
  */
 using Int = Num<int>;
@@ -23,15 +32,7 @@ using Chr = Num<char>;
 using I64 = Num<i64>;
 using U64 = Num<u64>;
 using F64 = Num<double>;
-
-/**
- * Input string
- * LLDB: type summary add --summary-string "${var._M_dataplus._M_p}" Str
- */
-struct Str : string {
-  using string::string;
-  Str() { cin >> *this; }
-};
+using String = Str<char>;
 
 /**
  * Printing utilities

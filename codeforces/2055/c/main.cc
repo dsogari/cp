@@ -30,10 +30,11 @@ template <typename T> struct Num {
 using Int = Num<int>;
 using I64 = Num<i64>;
 
-struct Str : string {
-  using string::string;
+template <typename T> struct Str : basic_string<T> {
+  using basic_string<T>::basic_string;
   Str() { cin >> *this; }
 };
+using String = Str<char>;
 
 template <typename T> struct Mat : vector<vector<T>> {
   int n, m;
@@ -47,7 +48,7 @@ template <typename T> struct Mat : vector<vector<T>> {
 
 void solve(int t) {
   Int n, m;
-  Str path;
+  String path;
   Mat<I64> g(n, m);
   int i = 0, j = 0;
   for (auto &&c : path) {

@@ -23,7 +23,19 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+struct Iota : vector<int> {
+  Iota(int n, int s = 0) : vector<int>(n) { iota(begin(), end(), s); }
+  Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
+};
+
+void solve(int t) {
+  Int n;
+  vector<Int> a(n), b(n);
+  auto cmp = [&](int i, int j) { return a[i] < a[j]; };
+  Iota idx(n, cmp);
+
+  // println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

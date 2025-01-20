@@ -1,2 +1,5 @@
 #!/usr/bin/sh
-build/debug/codeforces/$1/$1_$2 | diff - codeforces/$1/$2/output
+IFS='/' read -r judge contest problem <<EOF
+$1
+EOF
+"build/debug/$judge/$contest/${judge}_${contest}_${problem}" | diff -Z - "$1/output"

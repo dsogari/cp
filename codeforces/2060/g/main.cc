@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/302296907
+ * https://codeforces.com/contest/2060/submission/302299315
  *
  * (c) 2025 Diego Sogari
  */
@@ -33,18 +33,26 @@ struct Iota : vector<int> {
 void solve(int t) {
   Int n;
   vector<Int> a(n), b(n);
-  auto cmp = [&](int i, int j) { return min(a[i], b[i]) < min(a[j], b[j]); };
-  Iota idx(n, cmp); // O(n*log n)
+  vector<int> pos(2 * n + 1);
   int flips = 0, extra = n % 2;
-  for (int i = 0, prevmax = 0; i < n; i++) { // O(n)
-    auto [mn, mx] = minmax(a[idx[i]], b[idx[i]]);
-    if (prevmax > mx) {
+  for (int i = 0; i < n; i++) { // O(n)
+    if (a[i] > b[i]) {
+      swap(a[i], b[i]);
+      flips++;
+    }
+    pos[a[i]] = pos[b[i]] = i;
+  }
+  for (int i = 0, x = 0, prev = 0; i < n; i++) { // O(n)
+    while (pos[++x] < 0)
+      ;
+    auto y = b[pos[x]];
+    if (prev > y) {
       println("NO");
       return;
     }
-    flips += a[idx[i]] > b[idx[i]];
-    extra |= prevmax < mn && i % 2;
-    prevmax = mx;
+    pos[x] = pos[y] = -1; // mark as visited
+    extra |= prev < x && i % 2;
+    prev = y;
   }
   auto ans = flips % 2 == 0 || extra ? "YES" : "NO";
   println(ans);

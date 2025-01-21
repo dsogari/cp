@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/302153370
+ * https://codeforces.com/contest/2060/submission/302172405
  *
  * (c) 2025 Diego Sogari
  */
@@ -59,27 +59,19 @@ using Mint = Mod<int, 998244353>;
 void solve(int t) {
   Int k, n;
   auto logk = min<int>(n, bit_width<unsigned>(k)); // max number of factors
-  vector<Mint> ans(k), inv(logk + 2, 1), comb(logk + 2, 1);
-  for (int l = 1; l <= logk + 1; l++) {
-    inv[l] /= l;
-    comb[l] = comb[l - 1] * (n + 2 - l) * inv[l]; // hockey-stick identity
-  }
-  vector<vector<Mint>> memo(k + 1, vector<Mint>(logk + 1));
-  auto f = [&](auto &self, int i, int x, int l, int cnt, Mint prod) -> void {
-    prod *= inv[cnt] * l;
-    memo[x][l] += prod;
-    if (l < logk) {
-      for (int j = i; u64(x) * j <= k; j++) {
-        self(self, j, x * j, l + 1, j == i ? cnt + 1 : 1, prod);
+  vector<Mint> ans(k), dp(k + 1);
+  ans[0] = n, dp[1] = 1;
+  Mint comb = n + 1;
+  for (int l = 1; l <= logk; l++) {      // O(k*log^2 k)
+    comb = comb * (n + 1 - l) / (l + 1); // hockey-stick identity
+    decltype(dp) dp1(k + 1);
+    for (int x = 1; x <= k; x++) {
+      ans[x - 1] += dp1[x] * comb;
+      for (int y = x + x; y <= k; y += x) {
+        dp1[y] += dp[x]; // disregards order of repeated factors
       }
     }
-  };
-  ans[0] = n;
-  for (int i = 2; i <= k; i++) { // O(k*log^2 k)
-    f(f, i, i, 1, 1, 1);
-    for (int l = 1; l <= logk; l++) {
-      ans[i - 1] += memo[i][l] * comb[l + 1];
-    }
+    dp = dp1;
   }
   println(ans);
 }

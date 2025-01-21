@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/302299315
+ * https://codeforces.com/contest/2060/submission/302300604
  *
  * (c) 2025 Diego Sogari
  */
@@ -25,11 +25,6 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Iota : vector<int> {
-  Iota(int n, int s = 0) : vector<int>(n) { iota(begin(), end(), s); }
-  Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
-};
-
 void solve(int t) {
   Int n;
   vector<Int> a(n), b(n);
@@ -44,14 +39,14 @@ void solve(int t) {
   }
   for (int i = 0, x = 0, prev = 0; i < n; i++) { // O(n)
     while (pos[++x] < 0)
-      ;
+      ; // get next unvisited pair
     auto y = b[pos[x]];
     if (prev > y) {
       println("NO");
       return;
     }
-    pos[x] = pos[y] = -1; // mark as visited
-    extra |= prev < x && i % 2;
+    pos[x] = pos[y] = -1;       // mark as visited
+    extra |= prev < x && i % 2; // odd number of flips before i-th pair
     prev = y;
   }
   auto ans = flips % 2 == 0 || extra ? "YES" : "NO";

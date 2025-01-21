@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2060/submission/302296907
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -31,10 +33,21 @@ struct Iota : vector<int> {
 void solve(int t) {
   Int n;
   vector<Int> a(n), b(n);
-  auto cmp = [&](int i, int j) { return a[i] < a[j]; };
-  Iota idx(n, cmp);
-
-  // println(ans);
+  auto cmp = [&](int i, int j) { return min(a[i], b[i]) < min(a[j], b[j]); };
+  Iota idx(n, cmp); // O(n*log n)
+  int flips = 0, extra = n % 2;
+  for (int i = 0, prevmax = 0; i < n; i++) { // O(n)
+    auto [mn, mx] = minmax(a[idx[i]], b[idx[i]]);
+    if (prevmax > mx) {
+      println("NO");
+      return;
+    }
+    flips += a[idx[i]] > b[idx[i]];
+    extra |= prevmax < mn && i % 2;
+    prevmax = mx;
+  }
+  auto ans = flips % 2 == 0 || extra ? "YES" : "NO";
+  println(ans);
 }
 
 int main() {

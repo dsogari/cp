@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/302300604
+ * https://codeforces.com/contest/2060/submission/302303333
  *
  * (c) 2025 Diego Sogari
  */
@@ -28,28 +28,24 @@ using Int = Num<int>;
 void solve(int t) {
   Int n;
   vector<Int> a(n), b(n);
-  vector<int> pos(2 * n + 1);
-  int flips = 0, extra = n % 2;
+  vector<int> pairof(2 * n + 1);
+  bool even = true;
   for (int i = 0; i < n; i++) { // O(n)
-    if (a[i] > b[i]) {
-      swap(a[i], b[i]);
-      flips++;
-    }
-    pos[a[i]] = pos[b[i]] = i;
+    auto [mn, mx] = minmax(a[i], b[i]);
+    pairof[mn] = mx;
+    even ^= a[i] > b[i];
   }
-  for (int i = 0, x = 0, prev = 0; i < n; i++) { // O(n)
-    while (pos[++x] < 0)
-      ; // get next unvisited pair
-    auto y = b[pos[x]];
+  for (int i = 0, x = 0, y, prev = 0; i < n; i++) { // O(n)
+    while (!(y = pairof[++x]))
+      ; // find next pair
     if (prev > y) {
       println("NO");
       return;
     }
-    pos[x] = pos[y] = -1;       // mark as visited
-    extra |= prev < x && i % 2; // odd number of flips before i-th pair
+    even |= prev < x && i % 2; // odd number of flips before i-th pair
     prev = y;
   }
-  auto ans = flips % 2 == 0 || extra ? "YES" : "NO";
+  auto ans = even || n % 2 ? "YES" : "NO";
   println(ans);
 }
 

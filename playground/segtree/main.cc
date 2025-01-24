@@ -19,7 +19,7 @@ void solve(int t) {
       swap(q[i][1], q[i][2]); // [l, r]
     }
   }
-  Pref<int> pref(n, Max<int>{});
+  Pref1D<int> pref(n, Max<int>{});
   AssignSegTree<int, int> segtree(n, Max<int>{});
   for (int i = 0; i < n; i++) {
     pref[i] = segtree[i] = rand() % mx;

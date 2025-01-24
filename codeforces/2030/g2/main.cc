@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using i64 = int64_t;
 using u64 = uint64_t;
 using u128 = __uint128_t; // available on 64-bit targets
 
@@ -82,30 +83,39 @@ void solve(int t) {
   Int n;
   binom.reserve(n);
   vector<array<Int, 2>> a(n);
-  vector<int> left(n + 1), right(n + 1), cl(n), cr(n);
+  vector<array<int, 2>> b(2 * n);
+  vector<Mint> pow2(n + 1, 1), inv(n + 1, 1);
   for (int i = 0; i < n; i++) { // O(n)
-    auto [l, r] = a[i];
-    cl[i] += left[l]++;
-    cr[i] += right[r]++;
-  }
-  vector<Mint> pow2(n + 1, 1);
-  for (int i = 0; i < n; i++) { // O(n)
-    left[i + 1] += left[i];
-    right[i + 1] += right[i];
+    for (int j = 0; j < 2; j++) {
+      b[2 * i + j] = {a[i][j], j};
+    }
     pow2[i + 1] = pow2[i] * 2;
+    inv[i + 1] /= i + 1;
   }
-  for (int i = 0; i < n; i++) { // O(n)
-    auto [l, r] = a[i];
-    cl[i] += left[n] - left[l];
-    cr[i] += right[r - 1];
+  ranges::sort(b); // O(n*log n)
+  vector memo(n, vector<Mint>(1, 1));
+  for (int x = 0; x < n; x++) { // O(n^2)
+    for (int y = 1; y < n - x; y++) {
+      memo[x].push_back(memo[x].back() * (x + y) * inv[2] * inv[y]);
+    }
+    for (int y = 1; y < n - x; y++) {
+      memo[x][y] = memo[x][y] + memo[x][y - 1];
+    }
   }
   Mint ans;
-  for (int i = 0; i < n; i++) { // O(n^2)
-    for (int j = 0; j < n; j++) {
-      auto gap = a[i][0] - a[j][1];
-      if (gap > 0) {
-        auto sum = binom.pascald(cl[i], cr[j]); // vandermonde's identity
-        ans += sum * gap * pow2[n - 2 - cl[i] - cr[j]];
+  int cl = n, cr = 0;
+  for (auto [val, right] : b) { // O(n)
+    if (right) {
+      if (cl) {
+        auto sum = memo[cr][cl - 1] * pow2[cl - 1];
+        ans -= sum * val * pow2[n - 1 - cr - cl];
+      }
+      cr++;
+    } else {
+      cl--;
+      if (cr) {
+        auto sum = memo[cl][cr - 1] * pow2[cr - 1];
+        ans += sum * val * pow2[n - 1 - cl - cr];
       }
     }
   }

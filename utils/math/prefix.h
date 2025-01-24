@@ -4,12 +4,22 @@
 #include "matrix.h"
 
 /**
- * Prefix Array
+ * Compute prefix array
  */
-template <typename T> struct Pref : vector<T> {
+template <typename T, typename F = plus<T>>
+void make_pref(vector<T> &a, F f = {}) {
+  for (int i = 1; i < a.size(); i++) {
+    a[i] = f(a[i - 1], a[i]);
+  }
+}
+
+/**
+ * Prefix Array (lazy)
+ */
+template <typename T> struct Pref1D : vector<T> {
   int n;
   function<T(const T &, const T &)> f;
-  Pref(int n, auto &&f, T val = {}) : vector<T>(n, val), n(n), f(f) {}
+  Pref1D(int n, auto &&f, T val = {}) : vector<T>(n, val), n(n), f(f) {}
   T full() const { return query(0, n - 1); }
   T query(int l, int r) const { // O(n)
     T ans = (*this)[l];
@@ -21,7 +31,7 @@ template <typename T> struct Pref : vector<T> {
 };
 
 /**
- * Prefix Matrix
+ * Prefix Matrix (lazy)
  */
 template <typename T> struct Pref2D : Mat<T> {
   Pref2D(int n, int m) : Mat<T>(n + 1, m + 1) {}

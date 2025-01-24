@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2030/submission/302683127
+ * https://codeforces.com/contest/2030/submission/302683930
  *
  * (c) 2025 Diego Sogari
  */
@@ -106,7 +106,7 @@ void solve(int t) {
     for (int j = 0; j < n; j++) {
       auto gap = a[i][0] - a[j][1];
       if (gap > 0) {
-        auto sum = binom.combine(cl[i] + cr[j], cr[j]); // vandermonde identity
+        auto sum = binom.pascald(cl[i], cr[j]); // vandermonde's identity
         ans += sum * gap * pow2[n - 2 - cl[i] - cr[j]];
       }
     }

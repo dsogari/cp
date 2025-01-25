@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2025/submission/302832985
+ * https://codeforces.com/contest/2025/submission/302834799
  *
  * (c) 2025 Diego Sogari
  */
@@ -70,14 +70,15 @@ void solve(int t) {
   };
   int s = sqrt(q + 10);
   vector blocks((q + s - 1) / s, Block(s)); // O(q)
-  for (int i = 0; i < q; i++) {             // O(q*sqrt q)
-    auto j = exchange(ridx[i], -1);         // activate
+  for (auto &i : ridx) {                    // O(q*sqrt q)
+    auto j = exchange(i, -1);               // activate
     auto l = j - j % s, r = min(l + s, +q);
     blocks[j / s].update(l, r, get);
     i64 ans = 0;
-    for (int k = 0, bal = 0; k < blocks.size(); k++) {
-      ans += blocks[k].get(bal);
-      bal += blocks[k].shift;
+    int bal = 0;
+    for (auto &block : blocks) {
+      ans += block.get(bal);
+      bal += block.shift;
     }
     println(ans);
   }

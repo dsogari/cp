@@ -29,10 +29,8 @@ void solve(int t) {
   ranges::sort(a);
   int ans = 0;
   for (int i = 0, j = 1; j < n;) {
-    while (j < n - 1 && a[j] == a[j + 1]) {
-      j++;
-    }
-    auto diff = a[j] - a[i], len = j - i + 1;
+    auto diff = a[j] - a[i];
+    auto len = j - i + 1;
     if (diff <= len && diff > 1) {
       ans = max(ans, diff);
     }

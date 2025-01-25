@@ -44,8 +44,8 @@ template <typename T> struct FenTree {
   }
 };
 
-template <typename T> struct Max {
-  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+template <typename T> struct Min {
+  T operator()(const T &lhs, const T &rhs) const { return min(lhs, rhs); }
 };
 
 void solve(int t) {
@@ -55,38 +55,28 @@ void solve(int t) {
   for (auto &&ai : a) { // O(n*log n)
     cnt[ai]++;
   }
-  int m = cnt.size();
-  vector<int> b1, b2;
-  b1.reserve(m);
-  b2.reserve(m);
-  for (auto &&[ai, c] : cnt) { // O(n)
-    b1.push_back(ai);
-    b2.push_back(c);
-  }
-  for (int i = 1; i < m; i++) { // O(n)
-    b2[i] += b2[i - 1];
-  }
   map<int, int> diff;
-  for (int i = 1; i < m; i++) { // O(n*log n)
-    diff[b2[i] - (b1[i] - b1[0])] = i;
+  int total = 0;
+  for (auto &&[x, c] : cnt) { // O(n*log n)
+    diff.emplace(x - total, 0);
+    total += c;
   }
-  FenTree<int> fen(diff.size(), Max<int>{});
-  int j = fen.n - 1;
-  for (auto &[_, i] : diff) { // O(n*log n)
-    fen.update(j, i);
-    i = j--;
+  int j = diff.size();
+  for (auto &&[d, i] : diff) { // O(n)
+    i = --j;
   }
+  FenTree<int> fen(diff.size(), Min<int>{}, INT_MAX);
+  total = 0;
   int ans = 0;
-  for (int i = 0, c1 = 0, c2 = 0; i < m - 1; i++) { // O(n*log n)
-    auto it = diff.lower_bound(c2);
-    if (it != diff.end()) {
-      auto x = fen.query(it->second);
-      if (b1[x] - b1[i] > 1) {
-        ans = max(ans, b1[x] - b1[i]);
-      }
+  for (auto &&[x, c] : cnt) { // O(n*log n)
+    auto it = diff.lower_bound(x - total - c);
+    assert(it != diff.end());
+    auto y = fen.query(it->second);
+    if (x - y > 1) {
+      ans = max(ans, x - y);
     }
-    c1 += b1[i + 1] - b1[i];
-    c2 = b2[i] - c1;
+    fen.update(diff[x - total], x);
+    total += c;
   }
   println(ans);
 }

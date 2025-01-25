@@ -1,5 +1,7 @@
 /**
- * https://codeforces.com/contest/2020/submission/283682972
+ * https://codeforces.com/contest/2020/submission/302852590
+ *
+ * Graph; DP; DSU
  *
  * (c) 2024 Diego Sogari
  */
@@ -35,11 +37,12 @@ struct DSU {
       if (siz[a] < siz[b]) {
         swap(a, b);
       }
-      siz[a] += siz[b];
+      siz[a] += exchange(siz[b], 0);
       par[b] = a;
     }
     return a;
   }
+  int count() const { return siz.size() - ranges::count(siz, 0); } // O(n)
 };
 
 void solve(int t) {
@@ -64,11 +67,7 @@ void solve(int t) {
       }
     }
   }
-  set<int> components;
-  for (int i = 0; i < n; i++) {
-    components.insert(dsu.find(i));
-  }
-  int ans = components.size();
+  int ans = dsu.count();
   println(ans);
 }
 

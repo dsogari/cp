@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2033/submission/300316101
  *
+ * Greedy; two pointers
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2020/submission/283664339
  *
+ * Math; factorization
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

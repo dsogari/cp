@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2033/submission/300556742
  *
+ * Permutation; greedy
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2030/submission/287662564
  *
+ * Fenwick tree; two pointers; greedy
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

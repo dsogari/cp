@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2060/submission/301916091
  *
+ * Graph theory; DSU; DFS; greedy
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

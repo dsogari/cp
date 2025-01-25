@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2033/submission/300765554
  *
+ * Trees; DFS
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

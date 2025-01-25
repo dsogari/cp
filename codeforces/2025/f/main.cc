@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2025/submission/286540350
  *
+ * Constructive; graph; DFS
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

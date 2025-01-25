@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2033/submission/300534227
  *
+ * DP; greedy
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

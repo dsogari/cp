@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2055/submission/300995755
  *
+ * Sorting; segment
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

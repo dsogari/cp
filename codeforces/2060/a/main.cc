@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2060/submission/301911892
  *
+ * Brute force
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

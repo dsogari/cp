@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2020/submission/284706501
  *
+ * Combinatorics; factorization; multiplicative
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

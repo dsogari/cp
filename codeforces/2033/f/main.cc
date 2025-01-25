@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2033/submission/300574557
  *
+ * Number theory
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2030/submission/302683930
  *
+ * Combinatorics
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

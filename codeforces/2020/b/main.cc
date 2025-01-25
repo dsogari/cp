@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2020/submission/283664468
  *
+ * Math; binary search
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

@@ -1,13 +1,13 @@
 /**
  * https://codeforces.com/contest/2020/submission/284706557
  *
+ * Probability; bitmask; DP
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
-using i64 = int64_t;
-using u32 = uint32_t;
 using u64 = uint64_t;
 using u128 = __uint128_t;
 
@@ -31,13 +31,7 @@ using Int = Num<int>;
 
 template <typename T, auto M> struct Mod {
   using V = conditional_t<sizeof(T) <= 4, u64, u128>;
-  // static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
-  static V inv(V x, V m) { // O(log^2 m) | x and m coprime
-    for (V a = exchange(x, 1), b = exchange(m, 0); b; a = exchange(b, a % b)) {
-      x = exchange(m, x - (a / b) * m);
-    }
-    return x >= M ? x + M : x;
-  }
+  static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   make_unsigned_t<T> x;
   Mod() : x(0) {}
   Mod(auto y) : x(y % M) { x >= M ? x += M : x; }

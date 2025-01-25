@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2060/submission/301900428
  *
+ * Game; sorting; greedy; two pointers
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2025/submission/302834799
  *
+ * Sorting; sqrt decomposition
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

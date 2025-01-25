@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2025/submission/286363048
  *
+ * Brute force; DP
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

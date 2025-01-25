@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2025/submission/285939589
  *
+ * String; greedy
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

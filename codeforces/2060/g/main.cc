@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2060/submission/302303333
  *
+ * Sorting; greedy
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2030/submission/286829318
  *
+ * Game; string; greedy
+ *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>

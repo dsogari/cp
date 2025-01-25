@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2055/submission/300683307
  *
+ * Greedy
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

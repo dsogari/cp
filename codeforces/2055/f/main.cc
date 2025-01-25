@@ -1,6 +1,8 @@
 /**
  * https://codeforces.com/contest/2055/submission/302541175
  *
+ * Geometry; greedy; brute force
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>

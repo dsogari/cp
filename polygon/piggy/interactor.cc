@@ -3,13 +3,11 @@
  */
 #include "testlib.h"
 
-using namespace std;
-
 constexpr int maxt = 1e3, maxn = 1e4;
 
 int check(int n, int x, int d) {
-  cout << n << endl;
-  array<int, 2> end = {1, n}, inc = {-1, 1};
+  println(n);
+  std::array<int, 2> end = {1, n}, inc = {-1, 1};
   for (int rem = n + 1; rem--; x == end[d] ? x = end[!d] : x += inc[d]) {
     auto type = ouf.readToken("[!?]");
     if (type == "!") {
@@ -17,7 +15,7 @@ int check(int n, int x, int d) {
       return y == d;
     } else if (rem > 0) {
       auto y = ouf.readInt(1, n, "p");
-      cout << (y == x) << endl;
+      println(y == x);
     }
   }
   return -1;
@@ -26,7 +24,7 @@ int check(int n, int x, int d) {
 int main(int argc, char *argv[]) {
   registerInteraction(argc, argv);
   auto t = inf.readInt(1, maxt, "t");
-  cout << t << endl;
+  println(t);
   for (int i = 0; i < t; i++) {
     setTestCase(i + 1);
     auto n = inf.readInt(3, maxn, "n");

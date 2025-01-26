@@ -1,47 +1,7 @@
-# My Contest
-
-## D. Inc Match 2
-
-- Category: Strings
-- Expected difficulty: 1500
-- Expected time complexity: $O(n)$
-
-### Statement
-
-Su is eager to play a game with her beloved students. She will give each student a copy of a string of lowercase Latin letters. Then, she will ask students to perform operations on their string, according to the following rule:
-
-- a student can choose any **occurrence** of a letter which is not $\text{`z'}$ and replace it with the subsequent letter of the alphabet.
-
-And, after each operation:
-
-- while two or more **adjacent** characters are equal, they are deleted from the string.
-
-Finally, whoever makes their string empty with the fewest operations wins.
-
-In anticipation of the game, she wants to know the least such number of operations.
-
-### Input
-
-The first line of the input contains a single integer, $t$ ($1 \le t \le 10^4$) — the number of test cases.
-
-The first line of each test case contains a single integer, $n$ ($1 \le n \le 2 \cdot 10^5$) — the length of the string.
-
-The second line of each test case contains a string, $s$, consisting of lowercase Latin letters.
-
-### Output
-
-For each test case, output a single integer — the minimum number of operations required to make the string empty, according to the game rules; or $-1$ if it's impossible.
-
-### Note
-
-### Solution
-
-### Code
-
 ## E. Tarzan
 
 - Category: Trees, Graphs
-- Expected difficulty: 2000
+- Expected difficulty: 2500
 - Expected time complexity: $O(n \log n)$
 
 ### Statement
@@ -123,7 +83,7 @@ cout << heights.size() - 1 << endl;
 ## F2. Bookcase (Hard)
 
 - Category: Combinatorial Optimization
-- Expected difficulty: 2500
+- Expected difficulty: 3000
 - Expected time complexity: $O(?)$
 
 ### Statement

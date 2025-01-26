@@ -72,7 +72,7 @@ void solve(int t) {
     auto it = diff.lower_bound(x - total - c);
     assert(it != diff.end());
     auto y = fen.query(it->second);
-    if (x - y > 1) {
+    if (y < INT_MAX && x - y > 1) {
       ans = max(ans, x - y);
     }
     fen.update(diff[x - total], x);

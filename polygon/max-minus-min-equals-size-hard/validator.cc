@@ -3,7 +3,7 @@
  */
 #include "testlib.h"
 
-constexpr int maxt = 1e4, maxn = 2e5;
+constexpr int maxt = 1e4, maxn = 2e5, maxa = 1e9;
 
 int main(int argc, char *argv[]) {
   registerValidation(argc, argv);
@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     setTestCase(i + 1);
     auto n = inf.readInt(1, maxn, "n");
     inf.readEoln();
-    inf.readInts(n, 1, 2 * n, "a");
+    inf.readInts(n, -maxa, maxa, "a");
     inf.readEoln();
   }
   inf.readEof();

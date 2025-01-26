@@ -36,7 +36,7 @@
     \item $c_i$ --- the total number of elements up to, and including, $a_i$ (i.e., $ c_i = \sum_{j=1}^{i} b_j $)
   \end{itemize}
   
-  In other words, we want to maximize the value of $a_j - a_i$ for any $i < j$ such that $$ a_j - a_i \le c_j - c_i + b_i $$ or equivalently $$ a_j - c_j \le a_i - c_i + b_i $$
+  In other words, we want to maximize the value of $a_j - a_i$ for any $i < j$ such that $$ a_j - a_i \le c_j - c_i + b_i $$ or, equivalently, $$ a_j - c_j \le a_i - c_i + b_i $$
   
   Note that fixing a value of $i$ also fixes the right side of this equation. Let's call $d_j$ the left side. Then, $$ d_j \le d_i + b_i $$
   
@@ -51,39 +51,39 @@
   \textbf{Code}
   
   \begin{lstlisting}
-void solve() {
-  Int n;
-  vector<Int> a(n);
-  map<int, int> cnt;
-  for (auto &&ai : a) { // O(n*log n)
-    cnt[ai]++;
-  }
-  map<int, int> diff;
-  int total = 0;
-  for (auto &&[x, c] : cnt) { // O(n*log n)
-    diff.emplace(x - total, 0);
-    total += c;
-  }
-  int j = diff.size();
-  for (auto &&[d, i] : diff) { // O(n)
-    i = --j;
-  }
-  FenTree<int> fen(diff.size(), Min<int>{}, INT_MAX);
-  total = 0;
-  int ans = 0;
-  for (auto &&[x, c] : cnt) { // O(n*log n)
-    auto it = diff.lower_bound(x - total - c);
-    assert(it != diff.end());
-    auto y = fen.query(it->second);
-    if (x - y > 1) {
-      ans = max(ans, x - y);
+  void solve() {
+    Int n;
+    vector<Int> a(n);
+    map<int, int> cnt;
+    for (auto &&ai : a) { // O(n*log n)
+      cnt[ai]++;
     }
-    fen.update(diff[x - total], x);
-    total += c;
+    map<int, int> diff;
+    int total = 0;
+    for (auto &&[x, c] : cnt) { // O(n*log n)
+      diff.emplace(x - total, 0);
+      total += c;
+    }
+    int j = diff.size();
+    for (auto &&[d, i] : diff) { // O(n)
+      i = --j;
+    }
+    FenTree<int> fen(diff.size(), Min<int>{}, INT_MAX);
+    total = 0;
+    int ans = 0;
+    for (auto &&[x, c] : cnt) { // O(n*log n)
+      auto it = diff.lower_bound(x - total - c);
+      assert(it != diff.end());
+      auto y = fen.query(it->second);
+      if (x - y > 1) {
+        ans = max(ans, x - y);
+      }
+      fen.update(diff[x - total], x);
+      total += c;
+    }
+    println(ans);
   }
-  println(ans);
-}
-\end{lstlisting}
+  \end{lstlisting}
   
 \end{tutorial}
 

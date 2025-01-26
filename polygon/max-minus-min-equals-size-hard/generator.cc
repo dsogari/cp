@@ -3,7 +3,7 @@
  */
 #include "testlib.h"
 
-constexpr int maxt = 1e4, maxn = 2e5;
+constexpr int maxt = 1e4, maxn = 2e5, maxa = 1e9;
 
 int main(int argc, char *argv[]) {
   registerGen(argc, argv, 1);
@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < t; i++) {
     auto n = lengths[i];
     std::vector<int> a(n);
-    for (int i = 0; i < n; i++) {
-      a[i] = rnd.wnext(1, 2 * n, bias);
+    for (int j = 0; j < n; j++) {
+      a[j] = rnd.wnext(-maxa, maxa, bias);
     }
     println(n);
     println(a);

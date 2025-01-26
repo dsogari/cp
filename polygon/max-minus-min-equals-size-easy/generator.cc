@@ -2,7 +2,6 @@
  * (c) 2024 Diego Sogari
  */
 #include "testlib.h"
-#include <numeric>
 
 constexpr int maxt = 1e4, maxn = 2e5;
 
@@ -15,10 +14,7 @@ int main(int argc, char *argv[]) {
   println(t);
   for (int i = 0; i < t; i++) {
     auto n = lengths[i];
-    std::vector<int> a(2 * n);
-    std::iota(a.begin(), a.end(), 1);
-    shuffle(a.begin(), a.end());
-    a.resize(n);
+    auto a = rnd.distinct(n, 1, 2 * n);
     println(n);
     println(a);
   }

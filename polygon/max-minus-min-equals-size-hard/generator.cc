@@ -10,14 +10,16 @@ int main(int argc, char *argv[]) {
   int t = opt<int>(1, maxt);
   int N = opt<int>(2, maxn);
   int minn = opt<int>(3, 1);
-  int bias = opt<int>(4, 0);
   auto lengths = rnd.partition(t, N, minn);
   println(t);
   for (int i = 0; i < t; i++) {
     auto n = lengths[i];
     std::vector<int> a(n);
-    for (int j = 0; j < n; j++) {
-      a[j] = rnd.wnext(-maxa, maxa, bias);
+    a[0] = rnd.next(-maxa, maxa);
+    auto from = std::max(-maxa, a[0] - n);
+    auto to = std::min(maxa, a[0] + n);
+    for (int j = 1; j < n; j++) {
+      a[j] = rnd.next(from, to);
     }
     println(n);
     println(a);

@@ -27,6 +27,33 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+struct WDigraph : vector<vector<pair<int, double>>> {
+  const int n, m;
+  WDigraph(int n, int m = 0)
+      : vector<vector<pair<int, double>>>(n + 1), n(n), m(m) {}
+  void add(int u, int v, double w) { (*this)[u].push_back({v, w}); }
+};
+
+struct Dist : vector<pair<double, int>> {
+  Dist(const WDigraph &g, int s)
+      : vector<pair<double, int>>(g.size(), {LLONG_MAX, -1}) { // O(m*log n)
+    (*this)[s].first = 0;
+    set<pair<double, int>> q = {{0, s}};
+    while (q.size()) {
+      auto [du, u] = *q.begin();
+      q.erase(q.begin());
+      for (auto &[v, w] : g[u]) {
+        auto &[dv, p] = (*this)[v];
+        if (du + w < dv) {
+          q.erase({dv, v});
+          dv = du + w, p = u;
+          q.insert({dv, v});
+        }
+      }
+    }
+  }
+};
+
 struct Iota : vector<int> {
   Iota(int n, int s = 0) : vector<int>(n) { iota(begin(), end(), s); }
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
@@ -35,52 +62,28 @@ struct Iota : vector<int> {
 void solve(int t) {
   Int n;
   vector<array<Int, 3>> a(n);
-  auto cmp = [&](int i, int j) { return a[i][0] < a[j][0]; };
-  Iota idx(n, cmp); // O(n*log n)
-  vector<int> par(n, -1);
-  vector<double> dist(n, INFINITY);
-  queue<int> q;
-  auto first = ranges::find(idx, 0) - idx.begin();
-  auto last = ranges::find(idx, n - 1) - idx.begin();
-  q.push(first);
-  dist[first] = 0;
-  auto f = [&](int i, int j) { // O(1)
-    if (dist[i] >= dist[j]) {
-      return true;
-    }
-    auto [xi, yi, hi] = a[idx[i]];
-    auto [xj, yj, hj] = a[idx[j]];
-    auto dx = xj - xi, dy = yj - yi;
-    if (abs(dx) > hi) {
-      return false;
-    }
-    auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
-    if (d <= hi) {
-      if (isinf(dist[j]) && d + hj > hi) {
-        q.push(j);
-      }
-      if (dist[i] + d < dist[j]) {
-        dist[j] = dist[i] + d;
-        par[j] = i;
+  WDigraph g(n);
+  for (int i = 0; i < n; i++) { // O(n^2)
+    for (int j = 0; j < n; j++) {
+      if (i != j) {
+        auto [xi, yi, hi] = a[i];
+        auto [xj, yj, hj] = a[j];
+        i64 dx = xj - xi, dy = yj - yi;
+        auto d = sqrt(dx * dx + dy * dy);
+        if (d <= hi) {
+          g.add(i, j, d);
+        }
       }
     }
-    return true;
-  };
-  while (q.size()) { // O(n^2)
-    auto i = q.front();
-    q.pop();
-    for (int j = i + 1; j < n && f(i, j); j++)
-      ; // search right
-    for (int j = i - 1; j >= 0 && f(i, j); j--)
-      ; // search left
   }
-  if (par[last] < 0) {
+  Dist dist(g, 0); // O(n^2*log n)
+  if (dist[n - 1].second < 0) {
     println(0);
     return;
   }
   vector<int> ans;
-  for (int u = last; u != first; u = par[u]) {
-    ans.push_back(idx[u] + 1);
+  for (int u = n - 1; u != 0; u = dist[u].second) {
+    ans.push_back(u + 1);
   }
   ranges::reverse(ans);
   println(ans.size());

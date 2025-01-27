@@ -37,42 +37,43 @@ void solve(int t) {
   vector<array<Int, 3>> a(n);
   auto cmp = [&](int i, int j) { return a[i][0] < a[j][0]; };
   Iota idx(n, cmp); // O(n*log n)
-  vector<int> par(n, -1);
   vector<double> dist(n, INFINITY);
-  queue<int> q;
-  auto first = ranges::find(idx, 0) - idx.begin();
-  auto last = ranges::find(idx, n - 1) - idx.begin();
-  q.push(first);
-  dist[first] = 0;
+  vector<int> par(n, -1);
+  vector<bool> vis(n);
   auto f = [&](int i, int j) { // O(1)
-    if (dist[i] >= dist[j]) {
-      return true;
-    }
-    auto [xi, yi, hi] = a[idx[i]];
-    auto [xj, yj, hj] = a[idx[j]];
-    auto dx = xj - xi, dy = yj - yi;
-    if (abs(dx) > hi) {
-      return false;
-    }
-    auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
-    if (d <= hi) {
-      if (isinf(dist[j])) {
-        q.push(j);
+    if (dist[i] < dist[j]) {
+      auto [xi, yi, hi] = a[idx[i]];
+      auto [xj, yj, hj] = a[idx[j]];
+      auto dx = xj - xi, dy = yj - yi;
+      if (abs(dx) > hi) {
+        return false;
       }
-      if (dist[i] + d < dist[j]) {
+      auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
+      if (d <= hi && dist[i] + d < dist[j]) {
         dist[j] = dist[i] + d;
         par[j] = i;
       }
     }
     return true;
   };
-  while (q.size()) { // O(n^2)
-    auto i = q.front();
-    q.pop();
-    for (int j = i + 1; j < n && f(i, j); j++)
-      ; // search right
-    for (int j = i - 1; j >= 0 && f(i, j); j--)
+  auto first = ranges::find(idx, 0) - idx.begin();
+  auto last = ranges::find(idx, n - 1) - idx.begin();
+  dist[first] = 0;
+  for (int i = 0; i < n; i++) { // O(n^2)
+    int u = -1;
+    for (int j = 0; j < n; j++) {
+      if (!vis[j] && (u == -1 || dist[j] < dist[u])) {
+        u = j;
+      }
+    }
+    if (isinf(dist[u])) {
+      break;
+    }
+    vis[u] = true;
+    for (int j = u - 1; j >= 0 && f(u, j); j--)
       ; // search left
+    for (int j = u + 1; j < n && f(u, j); j++)
+      ; // search right
   }
   if (par[last] < 0) {
     println(0);

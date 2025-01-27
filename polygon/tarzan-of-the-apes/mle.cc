@@ -54,11 +54,6 @@ struct Dist : vector<pair<double, int>> {
   }
 };
 
-struct Iota : vector<int> {
-  Iota(int n, int s = 0) : vector<int>(n) { iota(begin(), end(), s); }
-  Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
-};
-
 void solve(int t) {
   Int n;
   vector<array<Int, 3>> a(n);

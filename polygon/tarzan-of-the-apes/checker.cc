@@ -6,7 +6,7 @@
 using namespace std;
 using i64 = int64_t;
 
-constexpr int maxt = 1e4, maxn = 2e5, maxa = 1e9, maxh = 1e9;
+constexpr int maxt = 1e3, maxn = 5e3, maxa = 1e9, maxh = 1e9;
 
 inline vector<int> getPath(InStream &in, int n) {
   vector<int> path;

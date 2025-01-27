@@ -32,26 +32,35 @@ struct Iota : vector<int> {
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
 };
 
+auto now() { return chrono::high_resolution_clock::now(); }
+
 void solve(int t) {
   Int n;
   vector<array<Int, 3>> a(n);
+  auto get = [&](int i, int j) -> array<int, 4> {
+    auto [xi, yi, hi] = a[i];
+    auto [xj, yj, hj] = a[j];
+    return {abs(xj - xi), abs(yj - yi), hi, hj};
+  };
+  auto [dx0, dy0, h0, hn] = get(0, n - 1);
+  if (i64(dx0) * dx0 + i64(dy0) * dy0 <= i64(h0) * h0) {
+    println(1);
+    println(n);
+    return;
+  }
   auto cmp = [&](int i, int j) { return a[i][0] < a[j][0]; };
   Iota idx(n, cmp); // O(n*log n)
-  vector<int> age(n, INT_MAX), par(n, -1);
+  vector<bool> vis(n);
+  vector<int> par(n, -1);
   vector<double> dist(n, INFINITY);
   queue<int> q;
   auto first = ranges::find(idx, 0) - idx.begin();
   auto last = ranges::find(idx, n - 1) - idx.begin();
   q.push(first);
-  age[first] = 0;
+  vis[first] = true;
   dist[first] = 0;
   auto f = [&](int i, int j) { // O(1)
-    if (age[i] >= age[j]) {
-      return true;
-    }
-    auto [xi, yi, hi] = a[idx[i]];
-    auto [xj, yj, hj] = a[idx[j]];
-    auto dx = abs(xj - xi), dy = abs(yj - yi);
+    auto [dx, dy, hi, hj] = get(idx[i], idx[j]);
     if (dx > hi) {
       return false;
     }
@@ -61,19 +70,18 @@ void solve(int t) {
         dist[j] = dist[i] + d;
         par[j] = i;
       }
-      if (age[j] == INT_MAX) {
-        q.push(j);
-        age[j] = age[i] + 1;
-      } else {
-        assert(age[j] == age[i] + 1);
+      if (!vis[j]) {
+        if (d + hj > hi) {
+          q.push(j);
+        }
+        vis[j] = true;
       }
     }
     return true;
   };
-  while (q.size()) { // O(n*sqrt n)
+  while (q.size()) { // O(n^2)
     auto i = q.front();
     q.pop();
-    auto step = age[i] + 1;
     for (int j = i + 1; j < n && f(i, j); j++)
       ; // search right
     for (int j = i - 1; j >= 0 && f(i, j); j--)

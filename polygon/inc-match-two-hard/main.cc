@@ -23,7 +23,19 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+template <typename T> struct Str : basic_string<T> {
+  using basic_string<T>::basic_string;
+  Str() { cin >> *this; }
+};
+using String = Str<char>;
+
+void solve(int t) {
+  Int n;
+  String s;
+  int ans = 0;
+
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

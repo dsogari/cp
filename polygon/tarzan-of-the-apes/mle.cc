@@ -62,51 +62,28 @@ struct Iota : vector<int> {
 void solve(int t) {
   Int n;
   vector<array<Int, 3>> a(n);
-  auto cmp = [&](int i, int j) { return a[i][0] < a[j][0]; };
-  Iota idx(n, cmp); // O(n*log n)
   WDigraph g(n);
-  vector<int> age(n, INT_MAX);
-  queue<int> q;
-  auto first = ranges::find(idx, 0) - idx.begin();
-  auto last = ranges::find(idx, n - 1) - idx.begin();
-  q.push(first);
-  age[first] = 0;
-  auto f = [&](int i, int j) { // O(1)
-    if (age[i] > age[j]) {
-      return true;
-    }
-    auto [xi, yi, hi] = a[idx[i]];
-    auto [xj, yj, hj] = a[idx[j]];
-    auto dx = abs(xj - xi), dy = abs(yj - yi);
-    if (dx > hi) {
-      return false;
-    }
-    auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
-    if (d <= hi) {
-      g.add(i, j, d);
-      if (age[j] == INT_MAX) {
-        q.push(j);
-        age[j] = age[i] + 1;
+  for (int i = 0; i < n; i++) { // O(n^2)
+    for (int j = 0; j < n; j++) {
+      if (i != j) {
+        auto [xi, yi, hi] = a[i];
+        auto [xj, yj, hj] = a[j];
+        i64 dx = xj - xi, dy = yj - yi;
+        auto d = sqrt(dx * dx + dy * dy);
+        if (d <= hi) {
+          g.add(i, j, d);
+        }
       }
     }
-    return true;
-  };
-  while (q.size()) { // O(n^2)
-    auto i = q.front();
-    q.pop();
-    for (int j = i + 1; j < n && f(i, j); j++)
-      ; // search right
-    for (int j = i - 1; j >= 0 && f(i, j); j--)
-      ; // search left
   }
-  Dist dist(g, first); // O(n^2*log n)
-  if (dist[last].second < 0) {
+  Dist dist(g, 0); // O(n^2*log n)
+  if (dist[n - 1].second < 0) {
     println(0);
     return;
   }
   vector<int> ans;
-  for (int u = last; u != first; u = dist[u].second) {
-    ans.push_back(idx[u] + 1);
+  for (int u = n - 1; u != 0; u = dist[u].second) {
+    ans.push_back(u + 1);
   }
   ranges::reverse(ans);
   println(ans.size());

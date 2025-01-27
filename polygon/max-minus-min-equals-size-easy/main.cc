@@ -28,12 +28,13 @@ void solve(int t) {
   vector<Int> a(n);
   ranges::sort(a);
   int ans = 0;
-  for (int i = 0, j = 1; j < n;) {
-    auto diff = a[j] - a[i], len = j - i + 1;
+  for (int l = 0, r = 1; r < n;) {
+    auto diff = a[r] - a[l];
+    auto len = r - l + 1;
     if (diff <= len && diff > 1) {
       ans = max(ans, diff);
     }
-    diff > len ? i++ : j++;
+    diff > len ? l++ : r++;
   }
   println(ans);
 }

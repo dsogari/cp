@@ -4,7 +4,6 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-using i64 = int64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug(...)
@@ -25,10 +24,17 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 void solve(int t) {
-  Int l, r;
-  i64 ans = r - l;
-  if (l < 0 && r > 0) {
-    ans += 2 * min(-l, +r) - 1 - (-l == r);
+  Int n;
+  vector<Int> a(n);
+  ranges::sort(a);
+  int ans = 0;
+  for (int l = 0, r = 1; r < n;) {
+    auto diff = a[r] - a[l];
+    auto len = r - l + 1;
+    if (diff == len) {
+      ans = max(ans, len);
+    }
+    diff > len ? l++ : r++;
   }
   println(ans);
 }

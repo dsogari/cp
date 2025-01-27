@@ -65,13 +65,16 @@ void solve(int t) {
   auto cmp = [&](int i, int j) { return a[i][0] < a[j][0]; };
   Iota idx(n, cmp); // O(n*log n)
   WDigraph g(n);
-  vector<bool> vis(n);
+  vector<int> age(n, INT_MAX);
   queue<int> q;
   auto first = ranges::find(idx, 0) - idx.begin();
   auto last = ranges::find(idx, n - 1) - idx.begin();
   q.push(first);
-  vis[first] = true;
+  age[first] = 0;
   auto f = [&](int i, int j) { // O(1)
+    if (age[i] > age[j]) {
+      return true;
+    }
     auto [xi, yi, hi] = a[idx[i]];
     auto [xj, yj, hj] = a[idx[j]];
     auto dx = abs(xj - xi), dy = abs(yj - yi);
@@ -81,11 +84,11 @@ void solve(int t) {
     auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
     if (d <= hi) {
       g.add(i, j, d);
-      if (!vis[j]) {
+      if (age[j] == INT_MAX) {
         if (d + hj > hi) {
           q.push(j);
         }
-        vis[j] = true;
+        age[j] = age[i] + 1;
       }
     }
     return true;

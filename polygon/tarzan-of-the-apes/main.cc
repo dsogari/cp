@@ -40,18 +40,18 @@ void solve(int t) {
   vector<double> dist(n, INFINITY);
   vector<int> par(n, -1);
   vector<bool> vis(n);
-  auto f = [&](int i, int j) { // O(1)
-    if (dist[i] < dist[j]) {
-      auto [xi, yi, hi] = a[idx[i]];
-      auto [xj, yj, hj] = a[idx[j]];
-      auto dx = xj - xi, dy = yj - yi;
-      if (abs(dx) > hi) {
+  auto f = [&](int u, int v) { // O(1)
+    if (dist[u] < dist[v]) {
+      auto [xu, yu, hu] = a[idx[u]];
+      auto [xv, yv, hv] = a[idx[v]];
+      auto dx = xv - xu, dy = yv - yu;
+      if (abs(dx) > hu) {
         return false;
       }
       auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
-      if (d <= hi && dist[i] + d < dist[j]) {
-        dist[j] = dist[i] + d;
-        par[j] = i;
+      if (d <= hu && dist[u] + d < dist[v]) {
+        dist[v] = dist[u] + d;
+        par[v] = u;
       }
     }
     return true;
@@ -61,16 +61,16 @@ void solve(int t) {
   dist[first] = 0;
   for (int i = 0; i < n; i++) { // O(n^2)
     int u = -1;
-    for (int j = 0; j < n; j++) {
-      if (!vis[j] && (u == -1 || dist[j] < dist[u])) {
-        u = j;
+    for (int v = 0; v < n; v++) {
+      if (!vis[v] && (u == -1 || dist[v] < dist[u])) {
+        u = v;
       }
     }
     if (isinf(dist[u])) {
       break;
     }
     vis[u] = true;
-    for (int j = u - 1; j >= 0 && f(u, j); j--)
+    for (int v = u - 1; v >= 0 && f(u, v); v--)
       ; // search left
     for (int j = u + 1; j < n && f(u, j); j++)
       ; // search right

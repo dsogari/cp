@@ -33,13 +33,26 @@ void solve(int t) {
   Int n;
   String s;
   if (n % 2 == 0) {
-    println("YES");
-    return;
+    return println("YES");
   }
+  auto f = [&](int &l, int &r, int inc, int end) {
+    while (l + inc != end && s[l + inc] >= s[l] && s[l] <= s[r]) {
+      l += inc;
+    }
+    return abs(r - l + 1) % 2;
+  };
   for (int i = 1; i < n; i++) { // O(n)
     if (s[i - 1] > s[i] && s[i] < s[i + 1]) {
-      println("YES");
-      return;
+      for (int l = i, r = i; true;) {
+        if (f(l, r, -1, -1) || f(r, l, 1, n)) {
+          return println("YES");
+        }
+        if (s[l] < s[r] ? l == 0 || s[l - 1] < s[l]
+                        : r == n - 1 || s[r + 1] < s[r]) {
+          i = r;
+          break;
+        }
+      }
     }
   }
   println("NO");

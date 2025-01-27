@@ -51,32 +51,31 @@ template <typename T> struct Min {
 void solve(int t) {
   Int n;
   vector<Int> a(n);
-  map<int, int> cnt;
-  for (auto &&ai : a) { // O(n*log n)
-    cnt[ai]++;
+  ranges::sort(a); // O(n*log n)
+  a.push_back(INT_MAX);
+  vector<array<int, 3>> vals;
+  vector<int> diff;
+  vals.reserve(n), diff.reserve(n);
+  for (int i = 0, j = 0; i < n; i++) { // O(n)
+    if (a[i + 1] > a[i]) {
+      vals.push_back({a[i], i + 1 - j, a[i] - j});
+      diff.push_back(a[i] - j);
+      j = i + 1;
+    }
   }
-  map<int, int> diff;
-  int total = 0;
-  for (auto &&[x, c] : cnt) { // O(n*log n)
-    diff.emplace(x - total, 0);
-    total += c;
-  }
-  int j = diff.size();
-  for (auto &&[d, i] : diff) { // O(n)
-    i = --j;
-  }
-  FenTree<int> fen(diff.size(), Min<int>{}, INT_MAX);
-  total = 0;
+  int m = vals.size(); // unique elements
+  ranges::sort(diff);  // O(n*log n)
+  FenTree<int> fen(m, Min<int>{}, INT_MAX);
   int ans = 0;
-  for (auto &&[x, c] : cnt) { // O(n*log n)
-    auto it = diff.lower_bound(x - total - c);
-    assert(it != diff.end());
-    auto y = fen.query(it->second);
+  for (int i = 0; i < m; i++) { // O(n*log n)
+    auto [x, c, d] = vals[i];
+    auto j = ranges::lower_bound(diff, d - c) - diff.begin();
+    auto k = ranges::lower_bound(diff, d) - diff.begin();
+    auto y = fen.query(m - j - 1);
     if (y < INT_MAX && x - y > 1) {
       ans = max(ans, x - y);
     }
-    fen.update(diff[x - total], x);
-    total += c;
+    fen.update(m - k - 1, x);
   }
   println(ans);
 }

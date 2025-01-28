@@ -39,7 +39,7 @@ void solve(int t) {
     while (l + inc != end && s[l + inc] >= s[l] && s[l] <= s[r]) {
       l += inc;
     }
-    return abs(r - l + 1) % 2;
+    return abs(r - l) % 2 == 0;
   };
   for (int i = 1; i < n; i++) { // O(n)
     if (s[i - 1] > s[i] && s[i] < s[i + 1]) {

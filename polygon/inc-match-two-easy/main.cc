@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -35,24 +35,29 @@ void solve(int t) {
   if (n % 2 == 0) {
     return println("YES");
   }
-  auto f = [&](int &l, int &r, int inc, int end) {
-    while (l + inc != end && s[l + inc] >= s[l] && s[l] <= s[r]) {
-      l += inc;
-    }
-    return abs(r - l) % 2 == 0;
+  auto pref = s, suff = s;
+  for (int i = 1, j = n - 2; i < n; i++, j--) { // O(n)
+    pref[i] = min(pref[i], pref[i - 1]);
+    suff[j] = min(suff[j], suff[j + 1]);
+  }
+  auto f = [&](int l, int r) {
+    auto mxl = max(s[l], l % 2 == 0 || pref[l] < s[l] ? 'z' : 'y');
+    auto mxr = max(s[r], r % 2 == 0 || suff[r] < s[r] ? 'z' : 'y');
+    return max(s[l], s[r]) <= min(mxl, mxr);
   };
-  for (int i = 1; i < n; i++) { // O(n)
+  for (int i = 1; i < n - 1; i++) { // O(n)
     if (s[i - 1] > s[i] && s[i] < s[i + 1]) {
-      for (int l = i, r = i; true;) {
-        if (f(l, r, -1, -1) || f(r, l, 1, n)) {
-          return println("YES");
-        }
-        if (s[l] < s[r] ? l == 0 || s[l - 1] < s[l]
-                        : r == n - 1 || s[r + 1] < s[r]) {
-          i = r;
-          break;
-        }
+      int l = i, r = i;
+      for (; l > 0 && s[l - 1] > s[l]; l--)
+        ; // find left boundary
+      for (; r < n - 1 && s[r] < s[r + 1]; r++)
+        ; // find right boundary
+      if ((r - l + 1) % 2
+              ? f(l, r) || (l + 1 < i && r - 1 > i && f(l + 1, r - 1))
+              : (l + 1 < i && f(l + 1, r)) || (r - 1 > i && f(l, r - 1))) {
+        return println("YES");
       }
+      i = r;
     }
   }
   println("NO");

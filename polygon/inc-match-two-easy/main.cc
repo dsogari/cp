@@ -47,7 +47,7 @@ void solve(int t) {
   };
   for (int i = 1; i < n - 1; i++) { // O(n)
     if (s[i - 1] > s[i] && s[i] < s[i + 1]) {
-      int l = i, r = i;
+      int l = i - 1, r = i + 1;
       for (; l > 0 && s[l - 1] > s[l]; l--)
         ; // find left boundary
       for (; r < n - 1 && s[r] < s[r + 1]; r++)

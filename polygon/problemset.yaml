@@ -1,0 +1,16 @@
+id: 553809
+name: Personal Contest
+url: https://codeforces.com/gym/553809
+authors:
+  - dsogari
+testers:
+  - dsogari
+
+problems:
+  A: absecutive/problem.yaml
+  B: piggy-on-the-track/problem.yaml
+  C1: max-minus-min-equals-size-easy/problem.yaml
+  C2: max-minus-min-equals-size-hard/problem.yaml
+  D: tarzan-of-the-apes/problem.yaml
+  E1: inc-match-two-easy/problem.yaml
+  E2: inc-match-two-hard/problem.yaml

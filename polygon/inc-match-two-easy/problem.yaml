@@ -1,0 +1,71 @@
+id: p6nMZZ5
+author: dsogari
+url: https://polygon.codeforces.com/p6nMZZ5/dsogari/inc-match-two-easy
+
+tags:
+  - games
+  - greedy
+  - strings
+
+info:
+  input: stdin
+  output: stdout
+  time limit: 250
+  memory limit: 4
+  interactive: false
+  difficulty: 1800
+
+statements:
+  english: english.statement.yaml
+
+tutorials:
+  english: english.tutorial.yaml
+
+solutions:
+  - type: model
+    name: main.cc
+    language: c++
+  - type: time limit exceeded
+    name: tle.cc
+    language: c++
+
+resources:
+  - type: checker
+    name: nyesno.cpp
+    language: c++
+  - type: validator
+    name: validator.cc
+    language: c++
+  - type: generator
+    name: generator.cc
+    language: c++
+
+tests:
+  - type: manual
+    data: |
+      7
+      1
+      a
+      2
+      ab
+      3
+      abc
+      4
+      abac
+      5
+      abcab
+      6
+      abcbad
+      5
+      azabc
+    example: true
+    description: Lower bound on n; lower and upper bounds on s
+  - type: script
+    line: generator
+    description: Upper bound on t; random values of n and s
+  - type: script
+    line: generator 1
+    description: Lower bound on t; upper bound on n (even); random values of s
+  - type: script
+    line: generator 1 199999
+    description: Lower bound on t; upper bound on n (odd); random values of s

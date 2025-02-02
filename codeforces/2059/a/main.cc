@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2059/submission/304087196
+ * https://codeforces.com/contest/2059/submission/304173523
  *
  * (c) 2025 Diego Sogari
  */
@@ -28,11 +28,11 @@ using Int = Num<int>;
 void solve(int t) {
   Int n;
   vector<Int> a(n), b(n);
-  ranges::sort(a);
-  ranges::sort(b);
+  ranges::sort(a); // O(n*log n)
+  ranges::sort(b); // O(n*log n)
   int ca = ranges::unique(a).begin() - a.begin();
   int cb = ranges::unique(b).begin() - b.begin();
-  auto ans = min(ca, cb) > 1 || max(ca, cb) > 2 ? "YES" : "NO";
+  auto ans = ca + cb > 3 ? "YES" : "NO";
   println(ans);
 }
 

@@ -126,3 +126,15 @@ template <typename T> Mat<T> trans(const Mat<T> &mat) {
   }
   return ans;
 }
+
+/**
+ * In-place matrix transpose
+ */
+template <typename T> void trans(Mat<T> &mat) {
+  assert(mat.m == mat.n);
+  for (int i = 0; i < mat.n; i++) {
+    for (int j = 0; j < mat.m; j++) {
+      ans[j][i] = mat[i][j];
+    }
+  }
+}

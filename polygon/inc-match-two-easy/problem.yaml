@@ -8,12 +8,35 @@ tags:
   - strings
 
 info:
-  input: stdin
-  output: stdout
   time limit: 250
   memory limit: 4
-  interactive: false
+  interactive: no
   difficulty: 1800
+
+input:
+  source: stdin
+  records:
+    - type: cases
+      name: "t"
+      bounds: [1, 10000]
+      records:
+        - type: case
+          name: "n"
+          bounds: [1, 200000]
+        - type: string
+          name: "s"
+          bounds: ["a", "z"]
+
+output:
+  source: stdout
+  records:
+    - type: cases
+      records:
+        - type: case
+          records:
+            - type: string
+              choices: ["YES", "NO"]
+              case sensitive: no
 
 statements:
   english: english.statement.yaml

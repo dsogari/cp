@@ -31,4 +31,8 @@ Let's call $f(l,r)$ a function that compares the current and maximum values of $
    - If its length is odd, the answer is either $f(l,r)$ or $f(l+1,r-1)$ (if possible).
    - Otherwise, the answer is either $f(l+1,r)$ or $f(l,r-1)$ (if possible).
 
-Since we make a single pass over the string, the time complexity is $O(n)$.
+Since we make a single pass over the string, the time complexity is $O(n)$. However, we can do better than that.
+
+Note that the length of a valid string with no valley is at most $2\alpha - 1$, where $\alpha$ is the size of the alphabet. Such a string would consist of characters starting at '`a`', going through '`z`', and back to '`a`'. But if the string has more characters, then it must have a valley that can be removed, because there would be at least one character on either side of the valley that is less than the corresponding extremity.
+
+Therefore, if the string has a length of at most $2\alpha - 1$ we can apply the algorithm above; otherwise the answer will be "`YES`". This results in a time complexity of $O(\alpha)$, which in this case is constant ($\alpha = 26$).

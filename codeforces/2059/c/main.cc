@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2059/submission/304180053
+ * https://codeforces.com/contest/2059/submission/304184855
  *
  * (c) 2025 Diego Sogari
  */
@@ -38,27 +38,18 @@ template <typename T> struct Mat : vector<vector<T>> {
 void solve(int t) {
   Int n;
   Mat<Int> g(n, n);
+  vector<int> len(n);
   for (int i = 0; i < n; i++) { // O(n^2)
-    g[i].push_back(0);
-    for (int j = n - 1; j >= 0; j--) {
-      g[i][j] = min(+n, g[i][j] + g[i][j + 1]);
+    for (int j = n - 1; j >= 0 && g[i][j] == 1; j--) {
+      len[i] = n - j;
     }
   }
-  for (int j = n - 1; j >= 0; j--) { // O(n^2*log n)
-    map<int, int, greater<int>> cnt;
-    for (int i = 0; i < n; i++) {
-      g[i][j] = (g[i][j] != n - j) * (1 + g[i][j + 1]);
-      cnt[g[i][j]]++;
-    }
-    int acc = 0;
-    for (auto &&[cols, rows] : cnt) {
-      acc += rows;
-      if (acc + cols > n) {
-        return println(n - j);
-      }
-    }
+  ranges::sort(len); // O(n*log n)
+  int ans = 0;
+  for (int i = 0; i < n; i++) { // O(n)
+    ans = 1 + min(ans, len[i]);
   }
-  println(n);
+  println(ans);
 }
 
 int main() {

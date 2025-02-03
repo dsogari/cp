@@ -53,9 +53,7 @@ SMat<U, N, M2> operator*(const SMat<T, N, M1> &lhs,
 template <typename T> struct Mat : vector<vector<T>> {
   int n, m;
   Mat(int n, int m) : vector<vector<T>>(n), n(n), m(m) {
-    for (auto &row : *this) {
-      row.resize(m);
-    }
+    ranges::for_each(*this, [m](auto &row) { row.resize(m); });
   }
   Mat(int n, int m, T s) : vector<vector<T>>(n, vector<T>(m, s)), n(n), m(m) {}
 };
@@ -133,8 +131,8 @@ template <typename T> Mat<T> trans(const Mat<T> &mat) {
 template <typename T> void trans(Mat<T> &mat) {
   assert(mat.m == mat.n);
   for (int i = 0; i < mat.n; i++) {
-    for (int j = 0; j < mat.m; j++) {
-      ans[j][i] = mat[i][j];
+    for (int j = i + 1; j < mat.m; j++) {
+      swap(mat[j][i], mat[i][j]);
     }
   }
 }

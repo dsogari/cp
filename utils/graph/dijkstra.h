@@ -4,7 +4,55 @@
 #include "graph.h"
 
 /**
- * Dijkstra's algorithm for sparse graphs
+ * Dijkstra's algorithm for non-weighed graphs
+ */
+struct DijUnit : vector<array<int, 2>> {
+  DijUnit(const Graph &g, int s)
+      : vector<array<int, 2>>(g.size(), {INT_MAX, -1}) { // O(m)
+    (*this)[s][0] = 0;
+    queue<int> q;
+    q.push(s);
+    while (q.size()) {
+      int u = q.front();
+      q.pop();
+      auto [du, pu] = (*this)[u];
+      for (auto &v : g[u]) {
+        auto &[dv, pv] = (*this)[v];
+        if (du + 1 < dv) {
+          dv = du + 1, pv = u;
+          q.push(v);
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Dijkstra's algorithm for binary-weighed graphs
+ */
+struct DijBinary : vector<array<int, 2>> {
+  DijBinary(const WGraph &g, int s)
+      : vector<array<int, 2>>(g.size(), {INT_MAX, -1}) { // O(m)
+    (*this)[s][0] = 0;
+    deque<int> q;
+    q.push_front(s);
+    while (q.size()) {
+      int u = q.front();
+      q.pop_front();
+      auto [du, pu] = (*this)[u];
+      for (auto &[v, w] : g[u]) {
+        auto &[dv, pv] = (*this)[v];
+        if (du + w < dv) {
+          dv = du + w, pv = u;
+          w == 1 ? q.push_back(v) : q.push_front(v);
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Dijkstra's algorithm for sparse weighed graphs
  */
 struct DijSparse : vector<pair<i64, int>> {
   DijSparse(const WGraph &g, int s)
@@ -15,10 +63,10 @@ struct DijSparse : vector<pair<i64, int>> {
       auto [du, u] = *q.begin();
       q.erase(q.begin());
       for (auto &[v, w] : g[u]) {
-        auto &[dv, p] = (*this)[v];
+        auto &[dv, pv] = (*this)[v];
         if (du + w < dv) {
           q.erase({dv, v});
-          dv = du + w, p = u;
+          dv = du + w, pv = u;
           q.insert({dv, v});
         }
       }
@@ -27,7 +75,7 @@ struct DijSparse : vector<pair<i64, int>> {
 };
 
 /**
- * Dijkstra's algorithm for dense graphs
+ * Dijkstra's algorithm for dense weighed graphs
  */
 struct DijDense : vector<pair<i64, int>> {
   DijDense(const WGraph &g, int s)

@@ -8,8 +8,9 @@
  */
 struct Digraph : vector<vector<int>> {
   const int n, m;
-  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
-    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
+  vector<array<Int, 2>> edges;
+  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), edges(m) {
+    for (auto &[u, v] : edges) {
       add(u, v);
     }
   }
@@ -21,13 +22,13 @@ struct Digraph : vector<vector<int>> {
  */
 struct Graph : vector<vector<int>> {
   const int n, m;
-  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
-    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
+  vector<array<Int, 2>> edges;
+  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), edges(m) {
+    for (auto &[u, v] : edges) {
       add(u, v);
     }
   }
-  void add(int u, int v) { _add(u, v), _add(v, u); }
-  void _add(int u, int v) { (*this)[u].push_back(v); }
+  void add(int u, int v) { (*this)[u].push_back(v), (*this)[v].push_back(u); }
 };
 
 /**
@@ -35,9 +36,10 @@ struct Graph : vector<vector<int>> {
  */
 struct WDigraph : vector<vector<array<int, 2>>> {
   const int n, m;
+  vector<array<Int, 3>> edges;
   WDigraph(int n, int m = 0)
-      : vector<vector<array<int, 2>>>(n + 1), n(n), m(m) {
-    for (auto &[u, v, w] : vector<array<Int, 3>>(m)) {
+      : vector<vector<array<int, 2>>>(n + 1), n(n), m(m), edges(m) {
+    for (auto &[u, v, w] : edges) {
       add(u, v, w);
     }
   }
@@ -49,13 +51,16 @@ struct WDigraph : vector<vector<array<int, 2>>> {
  */
 struct WGraph : vector<vector<array<int, 2>>> {
   const int n, m;
-  WGraph(int n, int m = 0) : vector<vector<array<int, 2>>>(n + 1), n(n), m(m) {
-    for (auto &[u, v, w] : vector<array<Int, 3>>(m)) {
+  vector<array<Int, 3>> edges;
+  WGraph(int n, int m = 0)
+      : vector<vector<array<int, 2>>>(n + 1), n(n), m(m), edges(m) {
+    for (auto &[u, v, w] : edges) {
       add(u, v, w);
     }
   }
-  void add(int u, int v, int w) { _add(u, v, w), _add(v, u, w); }
-  void _add(int u, int v, int w) { (*this)[u].push_back({v, w}); }
+  void add(int u, int v, int w) {
+    (*this)[u].push_back({v, w}), (*this)[v].push_back({u, w});
+  }
 };
 
 /**
@@ -67,10 +72,10 @@ struct LGraph : vector<vector<array<int, 2>>> {
   LGraph(int n, int m = 0)
       : vector<vector<array<int, 2>>>(n + 1), n(n), m(m), edges(m) {
     for (int i = 0; i < m; i++) {
-      auto [u, v] = edges[i];
-      add(u, v, i);
+      add(edges[i][0], edges[i][1], i);
     }
   }
-  void add(int u, int v, int id) { _add(u, v, id), _add(v, u, id); }
-  void _add(int u, int v, int id) { (*this)[u].push_back({v, id}); }
+  void add(int u, int v, int id) {
+    (*this)[u].push_back({v, id}), (*this)[v].push_back({u, id});
+  }
 };

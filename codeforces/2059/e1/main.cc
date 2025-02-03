@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2059/submission/304278109
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,31 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n, m;
+  vector<Int> a(n * m), b(n * m);
+  int i = 0;
+  for (int j = 0; j < n * m;) {
+    if (a[i] == b[j]) {
+      if (i % m == 0 && j - i < m) {
+        auto saved = i;
+        for (int k = j % m; k < m; k++, i++, j++) {
+          if (a[i] != b[j]) {
+            i = saved;
+            goto end;
+          }
+        }
+      } else {
+        i++, j++;
+      }
+    } else {
+      j++;
+    }
+  }
+end:
+  int ans = n * m - i;
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -49,11 +49,10 @@ template <typename T, size_t N>
 ostream &operator<<(ostream &os, const span<T, N> &a) {
   return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
 }
+template <typename T> ostream &operator<<(ostream &os, const list<T> &a) {
+  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
+}
 template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
   return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
 }
-
-/**
- * Output Line
- */
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }

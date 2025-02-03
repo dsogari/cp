@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2059/submission/304278109
+ * https://codeforces.com/contest/2059/submission/304284030
  *
  * (c) 2025 Diego Sogari
  */
@@ -27,28 +27,17 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int n, m;
-  vector<Int> a(n * m), b(n * m);
+  int nm = n * m;
+  vector<Int> a(nm), b(nm);
   int i = 0;
-  for (int j = 0; j < n * m;) {
+  for (int j = 0; j < nm; j++) { // O(n*m)
     if (a[i] == b[j]) {
-      if (i % m == 0 && j - i < m) {
-        auto saved = i;
-        for (int k = j % m; k < m; k++, i++, j++) {
-          if (a[i] != b[j]) {
-            i = saved;
-            goto end;
-          }
-        }
-      } else {
-        i++, j++;
-      }
-    } else {
-      j++;
+      i++;
+    } else if (i / m == j / m) { // same row, different values
+      i -= i % m;                // search from start of row
     }
   }
-end:
-  int ans = n * m - i;
-  println(ans);
+  println(nm - i);
 }
 
 int main() {

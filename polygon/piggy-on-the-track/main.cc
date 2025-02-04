@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2024-2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -32,9 +32,7 @@ void solve(int t) {
 #ifndef ONLINE_JUDGE
   Int x, d;
 #endif
-  int rem = n;
   auto query = [&](int p) -> bool {
-    assert(rem--);
     println('?', p);
 #ifndef ONLINE_JUDGE
     return simulate(n, x, d, p);
@@ -43,7 +41,7 @@ void solve(int t) {
 #endif
   };
   bool found = false;
-  while (rem > 2 && !found) {
+  for (int rem = n; rem > 2 && !found; rem--) {
     found = query(1);
   }
   auto ans = !found && query(n) || query(2);

@@ -36,7 +36,7 @@ struct WDigraph : vector<vector<pair<int, double>>> {
 
 struct Dist : vector<pair<double, int>> {
   Dist(const WDigraph &g, int s)
-      : vector<pair<double, int>>(g.size(), {LLONG_MAX, -1}) { // O(m*log n)
+      : vector<pair<double, int>>(g.size(), {INFINITY, -1}) { // O(m*log n)
     (*this)[s].first = 0;
     set<pair<double, int>> q = {{0, s}};
     while (q.size()) {

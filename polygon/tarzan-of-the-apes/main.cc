@@ -27,61 +27,39 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Iota : vector<int> {
-  Iota(int n, int s = 0) : vector<int>(n) { iota(begin(), end(), s); }
-  Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
-};
-
 void solve(int t) {
   Int n;
   vector<array<Int, 3>> a(n);
-  auto cmp = [&](int i, int j) { return a[i][0] < a[j][0]; };
-  Iota idx(n, cmp); // O(n*log n)
   vector<double> dist(n, INFINITY);
   vector<int> par(n, -1);
-  vector<bool> vis(n);
-  auto f = [&](int u, int v) { // O(1)
-    if (dist[u] < dist[v]) {
-      auto [xu, yu, hu] = a[idx[u]];
-      auto [xv, yv, hv] = a[idx[v]];
-      auto dx = xv - xu, dy = yv - yu;
-      if (abs(dx) > hu) {
-        return false;
-      }
-      auto d = sqrt(i64(dx) * dx + i64(dy) * dy);
-      if (d <= hu && dist[u] + d < dist[v]) {
-        dist[v] = dist[u] + d;
-        par[v] = u;
-      }
-    }
-    return true;
-  };
-  auto first = ranges::find(idx, 0) - idx.begin();
-  auto last = ranges::find(idx, n - 1) - idx.begin();
-  dist[first] = 0;
-  for (int i = 0; i < n; i++) { // O(n^2)
-    int u = -1;
+  set<pair<double, int>> q = {{0, 0}};
+  dist[0] = 0;
+  while (q.size()) { // O(n^2*log n)
+    auto [du, u] = *q.begin();
+    q.erase(q.begin());
+    auto [xu, yu, hu] = a[u];
     for (int v = 0; v < n; v++) {
-      if (!vis[v] && (u == -1 || dist[v] < dist[u])) {
-        u = v;
+      auto &dv = dist[v];
+      if (u != v && du < dv) {
+        auto [xv, yv, hv] = a[v];
+        i64 dx = xv - xu, dy = yv - yu;
+        auto d = sqrt(dx * dx + dy * dy);
+        if (d <= hu && du + d < dv) {
+          q.erase({dv, v});
+          dv = du + d;
+          par[v] = u;
+          q.insert({dv, v});
+        }
       }
     }
-    if (isinf(dist[u])) {
-      break;
-    }
-    vis[u] = true;
-    for (int v = u - 1; v >= 0 && f(u, v); v--)
-      ; // search left
-    for (int j = u + 1; j < n && f(u, j); j++)
-      ; // search right
   }
-  if (par[last] < 0) {
+  if (par[n - 1] < 0) {
     println(0);
     return;
   }
   vector<int> ans;
-  for (int u = last; u != first; u = par[u]) {
-    ans.push_back(idx[u] + 1);
+  for (int u = n - 1; u != 0; u = par[u]) {
+    ans.push_back(u + 1);
   }
   ranges::reverse(ans);
   println(ans.size());

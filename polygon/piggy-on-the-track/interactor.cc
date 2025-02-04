@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2024-2025 Diego Sogari
  */
 #include "testlib.h"
 
@@ -18,6 +18,7 @@ int check(int n, int x, int d) {
       println(y == x);
     }
   }
+  println(-1);
   return -1;
 }
 

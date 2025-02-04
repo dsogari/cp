@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2024-2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -23,20 +23,27 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+bool simulate(int n, int &x, int d, int p) {
+  return p == exchange(x, d ? x % n + 1 : n - (n - x + 1) % n);
+}
+
 void solve(int t) {
   Int n;
-  vector<Int> a(n);
-  ranges::sort(a);
-  int ans = 0;
-  for (int i = 0; i < n; i++) {
-    for (int j = i + 1; j < n; j++) {
-      auto diff = a[j] - a[i];
-      if (diff <= j - i + 1 && diff > 1) {
-        ans = max(ans, diff);
-      }
-    }
-  }
-  println(ans);
+#ifndef ONLINE_JUDGE
+  Int x, d;
+#endif
+  auto query = [&](int p) -> bool {
+    println('?', p);
+#ifndef ONLINE_JUDGE
+    return simulate(n, x, d, p);
+#else
+    return Int();
+#endif
+  };
+  for (int rem = n; rem > 1 && !query(1); rem--)
+    ;
+  auto ans = query(2);
+  println('!', ans);
 }
 
 int main() {

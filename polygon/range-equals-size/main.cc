@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2024-2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -63,10 +63,9 @@ void solve(int t) {
       j = i + 1;
     }
   }
-  int m = vals.size(); // unique elements
-  ranges::sort(diff);  // O(n*log n)
+  ranges::sort(diff); // O(n*log n)
+  int ans = 0, m = vals.size();
   FenTree<int> fen(m, Min<int>{}, INT_MAX);
-  int ans = 0;
   for (int i = 0; i < m; i++) { // O(n*log n)
     auto [x, c, d] = vals[i];
     auto j = ranges::lower_bound(diff, d - c) - diff.begin();

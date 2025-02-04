@@ -29,13 +29,7 @@ template <typename T> struct Str : basic_string<T> {
 };
 using String = Str<char>;
 
-void solve(int t) {
-  Int n;
-  String s;
-  int ans = 0;
-
-  println(ans);
-}
+void solve(int t) {}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

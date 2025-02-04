@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -23,19 +23,25 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
+vector<int> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
+  vector<int> ans;
+  for (int i = s; i < e; i++) {
+    if (ans.empty() || f(ans.back(), i)) {
+      ans.push_back(i);
+    } else {
+      *ranges::lower_bound(ans, i, f) = i;
+    }
+  }
+  return ans;
+}
+
 void solve(int t) {
   Int n;
-  vector<Int> a(n);
-  ranges::sort(a);
-  int ans = 0;
-  for (int l = 0, r = 1; r < n;) {
-    auto diff = a[r] - a[l];
-    auto len = r - l + 1;
-    if (diff <= len && diff > 1) {
-      ans = max(ans, diff);
-    }
-    diff > len ? l++ : r++;
-  }
+  vector<array<Int, 2>> a(n);
+  ranges::sort(a); // O(n*log n)
+  auto cmp = [&](int i, int j) { return a[i][1] > a[j][1]; };
+  auto seq = lis(cmp, 0, n); // O(n*log n)
+  int ans = seq.size();
   println(ans);
 }
 

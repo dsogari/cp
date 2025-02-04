@@ -9,8 +9,7 @@ testers:
 problems:
   A: absecutive/problem.yaml
   B: piggy-on-the-track/problem.yaml
-  C1: max-minus-min-equals-size-easy/problem.yaml
-  C2: max-minus-min-equals-size-hard/problem.yaml
+  C: range-equals-size/problem.yaml
   D: tarzan-of-the-apes/problem.yaml
-  E1: inc-match-two-easy/problem.yaml
-  E2: inc-match-two-hard/problem.yaml
+  E: inc-match-two/problem.yaml
+  F: bookcase/problem.yaml

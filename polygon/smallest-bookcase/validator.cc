@@ -1,9 +1,9 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include "testlib.h"
 
-constexpr int maxt = 1e4, maxn = 2e5;
+constexpr int maxt = 1e4, maxn = 2e5, maxa = 1e9;
 
 int main(int argc, char *argv[]) {
   registerValidation(argc, argv);
@@ -13,8 +13,12 @@ int main(int argc, char *argv[]) {
     setTestCase(i + 1);
     auto n = inf.readInt(1, maxn, "n");
     inf.readEoln();
-    inf.readInts(n, 1, 2 * n, "a");
-    inf.readEoln();
+    for (int j = 0; j < n; j++) {
+      inf.readInt(1, maxa, "w");
+      inf.readSpace();
+      inf.readInt(1, maxa, "h");
+      inf.readEoln();
+    }
   }
   inf.readEof();
 }

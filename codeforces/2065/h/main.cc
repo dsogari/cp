@@ -1,6 +1,4 @@
 /**
- * https://codeforces.com/contest/2065/submission/305312443
- *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -25,24 +23,7 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {
-  Int n, m, k;
-  auto b = abs(n - m);
-  if (k < b || k > max(n, m)) {
-    return println(-1);
-  }
-  string ans(n + m, '0');
-  for (int i = 0; i < k; i++) {
-    ans[i] += n < m;
-  }
-  for (int i = k; i < k + k - b; i++) {
-    ans[i] += n >= m;
-  }
-  for (int i = k + k - b; i < n + m; i++) {
-    ans[i] = '1' - ans[i - 1] + '0';
-  }
-  println(ans);
-}
+void solve(int t) {}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

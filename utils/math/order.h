@@ -18,11 +18,23 @@ template <typename T> struct Min {
 };
 
 /**
- * Vector Indices
+ * Element Indices
  */
 struct Iota : vector<int> {
   Iota(int n, int s = 0) : vector<int>(n) { iota(begin(), end(), s); }
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
+};
+
+/**
+ * Element Frequencies
+ */
+struct Freq : vector<int> {
+  Freq(const auto &a) : Freq(a, ranges::max(a)) {}
+  Freq(const auto &a, int mx) : vector<int>(mx + 1) { // O(n)
+    for (auto &&ai : a) {
+      (*this)[ai]++;
+    }
+  }
 };
 
 /**

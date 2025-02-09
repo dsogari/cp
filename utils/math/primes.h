@@ -25,7 +25,7 @@ struct Sieve : vector<int> {
  * Sieve of Small Prime numbers (up to 2^16) - ~13KB
  */
 constexpr struct SmallPrimes : array<u16, 6542> {
-  constexpr SmallPrimes() { // O(N*log log N) = O(2^18)
+  constexpr SmallPrimes() : array<u16, 6542>() { // O(N*log log N) = O(2^18)
     array<bool, 1 << 16> vis = {};
     for (int i = 2, cnt = 0; i < vis.size(); i++) {
       if (!vis[i]) {
@@ -65,7 +65,7 @@ struct SegSieve : vector<int> {
  * https://en.algorithmica.org/hpc/algorithms/factorization/
  */
 struct Factors : array<u64, 6542> {
-  constexpr Factors() { // O(N*log log N) = O(2^18)
+  constexpr Factors() : array<u64, 6542>() { // O(N*log log N) = O(2^18)
     for (int i = 0; i < size(); i++) {
       (*this)[i] = u64(-1) / primes[i] + 1;
     }
@@ -77,5 +77,37 @@ struct Factors : array<u64, 6542> {
       }
     }
     return 1;
+  }
+};
+
+/**
+ * Distinct Prime Factor Count of a number
+ */
+struct Omega : vector<int> {
+  Omega(int n) : vector<int>(n + 1) { // O(n*log log n)
+    for (int i = 2; i <= n; i++) {
+      if (!(*this)[i]) {
+        for (int j = i; j <= n; j += i) {
+          (*this)[j]++;
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Total Prime Factor Count of a number
+ */
+struct BigOmega : vector<int> {
+  BigOmega(int n) : vector<int>(n + 1) { // O(n*log log n)
+    for (int i = 2; i <= n; i++) {
+      if (!(*this)[i]) {
+        for (int j = i; j <= n; j += i) {
+          for (int k = j; k % i == 0; k /= i) {
+            (*this)[j]++;
+          }
+        }
+      }
+    }
   }
 };

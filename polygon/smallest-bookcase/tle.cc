@@ -106,7 +106,7 @@ void solve(int t) {
     }
   }
   HopcroftKarp hk(g, n);
-  int ans = n - hk.compute(); // O(n^2*sqrt n)
+  int ans = n - hk.compute(); // O(n^2.5)
   println(ans);
 }
 

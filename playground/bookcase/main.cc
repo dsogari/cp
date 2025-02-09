@@ -1,9 +1,9 @@
 /**
- * Bookcase
- *
- * (c) 2024 Diego Sogari
+ * (c) 2024-2025 Diego Sogari
  */
-#include <bits/stdc++.h>
+#include "graph/graph.h"
+#include "graph/tsp.h"
+#include "math/order.h"
 
 using namespace std;
 
@@ -14,39 +14,7 @@ using namespace std;
 init();
 #endif
 
-template <typename T, size_t N>
-ostream &operator<<(ostream &os, const array<T, N> &a) {
-  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
-}
-template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
-  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
-}
-void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
-
-template <typename T> struct Num {
-  T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
-  operator T &() { return x; }
-  operator T() const { return x; }
-};
-using Int = Num<int>;
-
-struct Digraph : vector<vector<int>> {
-  const int n, m;
-  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
-    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
-      add(u, v);
-    }
-  }
-  void add(int u, int v) { (*this)[u].push_back(v); }
-};
-
-constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
-  return *ranges::partition_point(ranges::views::iota(s, e), f);
-}
-
-array<vector<int>, 2> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
+array<vector<int>, 2> lis2(auto &&f, int s, int e) { // [s, e) O(n*log n)
   vector<int> inc, len;
   for (int i = s; i < e; i++) {
     if (inc.empty() || f(inc.back(), i)) {
@@ -61,28 +29,30 @@ array<vector<int>, 2> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
   return {inc, len};
 }
 
-int len1(auto &&b, int n, int k) { // O(k^n)
-  vector<int> s(k, -1), c(k);
-  int ans = n;
-  auto f = [&](auto &self, int i) -> void {
+int len1(auto &&b, int n, int k) { // O({k,n}) = O(k^n/k!), Stirling number
+  vector<int> s(k), c(k);
+  auto f = [&](auto &self, int i) -> int {
     if (i == n) {
-      ans = min(ans, *ranges::max_element(c));
-      return;
+      return ranges::max(c);
     }
+    int ans = INT_MAX;
     for (int j = 0; j < k; j++) {
-      if (s[j] < 0 || b[s[j]][1] <= b[i][1]) {
+      if (s[j] <= b[i][1]) {
         auto saved = s[j];
-        s[j] = i, c[j]++;
-        self(self, i + 1);
+        s[j] = b[i][1], c[j]++;
+        ans = min(ans, self(self, i + 1));
         s[j] = saved, c[j]--; // backtrack
+        if (!s[j]) {
+          break; // no need to go further
+        }
       }
     }
+    return ans;
   };
-  f(f, 0);
-  return ans;
+  return f(f, 0); // all partitions of {1,...,n} into k
 }
 
-int len2(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
+int len2(auto &&b, int n, int k, int mxlen) { // O({k,n}) = O(k^n/k!)
   Digraph g(n);
   for (int i = 0; i < n; i++) {
     for (int j = i + 1; j < n; j++) {
@@ -119,32 +89,55 @@ int len2(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
   return first_false(f, n / k, mxlen + 1);
 }
 
-int len3(auto &&b, int n, int k, int mxlen) { // O(n^2 + ?)
-  Digraph g(n);
+int len3(auto &&b, int n, int k, int mxlen) { // O(4^n*log n)
+  vector<bool> memo(1 << n);
   for (int i = 0; i < n; i++) {
-    for (int j = i + 1; j < n; j++) {
-      if (b[i][1] > b[j][1]) {
-        g.add(i, j);
+    memo[1 << i] = true;
+  }
+  for (unsigned i = 1; i < 1 << n; i++) { // O(n*2^n)
+    if (memo[i]) {
+      auto l = bit_width(i) - 1;
+      for (int r = l + 1; r < n; r++) {
+        if (b[l][1] <= b[r][1]) {
+          memo[i | 1 << r] = true;
+        }
       }
     }
   }
-  return 0;
+  vector<int> dp(1 << n);
+  auto f = [&](int len) {                   // O(4^n)
+    for (unsigned i = 1; i < 1 << n; i++) { // O(n*2^n)
+      dp[i] = memo[i] && popcount(i) <= len ? 1 : INT_MAX;
+    }
+    for (unsigned i = 1; i < 1 << n; i++) { // O(4^n)
+      if (dp[i] < INT_MAX) {
+        auto l = bit_width(i);
+        for (unsigned j = 1 << l; j < 1 << n; j++) {
+          if (!(i & j) && dp[j] < INT_MAX) {
+            dp[i | j] = min(dp[i | j], dp[i] + dp[j]);
+          }
+        }
+      }
+    }
+    assert(dp.back() < INT_MAX);
+    return dp.back() > k;
+  };
+  assert(k > 0 && k <= n);
+  return first_false(f, n / k, mxlen + 1);
 }
 
-auto now() { return chrono::high_resolution_clock::now(); }
-
 void solve(int t) {
-  // Int n;
-  // vector<array<Int, 2>> b(n);
-  int n = 12;
-  vector<array<int, 2>> b(n);
-  for (auto &&bi : b) {
-    bi[0] = rand() % n + 1;
-    bi[1] = rand() % n + 1;
-  }
+  Int n;
+  vector<array<Int, 2>> b(n);
+  // int n = 18;
+  // vector<array<int, 2>> b(n);
+  // for (auto &&bi : b) {
+  //   bi[0] = rand() % (2 * n) + 1;
+  //   bi[1] = rand() % (2 * n) + 1;
+  // }
   ranges::sort(b); // O(n*log n)
   auto cmp = [&](int i, int j) { return b[i][1] > b[j][1]; };
-  auto [seq, cnt] = lis(cmp, 0, n); // O(n*log n)
+  auto [seq, cnt] = lis2(cmp, 0, n); // O(n*log n)
   int k = seq.size(), mxlen = *ranges::max_element(cnt);
   auto t0 = now();
   int l1 = len1(b, n, k);
@@ -154,10 +147,9 @@ void solve(int t) {
   int l3 = len3(b, n, k, mxlen);
   auto t3 = now();
   assert(l1 == l2);
-  // assert(l1 == l3);
-  println(b, k, l1, l2, l3);
-  // chrono::duration<double, milli> d1 = t1 - t0, d2 = t2 - t1;
-  // println("OK", d1.count(), "ms", d2.count(), "ms");
+  assert(l1 == l3);
+  chrono::duration<double, milli> d1 = t1 - t0, d2 = t2 - t1, d3 = t3 - t2;
+  println(b, "\e[80G", k, l1, l2, l3, d1.count(), d2.count(), d3.count());
 }
 
 int main() {

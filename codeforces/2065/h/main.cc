@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2065/submission/305415421
+ * https://codeforces.com/contest/2065/submission/305420149
  *
  * (c) 2025 Diego Sogari
  */
@@ -100,28 +100,28 @@ void solve(int t) {
   array before = {FenTree<Mint>(n, plus{}), FenTree<Mint>(n, plus{})};
   array after = {FenTree<Mint>(n, plus{}), FenTree<Mint>(n, plus{})};
   auto upd = [&](int i, bool add) { // O(log n)
-    auto b = s[i] - '0';
+    auto b = s[i] & 1;
     before[b].update(i, add ? pow2[i] : -pow2[i]);
     after[b].update(i, add ? pow2[n - i - 1] : -pow2[n - i - 1]);
   };
-  auto get = [&](int i, bool single) { // O(log n)
-    auto b = 1 - s[i] + '0';
-    return (single ? Mint() : before[b].query(i - 1) * pow2[n - i - 1]) +
-           pow2[i] * (after[b].query(n - 1) - after[b].query(i));
+  auto get = [&](int i) { // O(log n)
+    auto b = 1 - s[i] & 1;
+    return before[b].query(i - 1) * pow2[n - i - 1] +
+           (after[b].query(n - 1) - after[b].query(i)) * pow2[i];
   };
-  for (int i = 0; i < n; i++) { // O(n*log n)
-    upd(i, true);
-  }
   Mint acc = pow2[n] - 1;
+  array<Mint, 2> sum = {};
   for (int i = 0; i < n; i++) { // O(n*log n)
-    acc += get(i, true);
+    acc += sum[s[i] & 1] * pow2[n - i - 1];
+    sum[1 - s[i] & 1] += pow2[i];
+    upd(i, true);
   }
   auto flip = [&](int i) { // O(log n)
-    acc -= get(i, false);
+    acc -= get(i);
     upd(i, false);
-    s[i] = '1' - s[i] + '0';
+    s[i] ^= 1; // toggle bit
     upd(i, true);
-    acc += get(i, false);
+    acc += get(i);
   };
   vector<int> ans(q);
   for (int i = 0; i < q; i++) { // O(q*log n)

@@ -64,13 +64,13 @@ struct SegSieve : vector<int> {
  * Prime Factors of a number (up to 2^32) - ~51KB
  * https://en.algorithmica.org/hpc/algorithms/factorization/
  */
-struct Factors : array<u64, 6542> {
-  constexpr Factors() : array<u64, 6542>() { // O(N*log log N) = O(2^18)
+constexpr struct Factor : array<u64, 6542> {
+  constexpr Factor() : array<u64, 6542>() { // O(N*log log N) = O(2^18)
     for (int i = 0; i < size(); i++) {
       (*this)[i] = u64(-1) / primes[i] + 1;
     }
   }
-  u32 find(u32 x) const { // O(min(6542,x/log x))
+  u16 operator()(u32 x) const { // O(min(6542,x/log x))
     for (auto m : *this) {
       if (m * x < m) {
         return u64(-1) / m + 1;
@@ -78,7 +78,7 @@ struct Factors : array<u64, 6542> {
     }
     return 1;
   }
-};
+} factor;
 
 /**
  * Distinct Prime Factor Count of a number

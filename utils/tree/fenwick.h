@@ -9,20 +9,19 @@
 template <typename T> struct FenTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
-      ans = f(ans, nodes[i]);
+      ans += nodes[i];
     }
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      nodes[i] += val;
     }
   }
 };
@@ -35,10 +34,10 @@ template <typename T> struct FenTreePlus : FenTree<T> {
   void update_from(int l, auto it) { // [l, n] O(n)
     assert(l >= 0);
     for (l++; l <= this->n; l++, it++) {
-      this->nodes[l] = this->f(this->nodes[l], *it);
+      this->nodes[l] += *it;
       int r = l + (l & -l);
       if (r <= this->n) {
-        this->nodes[r] = this->f(this->nodes[r], *it);
+        this->nodes[r] += *it;
       }
     }
   }
@@ -76,4 +75,13 @@ template <typename T> struct SparseFenTree {
       f(nodes[i], val);
     }
   }
+};
+
+/**
+ * Fenwick Tree node
+ */
+struct Node {
+  int x;
+  Node(int a = 0) : x(a) {}
+  void operator+=(const Node &rhs) { x = max(x, rhs.x); }
 };

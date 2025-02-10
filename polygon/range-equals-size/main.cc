@@ -26,26 +26,27 @@ using Int = Num<int>;
 template <typename T> struct FenTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
-      ans = f(ans, nodes[i]);
+      ans += nodes[i];
     }
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      nodes[i] += val;
     }
   }
 };
 
-template <typename T> struct Min {
-  T operator()(const T &lhs, const T &rhs) const { return min(lhs, rhs); }
+struct Node {
+  int x;
+  Node(int a = 0) : x(a) {}
+  void operator+=(const Node &rhs) { x = min(x, rhs.x); }
 };
 
 void solve(int t) {
@@ -65,12 +66,12 @@ void solve(int t) {
   }
   ranges::sort(diff); // O(n*log n)
   int ans = 0, m = vals.size();
-  FenTree<int> fen(m, Min<int>{}, INT_MAX);
+  FenTree<Node> fen(m, INT_MAX);
   for (int i = 0; i < m; i++) { // O(n*log n)
     auto [x, c, d] = vals[i];
     auto j = ranges::lower_bound(diff, d - c) - diff.begin();
     auto k = ranges::lower_bound(diff, d) - diff.begin();
-    auto y = fen.query(m - j - 1);
+    auto y = fen.query(m - j - 1).x;
     if (y < INT_MAX && x - y > 1) {
       ans = max(ans, x - y);
     }

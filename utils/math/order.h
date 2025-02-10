@@ -4,20 +4,6 @@
 #include "utils.h"
 
 /**
- * Maximum (function object)
- */
-template <typename T> struct Max {
-  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
-};
-
-/**
- * Minimum (function object)
- */
-template <typename T> struct Min {
-  T operator()(const T &lhs, const T &rhs) const { return min(lhs, rhs); }
-};
-
-/**
  * Element Indices
  */
 struct Iota : vector<int> {
@@ -113,26 +99,3 @@ int cyclicshift(auto &&f, int s, int e) { // [s, e) O(n)
   }
   return ans && s < e - 2 && f(s, e - 1) ? -1 : ans;
 }
-
-// Comparison operators
-const less<int> lt1;
-const greater<int> gt1;
-const equal_to<int> eq1;
-const less<array<int, 2>> lt2;
-const greater<array<int, 2>> gt2;
-const equal_to<array<int, 2>> eq2;
-
-// Custom comparison
-const auto lta1 = [](auto &lhs, auto &rhs) { return lhs[0] < rhs[0]; };
-const auto gta1 = [](auto &lhs, auto &rhs) { return lhs[0] > rhs[0]; };
-const auto lta2 = [](auto &lhs, auto &rhs) {
-  return lhs[0] < rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]);
-};
-const auto gta2 = [](auto &lhs, auto &rhs) {
-  return lhs[0] > rhs[0] || (lhs[0] == rhs[0] && lhs[1] > rhs[1]);
-};
-
-// Utility functions
-// sort
-// nth_element
-// next_permutation

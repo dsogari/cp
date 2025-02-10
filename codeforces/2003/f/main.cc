@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2003/submission/282687765
+ * https://codeforces.com/contest/2003/submission/305448720
  *
  * (c) 2024 Diego Sogari
  */
@@ -30,26 +30,27 @@ using Int = Num<int>;
 template <typename T> struct FenTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
-      ans = f(ans, nodes[i]);
+      ans += nodes[i];
     }
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      nodes[i] += val;
     }
   }
 };
 
-template <typename T> struct Max {
-  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+struct Node {
+  int x;
+  Node(int a = 0) : x(a) {}
+  void operator+=(const Node &rhs) { x = max(x, rhs.x); }
 };
 
 struct PCG {
@@ -66,7 +67,7 @@ struct PCG {
 auto now() { return chrono::high_resolution_clock::now(); }
 
 #ifdef ONLINE_JUDGE
-constexpr auto limit = 1.9;
+constexpr auto limit = 2.5;
 #else
 constexpr auto limit = 0.1;
 #endif
@@ -81,10 +82,10 @@ void solve(int t) {
     for (auto &&id : ids) {
       id = rng() % m;
     }
-    vector dp(m - 1, FenTree<int>(n, Max<int>{}, -1));
+    vector dp(m - 1, FenTree<Node>(n, -1));
     for (int i = 0; i < n; i++) {
       auto ord = ids[b[i] - 1];
-      auto val = ord ? dp[ord - 1].query(a[i] - 1) : 0;
+      auto val = ord ? dp[ord - 1].query(a[i] - 1).x : 0;
       if (val >= 0) {
         if (ord < m - 1) {
           dp[ord].update(a[i] - 1, val + c[i]);

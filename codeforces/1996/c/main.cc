@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1996/submission/282544535
+ * https://codeforces.com/contest/1996/submission/305443534
  *
  * (c) 2024 Diego Sogari
  */
@@ -25,27 +25,28 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Str : string {
+template <typename T> struct Str : basic_string<T> {
+  using basic_string<T>::basic_string;
   Str() { cin >> *this; }
 };
+using String = Str<char>;
 
 template <typename T> struct FenTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
-      ans = f(ans, nodes[i]);
+      ans += nodes[i];
     }
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      nodes[i] += val;
     }
   }
 };
@@ -54,9 +55,9 @@ constexpr int lowerlatin = 'z' - 'a' + 1;
 
 void solve(int t) {
   Int n, q;
-  Str a, b;
+  String a, b;
   vector<array<Int, 2>> qs(q);
-  vector<FenTree<int>> ca(lowerlatin, {n, plus<int>{}});
+  vector<FenTree<int>> ca(lowerlatin, {n});
   auto cb = ca;
   for (int i = 0; i < n; i++) {
     ca[a[i] - 'a'].update(i, 1);

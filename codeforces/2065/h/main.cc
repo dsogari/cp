@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2065/submission/305420149
+ * https://codeforces.com/contest/2065/submission/305570284
  *
  * (c) 2025 Diego Sogari
  */
@@ -73,20 +73,19 @@ struct Pow2 : vector<Mint> {
 template <typename T> struct FenTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
-      ans = f(ans, nodes[i]);
+      ans += nodes[i];
     }
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      nodes[i] += val;
     }
   }
 };
@@ -97,8 +96,8 @@ void solve(int t) {
   Int q;
   vector<Int> v(q);
   Pow2 pow2(n);
-  array before = {FenTree<Mint>(n, plus{}), FenTree<Mint>(n, plus{})};
-  array after = {FenTree<Mint>(n, plus{}), FenTree<Mint>(n, plus{})};
+  array before = {FenTree<Mint>(n), FenTree<Mint>(n)};
+  array after = {FenTree<Mint>(n), FenTree<Mint>(n)};
   auto upd = [&](int i, bool add) { // O(log n)
     auto b = s[i] & 1;
     before[b].update(i, add ? pow2[i] : -pow2[i]);

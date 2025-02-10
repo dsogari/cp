@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2030/submission/287662564
+ * https://codeforces.com/contest/2030/submission/305448385
  *
  * Fenwick tree; two pointers; greedy
  *
@@ -32,20 +32,19 @@ using Int = Num<int>;
 template <typename T> struct FenTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  FenTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(n + 1, val) {}
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
     for (i++; i > 0; i -= i & -i) {
-      ans = f(ans, nodes[i]);
+      ans += nodes[i];
     }
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
     for (i++; i <= n; i += i & -i) {
-      nodes[i] = f(nodes[i], val);
+      nodes[i] += val;
     }
   }
 };
@@ -63,7 +62,7 @@ void solve(int t) {
     }
     j = i;
   }
-  FenTree<int> pref(n, plus<int>{});
+  FenTree<int> pref(n);
   for (int i = 0, j = 1; i < n; j++) { // O(n*log n)
     if (j == n) {
       for (; i < j; i++) {

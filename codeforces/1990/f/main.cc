@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1990/submission/278410541
+ * https://codeforces.com/contest/1990/submission/305442754
  *
  * (c) 2024 Diego Sogari
  */
@@ -84,33 +84,31 @@ template <typename T> struct IntTree {
 template <typename T> struct SegTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
-  const T &full() const { return nodes[1]; }    // O(1)
+  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
+  T full() const { return _node(1); }           // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
-  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      _merge(i);
-    }
-  }
   T _query(int l, int r) const { // [l, r] O(log n)
     return l == r   ? _node(l)
-           : l & 1  ? f(_node(l), _query(l + 1, r))
-           : ~r & 1 ? f(_query(l, r - 1), _node(r))
+           : l & 1  ? _node(l) + _query(l + 1, r)
+           : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
+  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
+  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
+    }
+  }
   virtual T _node(int i) const { return nodes[i]; }
-  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 struct Seg {
   i64 sum, mx;
   int mpos;
-  Seg join(const Seg &other) const {
+  Seg operator+(const Seg &other) const {
     auto ans = mx < other.mx ? other : *this;
     ans.sum = sum + other.sum;
     return ans;
@@ -126,7 +124,7 @@ void solve(int t) {
   Int n, q;
   vector<I64> a(n);
   vector<Query> queries(q);
-  SegTree<Seg> segments(n, &Seg::join);
+  SegTree<Seg> segments(n);
   for (int i = 0; i < n; i++) {
     segments[i] = {a[i], a[i], i};
   }

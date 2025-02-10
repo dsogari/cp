@@ -9,6 +9,15 @@
 #include "debug.h"
 init();
 
+struct Seg {
+  int x;
+  Seg(int a = 0) : x(a) {}
+  Seg operator+(const Seg &other) const { return max(x, other.x); }
+  Seg operator+(const Lazy<Seg, int> &rhs) const {
+    return rhs.set ? rhs.val : x + rhs.val;
+  }
+};
+
 void solve(int t) {
   srand(time(0));
   Int n, m, mx;
@@ -20,34 +29,34 @@ void solve(int t) {
     }
   }
   Pref1D<int> pref(n, Max<int>{});
-  AssignSegTree<int, int> segtree(n, Max<int>{});
+  AssignSegTree<Seg, int> st(n);
   for (int i = 0; i < n; i++) {
-    pref[i] = segtree[i] = rand() % mx;
+    st[i] = pref[i] = rand() % mx;
   }
-  segtree.update(n - 1, false);
-  assert(pref.full() == segtree.full());
+  st.update(n - 1, false);
+  assert(pref.full() == st.full().x);
   chrono::duration<double, milli> ms;
   auto upd = [&](int l, int r, int x, bool set) {
     for (int i = l; i <= r; i++) {
       pref[i] = set ? x : pref[i] + x;
     }
     auto t0 = now();
-    segtree.update(l, r, x, set);
+    st.update(l, r, x, set);
     ms += now() - t0;
   };
   auto chk = [&](int l, int r) {
     auto t0 = now();
-    auto ans = segtree.query(l, r);
+    auto ans = st.query(l, r);
     ms += now() - t0;
-    assert(pref.query(l, r) == ans);
+    assert(pref.query(l, r) == ans.x);
   };
   for (auto [op, l, r, x] : q) {
     op <= 1 ? upd(l, r, x, op) : chk(l, r);
   }
-  segtree.pushall(n - 1);
-  assert(pref.full() == segtree.full());
+  st.pushall(n - 1);
+  assert(pref.full() == st.full().x);
   for (int i = 0; i < n; i++) {
-    assert(pref[i] == segtree.get(i));
+    assert(pref[i] == st.query(i, i).x);
   }
   println("OK", ms.count(), "ms");
 }

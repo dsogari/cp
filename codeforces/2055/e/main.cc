@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2055/submission/300995755
+ * https://codeforces.com/contest/2055/submission/305442125
  *
  * Sorting; segment
  *
@@ -36,34 +36,31 @@ struct Iota : vector<int> {
 template <typename T> struct SegTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
+  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
   T full() const { return _node(1); }           // O(1)
-  T get(int i) const { return _node(i + n); }   // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
-  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      _merge(i);
-    }
-  }
   T _query(int l, int r) const { // [l, r] O(log n)
     return l == r   ? _node(l)
-           : l & 1  ? f(_node(l), _query(l + 1, r))
-           : ~r & 1 ? f(_query(l, r - 1), _node(r))
+           : l & 1  ? _node(l) + _query(l + 1, r)
+           : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
+  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
+  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
+    }
+  }
   virtual T _node(int i) const { return nodes[i]; }
-  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 struct Seg {
-  i64 mx = 0, sum = 0;
-  /// non-commutative (use power-of-two)
-  Seg join(const Seg &rhs) const {
+  i64 mx, sum;
+  // non-commutative (use power-of-two)
+  Seg operator+(const Seg &rhs) const {
     return {max(mx, sum + rhs.mx), sum + rhs.sum};
   }
 };
@@ -84,7 +81,7 @@ void solve(int t) {
                    : x2 > y2 && (x1 == y1 || y1 > y2);
   };
   Iota idx(n, cmp); // O(n*log n)
-  SegTree<Seg> segtree(bit_ceil<unsigned>(n), &Seg::join);
+  SegTree<Seg> segtree(bit_ceil<unsigned>(n));
   for (int i = 0; i < n; i++) { // O(n)
     auto [x, y] = a[idx[i]];
     segtree[i] = {x, x - y};

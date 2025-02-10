@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2000/submission/284497261
+ * https://codeforces.com/contest/2000/submission/305442356
  *
  * (c) 2024 Diego Sogari
  */
@@ -32,27 +32,24 @@ using Chr = Num<char>;
 template <typename T> struct SegTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
+  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
   T full() const { return _node(1); }           // O(1)
-  T get(int i) const { return _node(i + n); }   // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
-  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      _merge(i);
-    }
-  }
   T _query(int l, int r) const { // [l, r] O(log n)
     return l == r   ? _node(l)
-           : l & 1  ? f(_node(l), _query(l + 1, r))
-           : ~r & 1 ? f(_query(l, r - 1), _node(r))
+           : l & 1  ? _node(l) + _query(l + 1, r)
+           : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
+  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
+  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
+    }
+  }
   virtual T _node(int i) const { return nodes[i]; }
-  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
@@ -60,20 +57,21 @@ constexpr auto first_false(auto &&f, auto s, auto e) { // [s, e) O(log n)
   return *ranges::partition_point(ranges::views::iota(s, e), f);
 }
 
-template <typename T> struct Max {
-  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
+struct Seg {
+  int x;
+  Seg operator+(const Seg &other) const { return {max(x, other.x)}; }
 };
 
 constexpr int mxa = 2e6;
-SegTree<int> gaps(mxa + 2, Max<int>{});
+SegTree<Seg> gaps(mxa + 2);
 auto set_gap = [](auto it) { // O(log n)
   auto x = *it + 1;
-  gaps[x] = *next(it) - x;
+  gaps[x] = {*next(it) - x};
   gaps.update(x, true);
 };
 auto clear_gap = [](auto it) { // O(log n)
   auto x = *it + 1;
-  gaps[x] = 0;
+  gaps[x] = {0};
   gaps.update(x, true);
 };
 
@@ -104,7 +102,7 @@ void solve(int t) { // O((n + m)*log n)
   };
   vector<int> ans;
   function<void(int)> rep = [&](int k) { // O(log^2 n)
-    auto f = [&](int x) { return gaps.query(0, x) < k; };
+    auto f = [&](int x) { return gaps.query(0, x).x < k; };
     auto x = first_false(f, 1, mxa + 2);
     ans.push_back(x);
   };

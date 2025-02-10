@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2001/submission/282544093
+ * https://codeforces.com/contest/2001/submission/305442233
  *
  * (c) 2024 Diego Sogari
  */
@@ -31,38 +31,35 @@ using Int = Num<int>;
 template <typename T> struct SegTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
+  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
   T full() const { return _node(1); }           // O(1)
-  T get(int i) const { return _node(i + n); }   // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
-  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      _merge(i);
-    }
-  }
   T _query(int l, int r) const { // [l, r] O(log n)
     return l == r   ? _node(l)
-           : l & 1  ? f(_node(l), _query(l + 1, r))
-           : ~r & 1 ? f(_query(l, r - 1), _node(r))
+           : l & 1  ? _node(l) + _query(l + 1, r)
+           : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
+  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
+  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
+    }
+  }
   virtual T _node(int i) const { return nodes[i]; }
-  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
-template <typename T> struct Max {
-  T operator()(const T &lhs, const T &rhs) const { return max(lhs, rhs); }
-};
-template <typename T> struct Min {
-  T operator()(const T &lhs, const T &rhs) const { return min(lhs, rhs); }
+struct Seg {
+  int mn, mx;
+  Seg operator+(const Seg &other) const {
+    return {min(mn, other.mn), max(mx, other.mx)};
+  }
 };
 
-SegTree<int> segmin(3e5, Min<int>{}), segmax(3e5, Max<int>{});
+SegTree<Seg> st(3e5);
 
 void solve(int t) {
   Int n;
@@ -75,12 +72,11 @@ void solve(int t) {
   for (auto &[_, idx] : pos) { // O(n*log n)
     right.insert(idx.back());
   }
-  segmin.n = segmax.n = n;      // adjust tree length for the test case
+  st.n = n;                     // adjust tree length for the test case
   for (int i = 0; i < n; i++) { // O(n)
-    segmin[i] = segmax[i] = a[i];
+    st[i] = {a[i], a[i]};
   }
-  segmin.update(n - 1, false); // O(n)
-  segmax.update(n - 1, false); // O(n)
+  st.update(n - 1, false); // O(n)
   vector<int> ans;
   auto f = [&](int &l, int x) { // O(log n) on average
     auto &idx = pos[x];
@@ -88,18 +84,16 @@ void solve(int t) {
     assert(it != idx.end());
     l = *it + 1; // increase last used position of the original array
     for (; it != idx.end(); it++) {
-      segmin[*it] = INT_MAX; // clear position
-      segmax[*it] = INT_MIN; // clear position
-      segmin.update(*it, true);
-      segmax.update(*it, true);
+      st[*it] = {INT_MAX, INT_MIN}; // clear position
+      st.update(*it, true);
     }
     right.erase(idx.back()); // remove right boundary of this element
     ans.push_back(x);
   };
   auto it = right.begin();
   for (int l = 0; it != right.end(); it = right.begin()) { // O(n*log n)
-    auto &segtree = ans.size() % 2 ? segmin : segmax;
-    f(l, segtree.query(l, *it));
+    auto seg = st.query(l, *it);
+    f(l, ans.size() % 2 ? seg.mn : seg.mx);
   }
   assert(ans.size() == pos.size());
   println(ans.size());

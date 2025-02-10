@@ -1,11 +1,9 @@
 /**
- * https://codeforces.com/contest/1995/submission/278314803
+ * https://codeforces.com/contest/1995/submission/305442619
  *
  * (c) 2024 Diego Sogari
  */
 #include <bits/stdc++.h>
-
-#pragma GCC optimize("O3,unroll-loops")
 
 using namespace std;
 
@@ -51,31 +49,31 @@ SMat<U, N, M2> operator*(const SMat<T, N, M1> &lhs,
 template <typename T> struct SegTree {
   int n;
   vector<T> nodes;
-  function<T(const T &, const T &)> f;
-  SegTree(int n, auto &&f, T val = {}) : n(n), f(f), nodes(2 * n, val) {}
-  const T &full() const { return nodes[1]; }    // O(1)
+  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
+  T full() const { return _node(1); }           // O(1)
   T &operator[](int i) { return nodes[i + n]; } // O(1)
   T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  void update(int i, bool single) { _check(i, i), _build(i + n, single); }
-  void _build(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      _merge(i);
-    }
-  }
   T _query(int l, int r) const { // [l, r] O(log n)
-    return l == r   ? nodes[l]
-           : l & 1  ? f(nodes[l], _query(l + 1, r))
-           : ~r & 1 ? f(_query(l, r - 1), nodes[r])
+    return l == r   ? _node(l)
+           : l & 1  ? _node(l) + _query(l + 1, r)
+           : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
+  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
+  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
+    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
+    for (i >>= 1; i > 0; dec[single]()) {
+      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
+    }
+  }
   virtual T _node(int i) const { return nodes[i]; }
-  void _merge(int i) { nodes[i] = f(_node(i << 1), _node(i << 1 | 1)); }
   void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 struct Seg : SMat<bool, 2> {
-  Seg join(const Seg &other) const { return static_cast<Seg>(*this * other); }
+  Seg operator+(const Seg &other) const {
+    return static_cast<Seg>(*this * other);
+  }
   bool good() const { return (*this)[0][0] || (*this)[1][1]; }
 };
 
@@ -110,7 +108,7 @@ void solve(int t) {
     add(i, (i + n + 1) % (2 * n));
   }
   ranges::sort(edges, cmp);
-  SegTree<Seg> desks(n, &Seg::join);
+  SegTree<Seg> desks(n);
   auto use = [&](int k, bool val) { // O(log n)
     auto [_, i, j] = edges[k];
     auto &desk = desks[i % n];

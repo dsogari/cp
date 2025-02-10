@@ -34,3 +34,14 @@ template <typename T, auto M> struct Mod {
 using Mint = Mod<int, 1000000007>;
 // using Mint = Mod<int, 998244353>;
 // using Mint = Mod<int, Barrett<int>{}>;
+
+/**
+ * Powers of Two
+ */
+struct Pow2 : vector<Mint> {
+  Pow2(int n) : vector<Mint>(n + 1, 1) { // O(n)
+    for (int i = 0; i < n; i++) {
+      (*this)[i + 1] = (*this)[i] * 2;
+    }
+  }
+};

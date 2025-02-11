@@ -23,90 +23,20 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-struct Digraph : vector<vector<int>> {
-  const int n, m;
-  vector<array<Int, 2>> edges;
-  Digraph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), edges(m) {
-    for (auto &[u, v] : edges) {
-      add(u, v);
-    }
-  }
-  void add(int u, int v) { (*this)[u].push_back(v); }
-};
-
-struct HopcroftKarp {
-  const Digraph &g;
-  vector<int> pair_u, pair_v, dist;
-  HopcroftKarp(const Digraph &g, int r)
-      : g(g), pair_u(g.size()), pair_v(r + 1), dist(g.size()) {}
-  int compute() { // O(m*sqrt n)
-    int ans = 0;
-    while (bfs()) {
-      for (int u = 1; u <= g.n; u++) {
-        if (pair_u[u] == 0 && dfs(u)) {
-          ans++;
-        }
-      }
-    }
-    return ans;
-  }
-  bool bfs() {
-    queue<int> q;
-    for (int u = 1; u <= g.n; u++) {
-      if (pair_u[u] == 0) {
-        dist[u] = 0;
-        q.push(u);
-      } else {
-        dist[u] = INT_MAX;
-      }
-    }
-    dist[0] = INT_MAX;
-    while (q.size()) {
-      int u = q.front();
-      q.pop();
-      if (dist[u] < dist[0]) {
-        for (auto &v : g[u]) {
-          if (dist[pair_v[v]] == INT_MAX) {
-            dist[pair_v[v]] = dist[u] + 1;
-            q.push(pair_v[v]);
-          }
-        }
-      }
-    }
-    return dist[0] != INT_MAX;
-  }
-  bool dfs(int u) {
-    if (u == 0) {
-      return true;
-    }
-    for (auto &v : g[u]) {
-      if (dist[pair_v[v]] == dist[u] + 1) {
-        if (dfs(pair_v[v])) {
-          pair_v[v] = u;
-          pair_u[u] = v;
-          return true;
-        }
-      }
-    }
-    dist[u] = INT_MAX;
-    return false;
-  }
-};
-
 void solve(int t) {
   Int n;
   vector<array<Int, 2>> a(n);
   ranges::sort(a); // O(n*log n)
-  Digraph g(n);
+  vector<int> far(n);
+  int ans = 1;
   for (int i = 0; i < n; i++) { // O(n^2)
     for (int j = i + 1; j < n; j++) {
-      if (a[i][1] <= a[j][1]) {
-        g.add(i + 1, j + 1);
+      if (a[i][1] > a[j][1]) {
+        far[j] = max(far[j], far[i] + 1);
+        ans = max(ans, far[j] + 1);
       }
     }
   }
-  HopcroftKarp hk(g, n);
-  int ans = n - hk.compute(); // O(n^2.5)
   println(ans);
 }
 

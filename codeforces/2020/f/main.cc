@@ -54,8 +54,8 @@ using Mint = Mod<int, 1000000007>;
 struct Binom {
   vector<Mint> fac, inv;
   Binom() : fac(1, 1), inv(1, 1) {}
-  Mint permute(int n) { return update(n), fac.at(n); }               // O(1)
-  Mint commute(int n) { return update(n), inv.at(n); }               // O(1)
+  Mint permute(int n) { return update(n), fac[n]; }                  // O(1)
+  Mint commute(int n) { return update(n), inv[n]; }                  // O(1)
   Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
   Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
   Mint catalan(int n) { return combine(2 * n, n) * invert(n + 1); }  // O(1)

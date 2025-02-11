@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1996/submission/305442471
+ * https://codeforces.com/contest/1996/submission/305725871
  *
  * (c) 2024 Diego Sogari
  */
@@ -37,52 +37,44 @@ struct Graph : vector<vector<int>> {
   void add(int u, int v) { (*this)[u].push_back(v), (*this)[v].push_back(u); }
 };
 
-template <typename T> struct SegTree {
+template <class T> struct SegTree {
   int n;
   vector<T> nodes;
-  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
-  T full() const { return _node(1); }           // O(1)
-  T &operator[](int i) { return nodes[i + n]; } // O(1)
-  T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  T _query(int l, int r) const { // [l, r] O(log n)
+  SegTree(int n, const T &val = {}) : n(n), nodes(2 * n, val) {} // O(n)
+  T full() const { return _node(1); }                            // O(1)
+  T &operator[](int i) { return nodes[i + n]; }                  // O(1)
+  virtual T _node(int i) const { return nodes[i]; }              // O(1)
+  void build() { for (int i = n; --i; _merge(i)); }              // O(n)
+  void update(int i) { for (i += n; i >>= 1; _merge(i)); }       // O(lg n)
+  void _merge(int i) { nodes[i] = _node(i << 1) + _node(i << 1 | 1); } // O(1)
+  T query(int l, int r) const { return _query(l + n, r + n); } // [l, r] O(lg n)
+  T _query(int l, int r) const {                               // [l, r] O(lg n)
     return l == r   ? _node(l)
            : l & 1  ? _node(l) + _query(l + 1, r)
            : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
-  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
-  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
-    }
-  }
-  virtual T _node(int i) const { return nodes[i]; }
-  void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 template <typename T, typename U> struct LazySegTree : SegTree<T> {
+  using SegTree<T>::update;
   vector<U> lazy;
   LazySegTree(int n, T val = {}, U lazyval = {})
-      : SegTree<T>(n, val), lazy(2 * n, lazyval) {}
-  using SegTree<T>::update;
-  void update(int l, int r, const U &val) { // [l, r] O(log n)
-    this->_check(l, r);
+      : SegTree<T>(n, val), lazy(2 * n, lazyval) {} // O(n)
+  void update(int l, int r, const U &val) {         // [l, r] O(lg n)
     _apply(l + this->n, r + this->n, val);
-    this->_update(l + this->n, true);
-    this->_update(r + this->n, true);
+    update(l), update(r);
   }
-  void _apply(int l, int r, const U &val) { // [l, r] O(log n)
-    return l == r   ? _apply(l, val)
-           : l & 1  ? (_apply(l, val), _apply(l + 1, r, val))
-           : ~r & 1 ? (_apply(r, val), _apply(l, r - 1, val))
-                    : _apply(l >> 1, r >> 1, val);
+  void _apply(int l, int r, const U &val) { // [l, r] O(lg n)
+    l == r   ? (lazy[l] += val, void())
+    : l & 1  ? (lazy[l] += val, _apply(l + 1, r, val))
+    : ~r & 1 ? (lazy[r] += val, _apply(l, r - 1, val))
+             : _apply(l >> 1, r >> 1, val);
   }
-  void _apply(int i, const U &val) { lazy[i] += val; }
-  virtual T _node(int i) const { return this->nodes[i] + lazy[i]; }
+  virtual T _node(int i) const { return this->nodes[i] + lazy[i]; } // O(1)
 
 private:
-  using SegTree<T>::query; // hide method (only full queries allowed)
+  using SegTree<T>::query; // only full queries allowed
 };
 
 struct Seg {
@@ -98,10 +90,12 @@ struct Seg {
 };
 
 void solve(int t) {
+  SegTree<int> a(1);
+  a.query(0, 0);
   Int n, m;
   Graph g(n, m);
   LazySegTree<Seg, int> segtree(n, {0, 1});
-  segtree.update(n - 1, false);  // build the tree
+  segtree.build();
   for (int u = 1; u <= n; u++) { // O(n + m*log n)
     for (auto &v : g[u]) {
       if (u < v) {

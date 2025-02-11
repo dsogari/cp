@@ -18,13 +18,12 @@ void make_pref(vector<T> &a, F f = {}) {
  */
 template <typename T> struct Pref1D : vector<T> {
   int n;
-  function<T(const T &, const T &)> f;
-  Pref1D(int n, auto &&f, T val = {}) : vector<T>(n, val), n(n), f(f) {}
+  Pref1D(int n, T val = {}) : vector<T>(n, val), n(n) {}
   T full() const { return query(0, n - 1); }
   T query(int l, int r) const { // O(n)
     T ans = (*this)[l];
     for (int i = l + 1; i <= r; i++) {
-      ans = f(ans, (*this)[i]);
+      ans = ans + (*this)[i];
     }
     return ans;
   }

@@ -20,7 +20,7 @@ void solve(int t) {
     }
   }
   vector<int> ans(m), ans1(m);
-  Pref1D<int> pref(n, plus<int>{});
+  Pref1D<int> pref(n);
   for (int i = 0; i < n; i++) {
     pref[i] = rand() % mx;
   }

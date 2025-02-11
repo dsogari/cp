@@ -81,28 +81,23 @@ template <typename T> struct IntTree {
   }
 };
 
-template <typename T> struct SegTree {
+template <class T> struct SegTree {
   int n;
   vector<T> nodes;
-  SegTree(int n, T val = {}) : n(n), nodes(2 * n, val) {}
-  T full() const { return _node(1); }           // O(1)
-  T &operator[](int i) { return nodes[i + n]; } // O(1)
-  T query(int l, int r) const { return _check(l, r), _query(l + n, r + n); }
-  T _query(int l, int r) const { // [l, r] O(log n)
+  SegTree(int n, const T &val = {}) : n(n), nodes(2 * n, val) {} // O(n)
+  T full() const { return _node(1); }                            // O(1)
+  T &operator[](int i) { return nodes[i + n]; }                  // O(1)
+  virtual T _node(int i) const { return nodes[i]; }              // O(1)
+  void build() { for (int i = n; --i; _merge(i)); }              // O(n)
+  void update(int i) { for (i += n; i >>= 1; _merge(i)); }       // O(lg n)
+  void _merge(int i) { nodes[i] = _node(i << 1) + _node(i << 1 | 1); } // O(1)
+  T query(int l, int r) const { return _query(l + n, r + n); } // [l, r] O(lg n)
+  T _query(int l, int r) const {                               // [l, r] O(lg n)
     return l == r   ? _node(l)
            : l & 1  ? _node(l) + _query(l + 1, r)
            : ~r & 1 ? _query(l, r - 1) + _node(r)
                     : _query(l >> 1, r >> 1);
   }
-  void update(int i, bool single) { _check(i, i), _update(i + n, single); }
-  void _update(int i, bool single) { // O(log n) / [0, i] O(n)
-    function<void()> dec[] = {[&]() { i--; }, [&]() { i >>= 1; }};
-    for (i >>= 1; i > 0; dec[single]()) {
-      nodes[i] = _node(i << 1) + _node(i << 1 | 1);
-    }
-  }
-  virtual T _node(int i) const { return nodes[i]; }
-  void _check(int l, int r) const { assert(l >= 0 && l <= r && r < n); }
 };
 
 struct Seg {
@@ -128,7 +123,7 @@ void solve(int t) {
   for (int i = 0; i < n; i++) {
     segments[i] = {a[i], a[i], i};
   }
-  segments.update(n - 1, false);
+  segments.build();
   IntTree<int> intervals(n, 0, n);
   map<array<int, 2>, int> cache;
   auto prune = [&](int l, int r) { return cache.erase({l, r}), true; };
@@ -153,7 +148,7 @@ void solve(int t) {
       println(query(query, x - 1, y - 1));
     } else {
       segments[x - 1] = {y, y, x - 1};
-      segments.update(x - 1, true);
+      segments.update(x - 1);
       intervals.visit(x - 1, prune);
     }
   }

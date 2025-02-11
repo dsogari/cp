@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2065/submission/305312443
+ * https://codeforces.com/contest/2065/submission/305588926
  *
  * (c) 2025 Diego Sogari
  */
@@ -31,15 +31,9 @@ void solve(int t) {
   if (k < b || k > max(n, m)) {
     return println(-1);
   }
-  string ans(n + m, '0');
-  for (int i = 0; i < k; i++) {
-    ans[i] += n < m;
-  }
-  for (int i = k; i < k + k - b; i++) {
-    ans[i] += n >= m;
-  }
-  for (int i = k + k - b; i < n + m; i++) {
-    ans[i] = '1' - ans[i - 1] + '0';
+  string ans(n + m, n < m ? '0' : '1');
+  for (int i = 0; i < n + m - (k - b); i++) {
+    ans[i] ^= i < k || (i - k) & 1;
   }
   println(ans);
 }

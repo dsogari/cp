@@ -13,16 +13,12 @@ template <typename T> struct FenTree {
   T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes[0];
-    for (i++; i > 0; i -= i & -i) {
-      ans += nodes[i];
-    }
+    for (i++; i > 0; i -= i & -i) ans += nodes[i];
     return ans;
   }
   void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
-    for (i++; i <= n; i += i & -i) {
-      nodes[i] += val;
-    }
+    for (i++; i <= n; i += i & -i) nodes[i] += val;
   }
 };
 
@@ -71,9 +67,7 @@ template <typename T> struct SparseFenTree {
   }
   void update(int i, auto &&f, const auto &val) { // O(log n)
     assert(i >= 0);
-    for (i++; i <= n; i += i & -i) {
-      f(nodes[i], val);
-    }
+    for (i++; i <= n; i += i & -i) f(nodes[i], val);
   }
 };
 

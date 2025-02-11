@@ -43,7 +43,7 @@ struct Iota : vector<int> {
 void solve(int t) {
   Int n, m;
   Mat<I64> a(n, m);
-  for (int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) { // O(n*m)
     for (int j = 1; j < m; j++) {
       a[i][j] += a[i][j - 1];
     }
@@ -51,7 +51,7 @@ void solve(int t) {
   auto cmp = [&](int i, int j) { return a[i].back() > a[j].back(); };
   Iota idx(n, cmp);
   i64 ans = 0, sum = 0;
-  for (auto &&i : idx) {
+  for (auto &&i : idx) { // O(n*m)
     ans += m * sum;
     for (int j = 0; j < m; j++) {
       ans += a[i][j];

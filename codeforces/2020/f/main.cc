@@ -34,13 +34,7 @@ using Int = Num<int>;
 
 template <typename T, auto M> struct Mod {
   using V = conditional_t<sizeof(T) <= 4, u64, u128>;
-  // static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
-  static V inv(V x, V m) { // O(log^2 m) | x and m coprime
-    for (V a = exchange(x, 1), b = exchange(m, 0); b; a = exchange(b, a % b)) {
-      x = exchange(m, x - (a / b) * m);
-    }
-    return x >= M ? x + M : x;
-  }
+  static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
   make_unsigned_t<T> x;
   Mod() : x(0) {}
   Mod(auto y) : x(y % M) { x >= M ? x += M : x; }
@@ -54,13 +48,6 @@ template <typename T, auto M> struct Mod {
   Mod &operator-=(Mod rhs) { return (x -= rhs.x) >= M ? x += M : x, *this; }
   Mod &operator*=(Mod rhs) { return x = x * V(rhs.x) % M, *this; }
   Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
-  Mod pow(auto y) const { // O(log y) | 0^(-inf,0] -> 1
-    Mod ans(1), base(*this);
-    for (auto e = y < 0 ? ~y + u128(1) : +y; e; e >>= 1, base *= base) {
-      e & 1 ? ans *= base : ans;
-    }
-    return y < 0 ? Mod(1) /= ans : ans;
-  }
 };
 using Mint = Mod<int, 1000000007>;
 
@@ -71,9 +58,10 @@ struct Binom {
   Mint commute(int n) { return update(n), inv.at(n); }               // O(1)
   Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
   Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
+  Mint catalan(int n) { return combine(2 * n, n) * invert(n + 1); }  // O(1)
   Mint arrange(int n, int k) { return permute(n) * commute(n - k); } // O(1)
   Mint combine(int n, int k) { return arrange(n, k) * commute(k); }  // O(1)
-  void reserve(int n) { fac.reserve(n), inv.reserve(n); }            // O(n)
+  void reserve(int n) { fac.reserve(n + 1), inv.reserve(n + 1); }    // O(n)
   void update(int n) { // O(1) amortized
     int s = fac.size();
     if (s <= n) {

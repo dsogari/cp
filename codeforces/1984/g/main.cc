@@ -72,13 +72,6 @@ template <typename T, auto M> struct Mod {
   Mod &operator-=(Mod rhs) { return (x -= rhs.x) >= M ? x += M : x, *this; }
   Mod &operator*=(Mod rhs) { return x = x * V(rhs.x) % M, *this; }
   Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
-  Mod pow(auto y) const { // O(log y) | 0^(-inf,0] -> 1
-    Mod ans(1), base(*this);
-    for (auto e = y < 0 ? ~y + u128(1) : +y; e; e >>= 1, base *= base) {
-      e & 1 ? ans *= base : ans;
-    }
-    return y < 0 ? Mod(1) /= ans : ans;
-  }
 };
 using Mint = Mod<int, Barrett<int>{}>;
 
@@ -142,8 +135,7 @@ void solve(int t) {
     Mint c = n - 1;
     auto findpos = [&](int i, int d) {
       int k = 0;
-      for (; a[c - (k - d)] != i && a[c + (k + d)] != i && k < n; k += 2)
-        ;
+      for (; a[c - (k - d)] != i && a[c + (k + d)] != i && k < n; k += 2);
       return a[c - (k - d)] == i ? make_pair(-k, bwd2) : make_pair(k, fwd2);
     };
     auto f = [&](int i, bool move) {
@@ -173,8 +165,7 @@ void solve(int t) {
     };
     f(n, false);
     for (int i = n - 1; i > 1; i--) {
-      for (int j = 1; a[c - j] == i && i > 1; j++, i--)
-        ;
+      for (int j = 1; a[c - j] == i && i > 1; j++, i--);
       if (i > 1) {
         f(i, true);
       }

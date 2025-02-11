@@ -45,21 +45,22 @@ template <typename T, auto M> struct Mod {
   Mod &operator-=(Mod rhs) { return (x -= rhs.x) >= M ? x += M : x, *this; }
   Mod &operator*=(Mod rhs) { return x = x * V(rhs.x) % M, *this; }
   Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
-  Mod pow(auto y) const { // O(log y) | 0^(-inf,0] -> 1
-    Mod ans(1), base(*this);
-    for (auto e = y < 0 ? ~y + u128(1) : +y; e; e >>= 1, base *= base) {
-      e & 1 ? ans *= base : ans;
-    }
-    return y < 0 ? Mod(1) /= ans : ans;
-  }
 };
 using Mint = Mod<int, 1000000007>;
+
+Mint mpow(Mint x, auto y) { // O(log y) | 0^(-inf,0] -> 1
+  Mint ans = 1;
+  for (auto e = y < 0 ? ~y + u128(1) : +y; e; e >>= 1, x *= x) {
+    e & 1 ? ans *= x : ans;
+  }
+  return y < 0 ? Mint(1) /= ans : ans;
+}
 
 void solve(int t) {
   vector<Int> a(t), b(t);
   Mint two = 2;
   for (auto &&bi : b) { // O(t*log max(k))
-    println(two.pow(bi));
+    println(mpow(two, bi));
   }
 }
 

@@ -45,6 +45,29 @@ double binsearch(auto &&f, double s, double e, int iter) {
  * Longest Increasing Subsequence
  */
 vector<int> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
+  vector<vector<int>> seq;
+  vector<int> ans;
+  for (int i = s; i < e; i++) {
+    if (ans.empty() || f(ans.back(), i)) {
+      ans.push_back(i);
+      seq.push_back({i});
+    } else {
+      auto j = ranges::lower_bound(ans, i, f) - ans.begin();
+      ans[j] = i;
+      seq[j].push_back(i);
+    }
+  }
+  for (int i = seq.size() - 2; i >= 0; i--) {
+    auto it = ranges::lower_bound(seq[i], ans[i + 1]);
+    ans[i] = *prev(it);
+  }
+  return ans;
+}
+
+/**
+ * Length of the Longest Increasing Subsequence
+ */
+int llis(auto &&f, int s, int e) { // [s, e) O(n*log n)
   vector<int> ans;
   for (int i = s; i < e; i++) {
     if (ans.empty() || f(ans.back(), i)) {
@@ -53,7 +76,7 @@ vector<int> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
       *ranges::lower_bound(ans, i, f) = i;
     }
   }
-  return ans;
+  return ans.size();
 }
 
 /**

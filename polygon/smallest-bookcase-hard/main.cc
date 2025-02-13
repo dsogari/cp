@@ -54,7 +54,7 @@ vector<int> lis(auto &&f, int s, int e) { // [s, e) O(n*log n)
 void solve(int t) {
   Int n;
   vector<array<Int, 2>> a(n);
-  auto cmp1 = [&](int i, int j) { return a[i][0] < a[j][0]; };
+  auto cmp1 = [&](int i, int j) { return a[i] < a[j]; };
   Iota idx(n, cmp1); // O(n*log n)
   auto cmp2 = [&](int i, int j) { return a[idx[i]][1] > a[idx[j]][1]; };
   auto seq = lis(cmp2, 0, n); // O(n*log n)
@@ -82,19 +82,16 @@ void solve(int t) {
         }
       }
     }
-    int ans = INT_MAX;
     vector<int> top(k), cnt(k);
     auto save = [&](int i, int j) -> array<int, 3> {
       return {exchange(top[j], a[idx[i]][1]), exchange(shf[idx[i]], j + 1),
               cnt[j]++};
     };
-    auto restore = [&](int i, int j, const array<int, 3> &saved) {
+    auto backtrack = [&](int i, int j, const array<int, 3> &saved) {
       top[j] = saved[0], shf[idx[i]] = saved[1], cnt[j] = saved[2];
     };
+    int ans = INT_MAX;
     auto f = [&](auto &self, int i, int mx) -> void { // O({n-k,k})
-      if (mx >= ans) {
-        return;
-      }
       if (i == n) {
         ans = mx;
         shelves = shf;
@@ -104,10 +101,13 @@ void solve(int t) {
         return self(self, i + 1, mx);
       }
       for (auto j : good[i]) {
-        if (a[idx[i]][1] >= top[j]) {
+        if (a[idx[i]][1] >= top[j] && cnt[j] + 1 < ans) {
           auto saved = save(i, j);
           self(self, i + 1, max(mx, cnt[j]));
-          restore(i, j, saved); // backtrack
+          backtrack(i, j, saved);
+          if (mx >= ans) {
+            break; // current branch is stale
+          }
         }
       }
     };

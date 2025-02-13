@@ -20,11 +20,20 @@ inline vector<int> getPath(InStream &in, int n) {
   };
   add(1); // path starts at Tarzan's tree
   auto len = in.readInt(0, n - 1, "number of moves");
+  if (!in.seekEoln()) {
+    in.quit(_pe, "Expected EOLN");
+  }
+  if (len == 0) {
+    return path;
+  }
   for (int i = 1; i <= len; i++) {
     auto j = in.readInt(1, n, format("path[%d]", i));
     add(j);
   }
-  if (len > 0 && path.back() != n) {
+  if (!in.seekEoln()) {
+    in.quit(_pe, "Expected EOLN");
+  }
+  if (path.back() != n) {
     in.quitf(_wa, "path doesn't end in Ape's tree: expected %d, found %d", n,
              path.back());
   }

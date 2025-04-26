@@ -3,7 +3,7 @@
  */
 #include "testlib.h"
 
-constexpr int maxt = 1e4, maxn = 2e5;
+constexpr int maxt = 1e3, maxn = 5e3;
 
 int main(int argc, char *argv[]) {
   registerGen(argc, argv, 1);
@@ -13,14 +13,13 @@ int main(int argc, char *argv[]) {
   auto lengths = rnd.partition(t, N, minn);
   println(t);
   for (int i = 0; i < t; i++) {
-    auto n = lengths[i];
+    int n = lengths[i];
     auto s = rnd.next("[a-z]{%d}", n);
     for (int i = 1; i < n; i++) {
       while (s[i] == s[i - 1]) {
         s[i] = rnd.next('a', 'z');
       }
     }
-    println(n);
     println(s);
   }
 }

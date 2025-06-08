@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2117/submission/323498009
+ * https://codeforces.com/contest/2117/submission/323541158
  *
  * (c) 2025 Diego Sogari
  */
@@ -31,24 +31,19 @@ using Int = Num<int>;
 void solve(int t) {
   Int n;
   vector<Int> a(n), b(n);
-  map<int, int> count;
+  vector<bool> seen(n + 1);
   int i = n - 1;
   for (; i >= 0; i--) {
     if (a[i] == b[i]) {
       break;
     }
-    auto &ca = count[a[i]];
-    auto &cb = count[b[i]];
-    if (ca > 1 || cb > 1) {
-      break;
+    if (i < n - 1) {
+      if (a[i] == a[i + 1] || b[i] == b[i + 1] || seen[a[i]] || seen[b[i]]) {
+        break;
+      }
+      seen[a[i + 1]] = true;
+      seen[b[i + 1]] = true;
     }
-    if (ca == 1 && i < n - 1 && a[i] != b[i + 1]) {
-      break;
-    }
-    if (cb == 1 && i < n - 1 && b[i] != a[i + 1]) {
-      break;
-    }
-    ca++, cb++;
   }
   auto ans = i + 1;
   println(ans);

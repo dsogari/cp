@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2117/submission/323474987
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,15 +25,24 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-template <typename T> struct Str : basic_string<T> {
-  using basic_string<T>::basic_string;
-  Str() { cin >> *this; }
-};
-using String = Str<char>;
-
 void solve(int t) {
   Int n;
-  String s;
+  vector<Int> a(n);
+  auto c = 2 * a[0] - a[1];
+  if (c < 0 || c % (n + 1)) {
+    return println("NO");
+  }
+  auto y = c / (n + 1);
+  auto x = a[0] - n * y;
+  if (x < 0) {
+    return println("NO");
+  }
+  for (int i = 2; i < n; i++) {
+    if (x * (i + 1) + y * (n - i) != a[i]) {
+      return println("NO");
+    }
+  }
+  println("YES");
 }
 
 int main() {

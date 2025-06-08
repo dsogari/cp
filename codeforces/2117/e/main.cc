@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2106/submission/317336778
+ * https://codeforces.com/contest/2117/submission/323498009
  *
  * (c) 2025 Diego Sogari
  */
@@ -29,37 +29,28 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 void solve(int t) {
-  Int n, q;
-  vector<Int> p(n);
-  vector<array<Int, 3>> b(q);
-  vector<int> pp(n + 1), ans;
-  for (int i = 0; i < n; i++) {
-    pp[p[i]] = i + 1;
-  }
-  for (auto &&[l, r, k] : b) {
-    if (pp[k] < l || pp[k] > r) {
-      ans.push_back(-1);
-      continue;
+  Int n;
+  vector<Int> a(n), b(n);
+  map<int, int> count;
+  int i = n - 1;
+  for (; i >= 0; i--) {
+    if (a[i] == b[i]) {
+      break;
     }
-    int c = -1;
-    for (int lt = 0, gt = 0, x = 0, y = 0; lt < k && n + 1 - gt > k;) {
-      auto m = (l + r) / 2;
-      if (pp[k] == m) {
-        c = 2 * max(x, y);
-        break;
-      }
-      if (pp[k] < m) {
-        x += p[m - 1] < k;
-        gt++;
-        r = m - 1;
-      } else {
-        y += p[m - 1] > k;
-        lt++;
-        l = m + 1;
-      }
+    auto &ca = count[a[i]];
+    auto &cb = count[b[i]];
+    if (ca > 1 || cb > 1) {
+      break;
     }
-    ans.push_back(c);
+    if (ca == 1 && i < n - 1 && a[i] != b[i + 1]) {
+      break;
+    }
+    if (cb == 1 && i < n - 1 && b[i] != a[i + 1]) {
+      break;
+    }
+    ca++, cb++;
   }
+  auto ans = i + 1;
   println(ans);
 }
 

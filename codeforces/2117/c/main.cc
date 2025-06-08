@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2117/submission/323445316
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,15 +25,20 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-template <typename T> struct Str : basic_string<T> {
-  using basic_string<T>::basic_string;
-  Str() { cin >> *this; }
-};
-using String = Str<char>;
-
 void solve(int t) {
   Int n;
-  String s;
+  vector<Int> a(n);
+  set<int> set1, set2;
+  int ans = 0;
+  for (int i = 0; i < n; i++) {
+    set1.insert(a[i]);
+    set2.erase(a[i]);
+    if (set2.empty()) {
+      swap(set1, set2);
+      ans++;
+    }
+  }
+  println(ans);
 }
 
 int main() {

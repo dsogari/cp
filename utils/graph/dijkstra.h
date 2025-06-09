@@ -54,17 +54,16 @@ struct DijBinary : vector<array<int, 2>> {
 /**
  * Dijkstra's algorithm for sparse weighed graphs
  */
-struct DijSparse : vector<pair<i64, int>> {
-  DijSparse(const WGraph &g, int s)
-      : vector<pair<i64, int>>(g.size(), {LLONG_MAX, -1}) { // O(m*log n)
+template <typename T> struct DijSparse : vector<pair<T, int>> {
+  DijSparse(const WGraph &g, int s) : vector<pair<T, int>>(g.size(), {{}, -1}) {
     (*this)[s].first = 0;
-    set<pair<i64, int>> q = {{0, s}};
+    set<pair<T, int>> q = {{0, s}};
     while (q.size()) {
       auto [du, u] = *q.begin();
       q.erase(q.begin());
       for (auto &[v, w] : g[u]) {
         auto &[dv, pv] = (*this)[v];
-        if (du + w < dv) {
+        if (pv == -1 || du + w < dv) {
           q.erase({dv, v});
           dv = du + w, pv = u;
           q.insert({dv, v});

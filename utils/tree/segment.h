@@ -16,15 +16,12 @@ template <class T> struct SegTree {
   void build() { for (int i = n; --i; _merge(i)); }              // O(n)
   void update(int i) { for (i += n; i >>= 1; _merge(i)); }       // O(lg n)
   void _merge(int i) { nodes[i] = _node(i << 1) + _node(i << 1 | 1); } // O(1)
-  T query(int l, int r) const { // [l, r] O(lg n)
-    auto ans = nodes[0];
-    return _visit(l + n, r + n, [&](int i) { ans = ans + _node(i); }), ans;
-  }
-  void _visit(int l, int r, auto &&f) const { // [l, r] O(lg n)
-    l == r   ? f(l)
-    : l & 1  ? (f(l), _visit(l + 1, r, f))
-    : ~r & 1 ? (_visit(l, r - 1, f), f(r))
-             : _visit(l >> 1, r >> 1, f);
+  T query(int l, int r) const { return _query(l + n, r + n); } // [l, r] O(lg n)
+  T _query(int l, int r) const {                               // [l, r] O(lg n)
+    return l == r   ? _node(l)
+           : l & 1  ? _node(l) + _query(l + 1, r)
+           : ~r & 1 ? _query(l, r - 1) + _node(r)
+                    : _query(l >> 1, r >> 1);
   }
 };
 

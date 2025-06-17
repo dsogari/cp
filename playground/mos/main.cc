@@ -1,7 +1,6 @@
 /**
  * (c) 2024 Diego Sogari
  */
-#include "io.h"
 #include "math/order.h"
 #include "math/prefix.h"
 #include "tree/mos.h"

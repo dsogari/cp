@@ -1,7 +1,9 @@
 /**
  * (c) 2024 Diego Sogari
  */
-#include "io.h"
+#pragma once
+
+#include "utils.h"
 
 /**
  * Directed Graph

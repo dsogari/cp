@@ -3,6 +3,8 @@
  *
  * Credit: Krishna Pal Deora (https://github.com/Krishnapal4050)
  */
+#pragma once
+
 #include "graph.h"
 
 /**

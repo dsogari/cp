@@ -1,6 +1,8 @@
 /**
  * (c) 2024 Diego Sogari
  */
+#pragma once
+
 #include "polygon.h"
 
 /**
@@ -19,8 +21,7 @@ struct Hull : vector<int> {
     sort(begin() + 1, end(), cmp2);
     auto i = begin() + 3;
     for (auto j = i; j != end(); *i++ = *j++) {
-      for (; (p[*(i - 1)] - p[*(i - 2)]).cross(p[*j] - p[*(i - 2)]) < 0; i--)
-        ;
+      for (; (p[*(i - 1)] - p[*(i - 2)]).cross(p[*j] - p[*(i - 2)]) < 0; i--);
     }
     resize(i - begin());
   }

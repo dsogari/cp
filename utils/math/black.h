@@ -1,6 +1,8 @@
 /**
  * (c) 2024 Diego Sogari
  */
+#pragma once
+
 #include "lucy.h"
 #include "mod.h"
 #include "primes.h"

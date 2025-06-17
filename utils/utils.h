@@ -3,16 +3,7 @@
  */
 #pragma once
 
-/**
- * Common includes
- */
-#include <bits/stdc++.h>
-
-/**
- * Common namespaces
- */
-using namespace std;
-using namespace placeholders;
+#include "io.h"
 
 /**
  * Numeric types
@@ -24,6 +15,16 @@ using u64 = uint64_t;
 using u128 = __uint128_t; // available on 64-bit targets
 using i128 = __int128_t;  // available on 64-bit targets
 using f128 = __float128;  // available on 64-bit targets
+
+/**
+ * Common aliases
+ */
+using Int = Number<int>;
+using Chr = Number<char>;
+using I64 = Number<i64>;
+using U64 = Number<u64>;
+using F64 = Number<double>;
+using Str = String<char>;
 
 /**
  * Common constants

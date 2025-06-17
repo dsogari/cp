@@ -1,6 +1,8 @@
 /**
  * (c) 2024 Diego Sogari
  */
+#pragma once
+
 #include "point.h"
 
 constexpr auto sign(auto x) { return (x > 0) - (x < 0); };

@@ -1,38 +1,35 @@
 /**
  * (c) 2024 Diego Sogari
  */
-#include "utils.h"
+#pragma once
+
+#include <bits/stdc++.h>
+
+using namespace std;
+using namespace placeholders;
 
 /**
  * Input number
- * LLDB: type summary add --summary-string "${var.x}" -x "^Num<"
+ * LLDB initCommands:
+ *  type summary add --summary-string "${var.x}" -x "^Number<"
  */
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
 
 /**
  * Input string
- * LLDB: type summary add --summary-string "${var._M_dataplus._M_p}" -x "^Str<"
+ * LLDB initCommands:
+ *  type summary add --summary-string "${var._M_dataplus._M_p}" -x "^String<"
  */
-template <typename T> struct Str : basic_string<T> {
+template <typename T> struct String : basic_string<T> {
   using basic_string<T>::basic_string;
-  Str() { cin >> *this; }
+  String() { cin >> *this; }
 };
-
-/**
- * Common input types
- */
-using Int = Num<int>;
-using Chr = Num<char>;
-using I64 = Num<i64>;
-using U64 = Num<u64>;
-using F64 = Num<double>;
-using String = Str<char>;
 
 /**
  * Printing utilities

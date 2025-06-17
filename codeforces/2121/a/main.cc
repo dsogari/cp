@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2121/submission/324794800
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -23,7 +25,14 @@ template <typename T> struct Num {
 };
 using Int = Num<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n, s;
+  vector<Int> a(n);
+  auto mn = *ranges::min_element(a);
+  auto mx = *ranges::max_element(a);
+  auto ans = mx - mn + min(abs(s - mn), abs(s - mx));
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

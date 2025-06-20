@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2121/submission/325209223
+ * https://codeforces.com/contest/2121/submission/325318454
  *
  * (c) 2025 Diego Sogari
  */
@@ -33,41 +33,20 @@ template <typename T> struct String : basic_string<T> {
 using Int = Number<int>;
 using Str = String<char>;
 
-template <typename T> struct FenTree {
-  int n;
-  vector<T> nodes;
-  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
-  T query(int i) const { // O(log n)
-    assert(i < n);
-    T ans = nodes[0];
-    for (i++; i > 0; i -= i & -i) ans += nodes[i];
-    return ans;
-  }
-  void update(int i, const T &val) { // O(log n)
-    assert(i >= 0);
-    for (i++; i <= n; i += i & -i) nodes[i] += val;
-  }
-};
-
 void solve(int t) {
   Int n;
   Str s;
-  vector<int> suff(n + 1);
-  for (int i = n - 1; i >= 0; i--) {
-    suff[i] += suff[i + 1] + (s[i] == '0' ? 1 : -1);
-  }
-  FenTree<int> fen(2 * n + 1);
-  i64 ans = 0, acc = 0;
+  vector<int> pref(n + 1);
   for (int i = 0; i < n; i++) {
-    fen.update(suff[i] + n, 1);
-    if (s[i] == '0') {
-      acc += fen.query(2 * n) - fen.query(suff[i] + n - 1);
-    } else {
-      acc += fen.query(suff[i] + n);
-    }
-    ans += acc;
+    pref[i + 1] = pref[i] + (s[i] == '0' ? 1 : -1);
   }
-  println(ans);
+  ranges::sort(pref); // we need the absolute value
+  i64 ans = 0;
+  for (int i = 0; i <= n; i++) {
+    ans += i64(i + 1) * (n - i);       // sum of subarray lengths
+    ans += i64(pref[i]) * (i + i - n); // sum of subarray sums
+  }
+  println(ans / 2);
 }
 
 int main() {

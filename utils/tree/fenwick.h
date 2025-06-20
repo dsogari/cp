@@ -79,5 +79,8 @@ template <typename T> struct SparseFenTree {
 struct Node {
   int x;
   Node(int a = 0) : x(a) {}
-  Node &operator+=(const Node &rhs) { x = max(x, rhs.x); }
+  Node &operator+=(const Node &rhs) {
+    x = max(x, rhs.x);
+    return *this;
+  }
 };

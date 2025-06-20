@@ -36,37 +36,27 @@ template <typename T> struct Mat : vector<vector<T>> {
 void solve(int t) {
   Int n, m;
   Mat<Int> g(n, m);
-  int ans = 0;
+  int ans = 0, total = 0;
   for (auto &&row : g) {
     ans = max(ans, +*ranges::max_element(row));
   }
-  bool choice1 = false, choice2 = false;
-  array<int, 2> c0 = {-1, -1}, c1 = {-1, -1};
+  vector<int> rowc(n), colc(m);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
       if (g[i][j] == ans) {
-        if (c0[0] < 0) {
-          c0 = {i, j};
-          continue;
-        }
-        if (i != c0[0] && j != c1[1]) {
-          if (c1[1] < 0) {
-            c1[1] = j;
-          } else {
-            choice1 = true;
-          }
-        }
-        if (j != c0[1] && i != c1[0]) {
-          if (c1[0] < 0) {
-            c1[0] = i;
-          } else {
-            choice2 = true;
-          }
-        }
+        rowc[i]++;
+        colc[j]++;
+        total++;
       }
     }
   }
-  ans -= !(choice1 && choice2);
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      if (rowc[i] + colc[j] - (g[i][j] == ans) == total) {
+        return println(ans - 1);
+      }
+    }
+  }
   println(ans);
 }
 

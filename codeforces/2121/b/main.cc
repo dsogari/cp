@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2121/submission/324809556
+ * https://codeforces.com/contest/2121/submission/325217044
  *
  * (c) 2025 Diego Sogari
  */
@@ -31,13 +31,20 @@ template <typename T> struct Str : basic_string<T> {
 };
 using String = Str<char>;
 
+struct AsciiHist : array<int, CHAR_MAX + 1> {
+  AsciiHist(const string &s) : array{} {
+    for (auto &&c : s) {
+      (*this)[c]++;
+    }
+  }
+};
+
 void solve(int t) {
   Int n;
   String s;
-  map<char, int> count;
-  count[s[0]] = count[s[n - 1]] = 1;
+  AsciiHist cnt(s);
   for (int i = 1; i < n - 1; i++) {
-    if (count[s[i]]++) {
+    if (cnt[s[i]] > 1) {
       return println("YES");
     }
   }

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2121/submission/324944730
+ * https://codeforces.com/contest/2121/submission/325214803
  *
  * (c) 2025 Diego Sogari
  */
@@ -27,37 +27,25 @@ using Int = Num<int>;
 
 void solve(int t) {
   Int n;
-  vector<Int> a(2 * n);
-  vector<int> pos(2 * n + 1);
+  vector<Int> a(n), b(n);
   vector<array<int, 2>> ans;
-  for (int i = 0; i < 2 * n; i++) {
-    pos[a[i]] = i;
-  }
-  auto move = [&](auto &p, int to) {
-    swap(a[p], a[to]);
-    swap(p, pos[a[p]]);
-    assert(p == to);
+  auto f = [&](auto &a, auto &b, int type, int i, int j) {
+    swap(a[i], b[j]);
+    ans.push_back({type, i});
   };
-  for (int x = 1; x <= 2 * n; x++) {
-    auto &p = pos[x];
-    if (x % 2) {
-      if (p >= n) {
-        move(p, p - n); // move to first vector
-        ans.push_back({3, p});
+  for (int i = 0; i < n - 1; i++) {
+    for (int j = 0; j < n - 1 - i; j++) {
+      if (a[j] > a[j + 1]) {
+        f(a, a, 1, j, j + 1);
       }
-      while (p > x / 2) {
-        move(p, p - 1);
-        ans.push_back({1, p});
+      if (b[j] > b[j + 1]) {
+        f(b, b, 2, j, j + 1);
       }
-    } else {
-      if (p < n) {
-        move(p, p + n); // move to second vector
-        ans.push_back({3, p - n});
-      }
-      while (p > x / 2 - 1 + n) {
-        move(p, p - 1);
-        ans.push_back({2, p - n});
-      }
+    }
+  }
+  for (int i = 0; i < n; i++) {
+    if (a[i] > b[i]) {
+      f(a, b, 3, i, i);
     }
   }
   println(ans.size());

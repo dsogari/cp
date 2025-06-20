@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2121/submission/325045084
+ * https://codeforces.com/contest/2121/submission/325213191
  *
  * (c) 2025 Diego Sogari
  */
@@ -33,26 +33,20 @@ void solve(int t) {
   I64 s;
   Int x;
   vector<Int> a(n);
-  map<i64, int> sums1 = {{0, 1}}, sums2 = {{0, 1}};
-  i64 sum1 = 0, sum2 = 0, ans = 0;
-  for (int i = 0; i < n; i++) {
-    if (a[i] > x) {
-      sums1.clear();
-      sum1 = 0;
-    } else {
-      sum1 += a[i];
-      ans += sums1[sum1 - s];
+  auto f = [&](int x) {
+    map<i64, int> sums = {{0, 1}};
+    i64 sum = 0, ans = 0;
+    for (int i = 0; i < n; i++) {
+      if (a[i] > x) {
+        sums.clear();
+      }
+      sum += a[i];
+      ans += sums[sum - s];
+      sums[sum]++;
     }
-    if (a[i] >= x) {
-      sums2.clear();
-      sum2 = 0;
-    } else {
-      sum2 += a[i];
-      ans -= sums2[sum2 - s];
-    }
-    sums1[sum1]++;
-    sums2[sum2]++;
-  }
+    return ans;
+  };
+  auto ans = f(x) - f(x - 1);
   println(ans);
 }
 

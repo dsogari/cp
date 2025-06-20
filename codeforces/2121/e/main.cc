@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2121/submission/324958476
+ * https://codeforces.com/contest/2121/submission/325214453
  *
  * (c) 2025 Diego Sogari
  */
@@ -34,16 +34,15 @@ using Str = String<char>;
 
 void solve(int t) {
   Str l, r;
-  auto diff = to_string(stoi(r) - stoi(l));
-  diff = string(l.size() - diff.size(), '0') + diff;
-  int ans = 0;
-  for (int i = 0; i < l.size(); i++) {
-    auto d = r[i] - l[i] + (l[i] <= r[i] ? 0 : 10);
-    if (diff[i] > '0') {
-      ans += d == 1;
-      break;
+  int ans = 0, i = 0;
+  for (; i < l.size() && l[i] == r[i]; i++) {
+    ans += 2;
+  }
+  if (i < l.size() && r[i] - l[i] == 1) {
+    ans++;
+    for (i++; i < l.size() && r[i] - l[i] == -9; i++) {
+      ans++;
     }
-    ans += 2 - min(2, d);
   }
   println(ans);
 }

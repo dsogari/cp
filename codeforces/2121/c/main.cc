@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2121/submission/324900521
+ * https://codeforces.com/contest/2121/submission/325216361
  *
  * (c) 2025 Diego Sogari
  */
@@ -36,44 +36,38 @@ template <typename T> struct Mat : vector<vector<T>> {
 void solve(int t) {
   Int n, m;
   Mat<Int> g(n, m);
-  vector<int> rows(n), cols(m);
-  int mx = 0, row = -1, col = -1;
+  int ans = 0;
   for (auto &&row : g) {
-    mx = max(mx, +*ranges::max_element(row));
+    ans = max(ans, +*ranges::max_element(row));
   }
-  for (int i = 0, c = 0; i < n; i++) {
+  bool choice1 = false, choice2 = false;
+  array<int, 2> c0 = {-1, -1}, c1 = {-1, -1};
+  for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      if (g[i][j] == mx) {
-        if (rows[i]++) {
-          if (row < 0) {
-            row = i;
-          } else if (row != i) {
-            return println(mx);
+      if (g[i][j] == ans) {
+        if (c0[0] < 0) {
+          c0 = {i, j};
+          continue;
+        }
+        if (i != c0[0] && j != c1[1]) {
+          if (c1[1] < 0) {
+            c1[1] = j;
+          } else {
+            choice1 = true;
           }
         }
-        if (cols[j]++) {
-          if (col < 0) {
-            col = j;
-          } else if (col != j) {
-            return println(mx);
+        if (j != c0[1] && i != c1[0]) {
+          if (c1[0] < 0) {
+            c1[0] = i;
+          } else {
+            choice2 = true;
           }
-        }
-        if (rows[i] == 1 && cols[j] == 1 && c++ > 1) {
-          return println(mx);
         }
       }
     }
   }
-  if (row >= 0 && col >= 0) {
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < m; j++) {
-        if (g[i][j] == mx && row != i && col != j) {
-          return println(mx);
-        }
-      }
-    }
-  }
-  println(mx - 1);
+  ans -= !(choice1 && choice2);
+  println(ans);
 }
 
 int main() {

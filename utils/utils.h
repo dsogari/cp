@@ -5,6 +5,8 @@
 
 #include "io.h"
 
+using namespace placeholders;
+
 /**
  * Numeric types
  */
@@ -25,13 +27,6 @@ using I64 = Number<i64>;
 using U64 = Number<u64>;
 using F64 = Number<double>;
 using Str = String<char>;
-
-/**
- * Common constants
- */
-constexpr int lowerlatin = 'z' - 'a' + 1;
-constexpr int upperlatin = 'Z' - 'A' + 1;
-const string vowels = "aeiou";
 
 /**
  * Timing utilities

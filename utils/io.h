@@ -6,7 +6,6 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-using namespace placeholders;
 
 /**
  * Input number
@@ -52,4 +51,8 @@ template <typename T> ostream &operator<<(ostream &os, const list<T> &a) {
 template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
   return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
 }
+
+/**
+ * Line output
+ */
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }

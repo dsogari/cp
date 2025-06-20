@@ -54,22 +54,22 @@ template <typename T> struct FenTreePlus : FenTree<T> {
  */
 template <typename T> struct SparseFenTree {
   int n;
-  unordered_map<int, T> nodes = {{0, {}}};
-  SparseFenTree(int n) : n(n) {}
-  T query(int i, auto &&f) const { // O(log n)
+  map<int, T> nodes;
+  SparseFenTree(int n, T val = {}) : n(n), nodes{{0, val}} {}
+  T query(int i) const { // O(log n)
     assert(i < n);
     T ans = nodes.find(0)->second;
     for (i++; i > 0; i -= i & -i) {
       auto it = nodes.find(i);
       if (it != nodes.end()) {
-        f(ans, it->second);
+        ans += it->second;
       }
     }
     return ans;
   }
-  void update(int i, auto &&f, const auto &val) { // O(log n)
+  void update(int i, const T &val) { // O(log n)
     assert(i >= 0);
-    for (i++; i <= n; i += i & -i) f(nodes[i], val);
+    for (i++; i <= n; i += i & -i) nodes[i] += val;
   }
 };
 
@@ -79,5 +79,5 @@ template <typename T> struct SparseFenTree {
 struct Node {
   int x;
   Node(int a = 0) : x(a) {}
-  void operator+=(const Node &rhs) { x = max(x, rhs.x); }
+  Node &operator+=(const Node &rhs) { x = max(x, rhs.x); }
 };

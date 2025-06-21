@@ -1,11 +1,12 @@
 /**
- * https://codeforces.com/contest/2121/submission/325306599
+ * https://codeforces.com/contest/2121/submission/325463307
  *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
+using u64 = uint64_t;
 
 #ifdef ONLINE_JUDGE
 #define debug(...)
@@ -29,9 +30,18 @@ template <typename T> struct Number {
 
 using Int = Number<int>;
 
+struct SplitHash {
+  size_t operator()(u64 x) const {
+    x += (u64)this + 0x9e3779b97f4a7c15;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+    return x ^ (x >> 31);
+  }
+};
+
 template <typename T> struct SparseFenTree {
   int n;
-  map<int, T> nodes;
+  unordered_map<int, T, SplitHash> nodes;
   SparseFenTree(int n, T val = {}) : n(n), nodes{{0, val}} {}
   T query(int i) const { // O(log n)
     assert(i < n);
@@ -50,29 +60,23 @@ template <typename T> struct SparseFenTree {
   }
 };
 
-struct Node {
-  int x;
-  Node(int a = 0) : x(a) {}
-  Node &operator+=(const Node &rhs) {
-    x = max(x, rhs.x);
-    return *this;
-  }
-};
-
 void solve(int t) {
   Int n;
   vector<array<Int, 2>> a(n);
-  SparseFenTree<Node> fen(1e9 + 1);
-  set<int, greater<int>> seen;
+  SparseFenTree<int> fen(1e9 + 1);
+  set<int> seen;
   vector<int> ans;
   for (auto [l, r] : a) {
+    fen.update(l, 1);
     seen.insert(l);
-    for (auto &&x : seen) {
-      if (l <= x && x <= r) {
-        fen.update(x, fen.query(x).x + 1);
+    auto it = seen.upper_bound(r);
+    if (it != seen.end()) {
+      fen.update(*it, -1);
+      if (fen.query(r) == fen.query(*it)) {
+        seen.erase(it);
       }
     }
-    ans.push_back(fen.query(1e9).x);
+    ans.push_back(fen.query(1e9));
   }
   println(ans);
 }

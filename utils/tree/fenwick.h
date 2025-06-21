@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "utils.h"
+#include "math/hash.h"
 
 /**
  * Fenwick Tree (Binary indexed tree)
@@ -54,7 +54,7 @@ template <typename T> struct FenTreePlus : FenTree<T> {
  */
 template <typename T> struct SparseFenTree {
   int n;
-  map<int, T> nodes;
+  unordered_map<int, T, SplitHash> nodes;
   SparseFenTree(int n, T val = {}) : n(n), nodes{{0, val}} {}
   T query(int i) const { // O(log n)
     assert(i < n);

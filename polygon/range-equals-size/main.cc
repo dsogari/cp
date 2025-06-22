@@ -1,5 +1,5 @@
 /**
- * (c) 2024-2025 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -14,14 +14,15 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
-using Int = Num<int>;
+
+using Int = Number<int>;
 
 template <typename T> struct FenTree {
   int n;
@@ -65,17 +66,16 @@ void solve(int t) {
     }
   }
   ranges::sort(diff); // O(n*log n)
-  int ans = 0, m = vals.size();
+  int ans = 0, m = ranges::unique(diff).end() - diff.begin();
   FenTree<Node> fen(m, INT_MAX);
-  for (int i = 0; i < m; i++) { // O(n*log n)
-    auto [x, c, d] = vals[i];
-    auto j = ranges::lower_bound(diff, d - c) - diff.begin();
-    auto k = ranges::lower_bound(diff, d) - diff.begin();
-    auto y = fen.query(m - j - 1).x;
+  for (auto [x, c, d] : vals) { // O(n*log n)
+    auto i = ranges::lower_bound(diff, d - c) - diff.begin();
+    auto j = ranges::lower_bound(diff, d) - diff.begin();
+    auto y = fen.query(m - i - 1).x;
     if (y < INT_MAX && x - y > 1) {
       ans = max(ans, x - y);
     }
-    fen.update(m - k - 1, x);
+    fen.update(m - j - 1, x);
   }
   println(ans);
 }

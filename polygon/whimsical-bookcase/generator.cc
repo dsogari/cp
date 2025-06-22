@@ -3,8 +3,6 @@
  */
 #include "testlib.h"
 
-using namespace std;
-
 int main(int argc, char *argv[]) {
   registerGen(argc, argv, 1);
   auto t = opt(1, 10'000);
@@ -13,12 +11,11 @@ int main(int argc, char *argv[]) {
   auto M = opt(4, 1);
   println(t);
   for (auto n : rnd.partition(t, N, M)) {
-    auto mid = rnd.next(n + 1, A - n);
-    vector<int> a(n);
-    for (int j = 0; j < n; j++) {
-      a[j] = rnd.next(mid - n, mid + n);
-    }
     println(n);
-    println(a);
+    for (int i = 0; i < n; i++) {
+      auto w = rnd.next(1, A);
+      auto h = rnd.next(1, A);
+      println(w, h);
+    }
   }
 }

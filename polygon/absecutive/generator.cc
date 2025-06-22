@@ -1,15 +1,16 @@
 /**
- * (c) 2024-2025 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include "testlib.h"
 
-constexpr int maxt = 1e3, maxa = 1e9;
+constexpr int T = 1'000;
+constexpr int A = 1'000'000'000;
 
 int main(int argc, char *argv[]) {
   registerGen(argc, argv, 1);
-  int t = opt<int>(1, maxt);
-  int L = opt<int>(2, -maxa);
-  int R = opt<int>(3, maxa);
+  auto t = opt(1, T);
+  auto L = opt(2, -A);
+  auto R = opt(3, A);
   println(t);
   for (int i = 0; i < t; i++) {
     auto l = rnd.next(L, R);

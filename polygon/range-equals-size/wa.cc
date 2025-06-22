@@ -1,5 +1,5 @@
 /**
- * (c) 2024 Diego Sogari
+ * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
@@ -14,14 +14,15 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
-using Int = Num<int>;
+
+using Int = Number<int>;
 
 void solve(int t) {
   Int n;

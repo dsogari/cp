@@ -4,7 +4,7 @@
 #include "testlib.h"
 
 constexpr int T = 1'000;
-constexpr int A = 1'000'000'000;
+constexpr int N = 10'000;
 
 int main(int argc, char *argv[]) {
   registerValidation(argc, argv);
@@ -12,9 +12,11 @@ int main(int argc, char *argv[]) {
   inf.readEoln();
   for (int i = 0; i < t; i++) {
     setTestCase(i + 1);
-    auto l = inf.readInt(-A, A, "l");
+    auto n = inf.readInt(3, N, "n");
     inf.readSpace();
-    inf.readInt(l, A, "r");
+    inf.readInt(1, n, "x");
+    inf.readSpace();
+    inf.readInt(0, 1, "d");
     inf.readEoln();
   }
   inf.readEof();

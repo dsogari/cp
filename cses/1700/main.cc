@@ -1,5 +1,5 @@
 /**
- * https://cses.fi/problemset/result/10648518/
+ * https://cses.fi/problemset/result/13411076/
  *
  * (c) 2024 Diego Sogari
  */
@@ -17,24 +17,25 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
-using Int = Num<int>;
+
+using Int = Number<int>;
 
 struct Graph : vector<vector<int>> {
   const int n, m;
-  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m) {
-    for (auto &[u, v] : vector<array<Int, 2>>(m)) {
+  vector<array<Int, 2>> edges;
+  Graph(int n, int m = 0) : vector<vector<int>>(n + 1), n(n), m(m), edges(m) {
+    for (auto &[u, v] : edges) {
       add(u, v);
     }
   }
-  void add(int u, int v) { _add(u, v), _add(v, u); }
-  void _add(int u, int v) { (*this)[u].push_back(v); }
+  void add(int u, int v) { (*this)[u].push_back(v), (*this)[v].push_back(u); }
 };
 
 struct SplitHash {
@@ -58,7 +59,7 @@ void solve(int t) {
         x += hash(self(self, g, v, u));
       }
     }
-    return hashes.emplace(x, hashes.size() + 1).first->second;
+    return hashes.emplace(x, hashes.size()).first->second;
   };
   auto ans = f(f, g1, 1, 1) == f(f, g2, 1, 1) ? "YES" : "NO";
   println(ans);

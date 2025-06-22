@@ -6,7 +6,26 @@
 #include "utils.h"
 
 /**
- * Disjoint set union (Union find)
+ * Disjoint set union with path compression
+ */
+struct SimpleDSU {
+  vector<int> par;
+  SimpleDSU(int n) : par(n) { iota(par.begin(), par.end(), 0); }
+  int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(lg n)
+  int merge(int a, int b) { // O(lg n) amortized
+    a = find(a), b = find(b);
+    if (a != b) {
+      if (a < b) {
+        swap(a, b);
+      }
+      par[b] = a;
+    }
+    return a;
+  }
+};
+
+/**
+ * Disjoint set union with size optimization
  */
 struct DSU {
   vector<int> par, siz;

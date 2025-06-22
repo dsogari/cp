@@ -26,14 +26,15 @@ using Int = Number<int>;
 
 void solve(int t) {
   Int n;
-  vector<Int> a(n);
-  ranges::sort(a);
-  int ans = 0;
-  for (int i = 0; i < n; i++) {
+  vector<array<Int, 2>> a(n);
+  ranges::sort(a); // O(n*log n)
+  vector<int> far(n);
+  int ans = 1;
+  for (int i = 0; i < n; i++) { // O(n^2)
     for (int j = i + 1; j < n; j++) {
-      auto diff = a[j] - a[i];
-      if (diff <= j - i + 1 && diff > 1) {
-        ans = max(ans, diff);
+      if (a[i][1] > a[j][1]) {
+        far[j] = max(far[j], far[i] + 1);
+        ans = max(ans, far[j] + 1);
       }
     }
   }

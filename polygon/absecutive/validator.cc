@@ -10,8 +10,8 @@ int main(int argc, char *argv[]) {
   registerValidation(argc, argv);
   auto t = inf.readInt(1, T, "t");
   inf.readEoln();
-  for (int i = 0; i < t; i++) {
-    setTestCase(i + 1);
+  for (int i = 1; i <= t; i++) {
+    setTestCase(i);
     auto l = inf.readInt(-A, A, "l");
     inf.readSpace();
     inf.readInt(l, A, "r");

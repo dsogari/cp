@@ -13,9 +13,9 @@ int main(int argc, char *argv[]) {
   auto type = opt(4, 1);
   println(t);
   for (auto l : rnd.partition(t, N, M)) {
-    auto n = (int)ceil(sqrt(l) * rnd.next(0.5, 2.0));
-    auto m = l / min(n, l);
-    auto A = max(n, m);
+    int n = ceil(sqrt(l) * rnd.next(0.5, 2.0));
+    int m = l / min(n, l);
+    int A = max(n, m);
     println(n, m);
     vector<int> a(m);
     for (int k = 0; k < n; k++) {

@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   auto L = opt(2, -A);
   auto R = opt(3, A);
   println(t);
-  for (int i = 0; i < t; i++) {
+  for (int i = 1; i <= t; i++) {
     auto l = rnd.next(L, R);
     auto r = rnd.next(l, R);
     println(l, r);

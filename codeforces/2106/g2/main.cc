@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2106/submission/326607446
+ * https://codeforces.com/contest/2106/submission/326609768
  *
  * (c) 2025 Diego Sogari
  */
@@ -61,13 +61,13 @@ struct Path : vector<int> {
   }
 };
 
-int simulate(const Graph &g, auto &a, int r, int type, int k,
+int simulate(const Graph &g, auto &a, int root, int type, int k,
              const auto &nodes) {
   if (type == 1) {
     assert(k == nodes.size());
     int sum = 0;
     for (auto &&u : nodes) {
-      Path path(g, r, u);
+      Path path(g, root, u);
       for (auto &&v : path) {
         sum += a[v - 1];
       }
@@ -82,7 +82,7 @@ int simulate(const Graph &g, auto &a, int r, int type, int k,
 void solve(int t) {
   Int n;
 #ifndef ONLINE_JUDGE
-  Int r;
+  Int root;
   vector<Int> a(n);
 #endif
   Graph g(n, n - 1);
@@ -91,22 +91,23 @@ void solve(int t) {
     assert(rem--);
     println('?', type, k, nodes);
 #ifndef ONLINE_JUDGE
-    return simulate(g, a, r, type, k, nodes);
+    return simulate(g, a, root, type, k, nodes);
 #else
     return type == 1 ? Int() : Int(0);
 #endif
   };
   vector<int> ans(n), siz(n + 1);
   vector<bool> vis(n + 1);
-  auto get = [&](auto &get, int u, int p, int sum) -> void {
-    ans[u - 1] = query(1, 1, vector{u}) - sum;
+  auto get = [&](auto &get, int u, int p, int prev) -> void {
+    auto sum = query(1, 1, vector{u});
+    ans[u - 1] = sum - prev;
     for (auto &&v : g[u]) {
       if (v != p) {
-        get(get, v, u, sum + ans[u - 1]);
+        get(get, v, u, sum);
       }
     }
   };
-  auto chk = [&](int u) {
+  auto chk = [&](int u) { // O(log deg{u})
     int l = 0, r = g[u].size();
     while (l < r) {
       auto mid = (l + r + 1) / 2;
@@ -133,14 +134,14 @@ void solve(int t) {
     }
     if (ok && n - siz[u] <= n / 2) {
       vis[u] = true; // found centroid
-      auto next = chk(u);
-      if (next == u) {
-        get(get, next, next, 0); // found root
+      siz[p] = n - siz[u];
+      auto v = chk(u); // next candidate
+      if (v == u) {
+        get(get, v, v, 0); // found root
       } else {
-        n = next == p ? n - siz[u] : siz[next];
-        dfs(dfs, next, u, n); // keep looking
+        dfs(dfs, v, u, siz[v]); // keep looking
       }
-      return -1;
+      return -1; // stop searching
     }
     return siz[u];
   };

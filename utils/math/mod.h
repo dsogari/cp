@@ -51,3 +51,14 @@ struct Pow2 : vector<Mint> {
     }
   }
 };
+
+/**
+ * Powers of a number
+ */
+struct Pow : vector<Mint> {
+  Pow(int n, Mint base) : vector<Mint>(n + 1, 1) { // O(n)
+    for (int i = 0; i < n; i++) {
+      (*this)[i + 1] = (*this)[i] * base;
+    }
+  }
+};

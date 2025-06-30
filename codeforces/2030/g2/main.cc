@@ -17,14 +17,14 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
-using Int = Num<int>;
+using Int = Number<int>;
 
 template <typename T, auto M> struct Mod {
   using V = conditional_t<sizeof(T) <= 4, u64, u128>;
@@ -45,72 +45,56 @@ template <typename T, auto M> struct Mod {
 };
 using Mint = Mod<int, 998244353>;
 
-struct Binom {
-  vector<Mint> fac, inv;
-  Binom() : fac(1, 1), inv(1, 1) {}
-  Mint permute(int n) { return update(n), fac[n]; }                  // O(1)
-  Mint commute(int n) { return update(n), inv[n]; }                  // O(1)
-  Mint invert(int n) { return arrange(n - 1, -1); }                  // O(1)
-  Mint pascald(int n, int k) { return combine(n + k, k); }           // O(1)
-  Mint catalan(int n) { return combine(2 * n, n) * invert(n + 1); }  // O(1)
-  Mint arrange(int n, int k) { return permute(n) * commute(n - k); } // O(1)
-  Mint combine(int n, int k) { return arrange(n, k) * commute(k); }  // O(1)
-  void reserve(int n) { fac.reserve(n + 1), inv.reserve(n + 1); }    // O(n)
-  void update(int n) { // O(1) amortized
-    int s = fac.size();
-    if (s <= n) {
-      fac.resize(n + 1);
-      inv.resize(n + 1);
-      for (int i = s; i <= n; i++) {
-        fac[i] = fac[i - 1] * i;
-      }
-      inv[n] = Mint(1) / fac[n];
-      for (int i = n; i > s; i--) {
-        inv[i - 1] = inv[i] * i;
-      }
+template <typename T> struct FenTree {
+  int n;
+  vector<T> nodes;
+  FenTree(int n, T val = {}) : n(n), nodes(n + 1, val) {}
+  T query(int i) const { // O(log n)
+    assert(i < n);
+    T ans = nodes[0];
+    for (i++; i > 0; i -= i & -i) ans += nodes[i];
+    return ans;
+  }
+  void update(int i, const T &val) { // O(log n)
+    assert(i >= 0);
+    for (i++; i <= n; i += i & -i) nodes[i] += val;
+  }
+};
+
+struct Pow : vector<Mint> {
+  Pow(int n, Mint base) : vector<Mint>(n + 1, 1) { // O(n)
+    for (int i = 0; i < n; i++) {
+      (*this)[i + 1] = (*this)[i] * base;
     }
   }
-} binom;
+};
 
 void solve(int t) {
   Int n;
-  binom.reserve(n);
+  Pow pow2(n, 2), invpow2(n, Mint(1) / 2);
   vector<array<Int, 2>> a(n);
-  vector<array<int, 2>> b(2 * n);
-  vector<Mint> pow2(n + 1, 1), inv(n + 1, 1);
-  for (int i = 0; i < n; i++) { // O(n)
-    for (int j = 0; j < 2; j++) {
-      b[2 * i + j] = {a[i][j], j};
-    }
-    pow2[i + 1] = pow2[i] * 2;
-    inv[i + 1] /= i + 1;
+  vector<int> left, right;
+  for (auto &&[l, r] : a) {
+    left.push_back(l - 1);
+    right.push_back(r - 1);
   }
-  ranges::sort(b); // O(n*log n)
-  vector memo(n, vector<Mint>(1, 1));
-  for (int x = 0; x < n; x++) { // O(n^2)
-    for (int y = 1; y < n - x; y++) {
-      memo[x].push_back(memo[x].back() * (x + y) * inv[2] * inv[y]);
-    }
-    for (int y = 1; y < n - x; y++) {
-      memo[x][y] = memo[x][y] + memo[x][y - 1];
+  ranges::sort(left);
+  ranges::sort(right);
+  FenTree<Mint> fen1(n), fen2(n);
+  for (int i = 0, j = 0; i < n; i++) {
+    if (i == n - 1 || right[i] != right[i + 1]) {
+      auto c = pow2[n - j - 1] * (i + 1 - j);
+      fen1.update(right[i], c);
+      fen2.update(right[i], c * right[i]);
+      j = i + 1;
     }
   }
   Mint ans;
-  int cl = n, cr = 0;
-  for (auto [val, right] : b) { // O(n)
-    if (right) {
-      if (cl) {
-        auto sum = memo[cr][cl - 1] * pow2[cl - 1];
-        ans -= sum * val * pow2[n - 1 - cr - cl];
-      }
-      cr++;
-    } else {
-      cl--;
-      if (cr) {
-        auto sum = memo[cl][cr - 1] * pow2[cr - 1];
-        ans += sum * val * pow2[n - 1 - cl - cr];
-      }
-    }
+  for (int i = 1; i < n; i++) {
+    auto l = left[i];
+    auto c = fen1.query(l) * l - fen2.query(l);
+    c *= invpow2[n - i];
+    ans += c;
   }
   println(ans);
 }

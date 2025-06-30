@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2106/submission/326607446
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -12,6 +14,10 @@ using namespace std;
 init();
 #endif
 
+template <typename T, size_t N>
+ostream &operator<<(ostream &os, const span<T, N> &a) {
+  return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
+}
 template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
   return ranges::for_each(a, [&os](auto &ai) { os << ai << ' '; }), os;
 }
@@ -56,12 +62,13 @@ struct Path : vector<int> {
 };
 
 int simulate(const Graph &g, auto &a, int r, int type, int k,
-             const vector<int> &nodes) {
+             const auto &nodes) {
   if (type == 1) {
     assert(k == nodes.size());
     int sum = 0;
     for (auto &&u : nodes) {
-      for (auto &&v : Path(g, r, u)) {
+      Path path(g, r, u);
+      for (auto &&v : path) {
         sum += a[v - 1];
       }
     }
@@ -80,7 +87,7 @@ void solve(int t) {
 #endif
   Graph g(n, n - 1);
   int rem = n + 200;
-  auto query = [&](int type, int k, const vector<int> &nodes) {
+  auto query = [&](int type, int k, const auto &nodes) {
     assert(rem--);
     println('?', type, k, nodes);
 #ifndef ONLINE_JUDGE
@@ -89,8 +96,55 @@ void solve(int t) {
     return type == 1 ? Int() : Int(0);
 #endif
   };
-  vector<int> ans(n);
-
+  vector<int> ans(n), siz(n + 1);
+  vector<bool> vis(n + 1);
+  auto get = [&](auto &get, int u, int p, int sum) -> void {
+    ans[u - 1] = query(1, 1, vector{u}) - sum;
+    for (auto &&v : g[u]) {
+      if (v != p) {
+        get(get, v, u, sum + ans[u - 1]);
+      }
+    }
+  };
+  auto chk = [&](int u) {
+    int l = 0, r = g[u].size();
+    while (l < r) {
+      auto mid = (l + r + 1) / 2;
+      auto nodes = span(&g[u][0], &g[u][mid]);
+      auto sum1 = query(1, mid, nodes);
+      query(2, u, vector<int>{});
+      auto sum2 = query(1, mid, nodes);
+      (abs(sum1 - sum2) == 2 * mid) ? l = mid : r = mid - 1;
+    }
+    return l < g[u].size() ? g[u][l] : u;
+  };
+  auto dfs = [&](auto &dfs, int u, int p, int n) -> int {
+    siz[u] = 1;
+    bool ok = true;
+    for (auto &&v : g[u]) {
+      if (v != p && !vis[v]) {
+        auto s = dfs(dfs, v, u, n);
+        if (s < 0) {
+          return s;
+        }
+        siz[u] += s;
+        ok = ok && s <= n / 2;
+      }
+    }
+    if (ok && n - siz[u] <= n / 2) {
+      vis[u] = true; // found centroid
+      auto next = chk(u);
+      if (next == u) {
+        get(get, next, next, 0); // found root
+      } else {
+        n = next == p ? n - siz[u] : siz[next];
+        dfs(dfs, next, u, n); // keep looking
+      }
+      return -1;
+    }
+    return siz[u];
+  };
+  dfs(dfs, 1, 1, n);
   println('!', ans);
 }
 

@@ -1,13 +1,11 @@
 /**
- * https://codeforces.com/contest/2114/submission/326745805
+ * https://codeforces.com/contest/2114/submission/326807590
  *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
 
 using namespace std;
-using i64 = int64_t;
-using u16 = uint16_t;
 
 #ifdef ONLINE_JUDGE
 #define debug(...)
@@ -96,12 +94,12 @@ void solve(int t) {
     }
     return ans;
   };
-  auto m = lcm<i64>(+x, +y);
-  auto c1 = f(m / x);
+  auto g = gcd(+x, +y);
+  auto c1 = f(x / g);
   if (c1 < 0) {
     return println(-1);
   }
-  auto c2 = f(m / y);
+  auto c2 = f(y / g);
   if (c2 < 0) {
     return println(-1);
   }

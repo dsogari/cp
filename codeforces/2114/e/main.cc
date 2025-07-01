@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2114/submission/326630047
+ * https://codeforces.com/contest/2114/submission/326804506
  *
  * (c) 2025 Diego Sogari
  */
@@ -46,19 +46,18 @@ void solve(int t) {
   vector<Int> a(n);
   Graph g(n, n - 1);
   vector<i64> ans(n);
-  multiset<i64> sums = {0};
-  auto dfs = [&](auto &dfs, int u, int p, i64 sum, bool odd) -> void {
-    sum += odd ? +a[u - 1] : -a[u - 1];
-    sums.insert(sum);
-    ans[u - 1] = odd ? sum - *sums.begin() : *sums.rbegin() - sum;
+  auto dfs = [&](auto &dfs, int u, int p, i64 sum, i64 mn, i64 mx) -> void {
+    sum += a[u - 1];
+    ans[u - 1] = sum - mn;
+    mn = min(mn, sum);
+    mx = max(mx, sum);
     for (auto &&v : g[u]) {
       if (v != p) {
-        dfs(dfs, v, u, sum, !odd);
+        dfs(dfs, v, u, -sum, -mx, -mn);
       }
     }
-    sums.erase(sums.find(sum));
   };
-  dfs(dfs, 1, 1, 0, 1);
+  dfs(dfs, 1, 1, 0, 0, 0);
   println(ans);
 }
 

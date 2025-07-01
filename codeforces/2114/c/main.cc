@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2114/submission/326621519
+ * https://codeforces.com/contest/2114/submission/326788830
  *
  * (c) 2025 Diego Sogari
  */
@@ -29,11 +29,11 @@ using Int = Number<int>;
 void solve(int t) {
   Int n;
   vector<Int> a(n);
-  int ans = 0, prev = -1;
-  for (auto &&x : a) {
-    if (prev + 1 < x) {
+  int ans = 1;
+  for (int i = 1, j = 0; i < n; i++) {
+    if (a[j] + 1 < a[i]) {
       ans++;
-      prev = x;
+      j = i;
     }
   }
   println(ans);

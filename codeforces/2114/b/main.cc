@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2114/submission/326620401
+ * https://codeforces.com/contest/2114/submission/326788319
  *
  * (c) 2025 Diego Sogari
  */
@@ -37,9 +37,8 @@ void solve(int t) {
   Str s;
   int zeroes = ranges::count(s, '0');
   int ones = ranges::count(s, '1');
-  int mn = min(zeroes, ones);
-  int c = n / 2 - mn;
-  auto ans = k >= c && k % 2 == c % 2 ? "YES" : "NO";
+  int c = n / 2 - min(zeroes, ones);
+  auto ans = k >= c && (k ^ c) % 2 == 0 ? "YES" : "NO";
   println(ans);
 }
 

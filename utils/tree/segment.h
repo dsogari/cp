@@ -96,3 +96,10 @@ template <typename T> struct Lazy {
  *  return rhs.set ? rhs.val : x + rhs.val;
  * }
  */
+
+/**
+ * Generic Node
+ */
+struct Seg {
+  Seg operator+(const Seg &rhs) const { return {}; }
+};

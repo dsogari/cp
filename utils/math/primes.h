@@ -63,6 +63,21 @@ struct SegSieve : vector<int> {
 };
 
 /**
+ * Distinct Prime Factors of a number
+ */
+struct PrimeFactors : vector<int> {
+  PrimeFactors(const auto &primes, int n) { // O(log log n)
+    for (auto &&p : primes) {
+      if (p > n) {
+        break;
+      } else if (n % p == 0) {
+        push_back(p);
+      }
+    }
+  }
+};
+
+/**
  * Prime Factors of a number (up to 2^32) - ~51KB
  * https://en.algorithmica.org/hpc/algorithms/factorization/
  */

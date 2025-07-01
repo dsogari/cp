@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2114/submission/326621519
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -24,7 +26,18 @@ template <typename T> struct Number {
 
 using Int = Number<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int n;
+  vector<Int> a(n);
+  int ans = 0, prev = -1;
+  for (auto &&x : a) {
+    if (prev + 1 < x) {
+      ans++;
+      prev = x;
+    }
+  }
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2114/submission/326620401
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -22,9 +24,24 @@ template <typename T> struct Number {
   operator T() const { return x; }
 };
 
-using Int = Number<int>;
+template <typename T> struct String : basic_string<T> {
+  using basic_string<T>::basic_string;
+  String() { cin >> *this; }
+};
 
-void solve(int t) {}
+using Int = Number<int>;
+using Str = String<char>;
+
+void solve(int t) {
+  Int n, k;
+  Str s;
+  int zeroes = ranges::count(s, '0');
+  int ones = ranges::count(s, '1');
+  int mn = min(zeroes, ones);
+  int c = n / 2 - mn;
+  auto ans = k >= c && k % 2 == c % 2 ? "YES" : "NO";
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

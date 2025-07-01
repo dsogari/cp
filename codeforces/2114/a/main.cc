@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2114/submission/326616459
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -24,7 +26,15 @@ template <typename T> struct Number {
 
 using Int = Number<int>;
 
-void solve(int t) {}
+void solve(int t) {
+  Int s;
+  int x = sqrt(+s);
+  if (x * x == s) {
+    println(0, x);
+  } else {
+    println(-1);
+  }
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

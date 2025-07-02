@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2123/submission/326864763
+ * https://codeforces.com/contest/2123/submission/327123072
  *
  * (c) 2025 Diego Sogari
  */
@@ -29,11 +29,8 @@ using Int = Number<int>;
 void solve(int t) {
   Int n, j, k;
   vector<Int> a(n);
-  int c = 0;
-  for (auto &&x : a) {
-    c += a[j - 1] < x;
-  }
-  auto ans = k > 1 || c == 0 ? "YES" : "NO";
+  auto mx = *ranges::max_element(a);
+  auto ans = k > 1 || a[j - 1] == mx ? "YES" : "NO";
   println(ans);
 }
 

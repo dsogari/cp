@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2123/submission/326997339
+ * https://codeforces.com/contest/2123/submission/327121520
  *
  * (c) 2025 Diego Sogari
  */
@@ -48,26 +48,18 @@ template <typename T> struct FenTree {
 void solve(int t) {
   Int n;
   vector<Int> a(n);
-  vector<int> pref(n + 1), freq(n + 1), ans(n + 1, 1);
+  vector<int> freq(n + 1), ans(n + 1, 1);
   FenTree<int> fen(n + 1);
   for (auto &&x : a) {
-    pref[x] = 1;
     freq[x]++;
   }
-  int mex = n;
-  for (int i = 0, j = n - 1; i < n; i++, j--) {
-    if (freq[j] == 0) {
-      mex = j;
-    }
-    pref[i + 1] += pref[i];
-  }
+  int mex = ranges::find(freq, 0) - freq.begin();
   for (int i = 0, k = n - 1; k > 0; k--) {
-    while (i < mex && n - pref[i] + 1 >= k) {
-      assert(freq[i] > 0);
+    while (i < mex && n - i >= k) {
       fen.update(freq[i], 1);
       i++;
     }
-    ans[k] = fen.query(k) + (n - pref[mex] >= k);
+    ans[k] = fen.query(k) + (n - mex >= k);
   }
   println(ans);
 }

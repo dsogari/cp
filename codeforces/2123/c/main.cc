@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2123/submission/326936553
+ * https://codeforces.com/contest/2123/submission/327122716
  *
  * (c) 2025 Diego Sogari
  */
@@ -36,8 +36,7 @@ void solve(int t) {
     suffmax[j] = mx = max(mx, +a[j]);
   }
   for (int i = 1; i < n - 1; i++) {
-    auto [mn, mx] = minmax(prefmin[i - 1], suffmax[i + 1]);
-    ans[i] = a[i] < mn || a[i] > mx || prefmin[i - 1] > suffmax[i] ? '1' : '0';
+    ans[i] = a[i] > suffmax[i + 1] || a[i] < prefmin[i - 1] ? '1' : '0';
   }
   println(ans);
 }

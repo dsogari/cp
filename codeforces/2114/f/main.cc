@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2114/submission/326807590
+ * https://codeforces.com/contest/2114/submission/327195973
  *
  * (c) 2025 Diego Sogari
  */
@@ -57,53 +57,42 @@ map<array<int, 3>, int> memo;
 
 void solve(int t) {
   Int x, y, k;
-  set<array<int, 3>> vis;
-  auto dfs = [&](auto &dfs, auto &factors, int x, int y, int z, int c,
-                 int &best) -> void {
-    if (y == x) {
-      best = min(best, c);
-      return;
+  auto f = [&](int x) { // O(n)
+    if (x == 1) {
+      return 0;
     }
-    if (!vis.insert({y, z, c}).second) {
-      return;
+    if (x <= k) {
+      return 1;
     }
-    for (auto p : factors) {
-      auto yy = y * p;
-      if (yy > x) {
-        break;
-      } else if (z * p > k) {
-        dfs(dfs, factors, x, yy, p, c + 1, best);
-      } else {
-        dfs(dfs, factors, x, yy, z * p, c, best);
+    map<int, int> dp;
+    for (int i = 2; i <= k && i * i <= x; i++) { // O(sqrt n)
+      if (x % i == 0) {
+        dp.emplace(i, 1);
+        if (x / i <= k) {
+          dp.emplace(x / i, 1);
+        }
       }
     }
-  };
-  auto f = [&](int x) {
-    auto [it, ok] = memo.insert({{x, k}, INT_MAX});
-    auto &ans = it->second;
-    if (ok) {
-      PrimeFactors factors(sieve, x); // O(log x)
-      if (factors.empty()) {
-        ans = 0;
-      } else if (factors.back() > k) {
-        ans = -1;
-      } else {
-        vis.clear();
-        dfs(dfs, factors, x, 1, 1, 1, ans); // O((log x)!)
+    for (auto &&[d1, c1] : dp) { // O(n)
+      for (auto &&[d2, c2] : dp) {
+        if (d2 >= d1 && d2 < x) {
+          auto y = d1 * d2;
+          if (y > k && x % y == 0) {
+            auto &c = dp[y];
+            c = min(c ? c : INT_MAX, c1 + c2);
+          }
+        }
       }
     }
-    return ans;
+    return dp.contains(x) ? dp[x] : -1;
   };
   auto g = gcd(+x, +y);
-  auto c1 = f(x / g);
-  if (c1 < 0) {
+  auto a = f(x / g);
+  auto b = f(y / g);
+  if (a < 0 || b < 0) {
     return println(-1);
   }
-  auto c2 = f(y / g);
-  if (c2 < 0) {
-    return println(-1);
-  }
-  auto ans = c1 + c2;
+  auto ans = a + b;
   println(ans);
 }
 

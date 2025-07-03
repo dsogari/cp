@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2114/submission/326811339
+ * https://codeforces.com/contest/2114/submission/327198218
  *
  * (c) 2025 Diego Sogari
  */
@@ -33,20 +33,15 @@ void solve(int t) {
   vector<int> b(n);
   for (int i = 0; i < n; i++) {         // O(n*log A)
     b[i] = countr_zero<unsigned>(a[i]); // get base-2 exponent
+    a[i] >>= b[i];                      // get first odd factor
   }
-  auto f = [&](int e1, int e2, bool same) {
-    return (1 << e1) - (same && e1 > e2 ? (1 << (e2 + 1)) - 1 : 0);
+  auto f = [&](int i, int j) {
+    return a[i] == a[j] && b[i] > b[j] ? (1 << (b[j] + 1)) - 1 : 0;
   };
   vector<i64> pref(n + 1), suff(n + 1);
-  for (int i = 0, prev = 0; i < n; i++) { // O(n)
-    auto odd = a[i] >> b[i];
-    pref[i + 1] = pref[i] + f(b[i], i == 0 ? 0 : b[i - 1], odd == prev);
-    prev = odd;
-  }
-  for (int i = n - 1, prev = 0; i >= 0; i--) { // O(n)
-    auto odd = a[i] >> b[i];
-    suff[i] = suff[i + 1] + f(b[i], i + 1 == n ? 0 : b[i + 1], odd == prev);
-    prev = odd;
+  for (int i = 0, j = n - 1; i < n; i++, j--) { // O(n)
+    pref[i + 1] = pref[i] + (1 << b[i]) - (i > 0 ? f(i, i - 1) : 0);
+    suff[j] = suff[j + 1] + (1 << b[j]) - (j + 1 < n ? f(j, j + 1) : 0);
   }
   i64 mx = 0;
   for (int i = 0; i < n; i++) { // O(n)

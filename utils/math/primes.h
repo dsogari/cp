@@ -6,6 +6,18 @@
 #include "utils.h"
 
 /**
+ * Primality check
+ */
+bool is_prime(int x) { // O(sqrt x)
+  for (int i = 2; i * i <= x; i++) {
+    if (x % i == 0) {
+      return false;
+    }
+  }
+  return x > 1;
+}
+
+/**
  * Sieve of Prime numbers (up to 2^32)
  */
 struct Sieve : vector<int> {

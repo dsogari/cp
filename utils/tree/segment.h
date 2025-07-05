@@ -100,6 +100,6 @@ template <typename T> struct Lazy {
 /**
  * Generic Node
  */
-struct Seg {
-  Seg operator+(const Seg &rhs) const { return {}; }
+struct Segment {
+  Segment operator+(const Segment &rhs) const { return {}; }
 };

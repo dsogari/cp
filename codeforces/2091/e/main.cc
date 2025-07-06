@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2091/submission/327836833
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -24,7 +26,24 @@ template <typename T> struct Number {
 
 using Int = Number<int>;
 
-void solve(int t) {}
+struct Omega : vector<int> {
+  Omega(int n) : vector<int>(n + 1) { // O(n*log log n)
+    for (int i = 2; i <= n; i++) {
+      if (!(*this)[i]) {
+        for (int j = i; j <= n; j += i) {
+          (*this)[j]++;
+        }
+      }
+    }
+  }
+};
+
+void solve(int t) {
+  Int n;
+  Omega omega(n);                                      // O(n*log log n)
+  int ans = accumulate(omega.begin(), omega.end(), 0); // O(n)
+  println(ans);
+}
 
 int main() {
   cin.tie(nullptr)->tie(nullptr)->sync_with_stdio(false);

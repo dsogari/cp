@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2093/submission/327719699
+ * https://codeforces.com/contest/2093/submission/327840622
  *
  * (c) 2025 Diego Sogari
  */
@@ -50,8 +50,10 @@ void solve(int t) {
   Int n, k;
   vector<Int> a(n);
   Trie<int, 2> trie(n);
-  int mx = max(k, *ranges::max_element(a)); // O(n)
-  int len = bit_width<unsigned>(mx);
+  int len = bit_width<unsigned>(*ranges::max_element(a)); // O(n)
+  if (len < bit_width<unsigned>(k)) {
+    return println(-1);
+  }
   int ans = INT_MAX;
   auto add = [&](auto &node, int j, unsigned x, int i) -> int {
     node.first = i;

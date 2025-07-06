@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2093/submission/327367895
+ * https://codeforces.com/contest/2093/submission/327841693
  *
  * (c) 2025 Diego Sogari
  */
@@ -34,14 +34,9 @@ using Str = String<char>;
 
 void solve(int t) {
   Str s;
-  int n = s.size(), nonzero = 0, last = -1;
-  for (int i = 0; i < n; i++) {
-    if (s[i] != '0') {
-      last = i;
-      nonzero++;
-    }
-  }
-  auto ans = n - last - 1 + nonzero - 1;
+  int n = s.size(), zeroes = ranges::count(s, '0');
+  int c = zeroes == n ? n : n - s.find_last_not_of('0') - 1;
+  auto ans = c + (n - zeroes - 1);
   println(ans);
 }
 

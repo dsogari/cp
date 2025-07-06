@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2093/submission/327372475
+ * https://codeforces.com/contest/2093/submission/327841967
  *
  * (c) 2025 Diego Sogari
  */
@@ -40,13 +40,10 @@ void solve(int t) {
   if (x > 1 && k > 1) {
     return println("NO");
   }
-  int y = x;
   if (x == 1) {
-    while (--k) {
-      y = y * 10 + x;
-    }
+    for (int y = x; --k; x *= 10, x += y);
   }
-  auto ans = is_prime(y) ? "YES" : "NO";
+  auto ans = is_prime(x) ? "YES" : "NO";
   println(ans);
 }
 

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2093/submission/327713276
+ * https://codeforces.com/contest/2093/submission/327719699
  *
  * (c) 2025 Diego Sogari
  */
@@ -46,44 +46,33 @@ template <typename T, size_t N> struct Trie {
   }
 };
 
-auto add = [](auto &node, int j, unsigned x, int i) -> int {
-  if (j > 0) {
-    node.first.push_back(i);
-  }
-  return j < 32 ? (x >> 31 - j) & 1 : -1;
-};
-
 void solve(int t) {
   Int n, k;
   vector<Int> a(n);
-  Trie<vector<int>, 2> trie(n);
+  Trie<int, 2> trie(n);
+  int mx = max(k, *ranges::max_element(a)); // O(n)
+  int len = bit_width<unsigned>(mx);
   int ans = INT_MAX;
-  auto f = [&](auto &node, int i) { // O(log n)
-    auto it = ranges::lower_bound(node.first, i);
-    if (it != node.first.end()) {
-      ans = min(ans, *it - i + 1);
-    }
-    if (it != node.first.begin()) {
-      ans = min(ans, i - *prev(it) + 1);
-    }
+  auto add = [&](auto &node, int j, unsigned x, int i) -> int {
+    node.first = i;
+    return j < len ? (x >> len - 1 - j) & 1 : -1;
   };
-  auto get = [&](auto &node, int j, unsigned x, int i) -> int { // O(log n)
-    if (j == 32) {
-      f(node, i);
+  auto get = [&](auto &node, int j, unsigned x, int i) -> int {
+    if (j == len) {
+      ans = min(ans, i - node.first + 1);
       return -1; // x ^ y == k
     }
-    auto bitx = (x >> 31 - j) & 1;
-    auto bitk = (k >> 31 - j) & 1;
+    auto bitx = (x >> len - 1 - j) & 1;
+    auto bitk = (k >> len - 1 - j) & 1;
     auto xorc = node.second[!bitx]; // x ^ y > k
     if (!bitk && xorc) {
-      f(trie.nodes[xorc], i);
+      auto &child = trie.nodes[xorc];
+      ans = min(ans, i - child.first + 1);
     }
     return !bitk ? bitx : xorc ? !bitx : -1;
   };
-  for (int i = 0; i < n; i++) { // O(n*log^2 n)
+  for (int i = 0; i < n; i++) { // O(n*log A)
     trie.visit(add, a[i], i);
-  }
-  for (int i = 0; i < n; i++) { // O(n*log^2 n)
     trie.visit(get, a[i], i);
   }
   if (ans == INT_MAX) {

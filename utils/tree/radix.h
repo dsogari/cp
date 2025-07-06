@@ -11,9 +11,9 @@
 template <typename T, size_t N> struct Trie {
   vector<pair<T, array<int, N>>> nodes;
   Trie(int cap = 1) : nodes(1) { nodes.reserve(cap); }
-  void visit(auto &&f, auto &&x) {
+  void visit(auto &&f, auto &&x, auto &&...args) {
     for (int i = 0, j = 0;; j++) {
-      int k = f(nodes[i], j, x);
+      int k = f(nodes[i], j, x, args...);
       if (k < 0) {
         break;
       }
@@ -31,8 +31,13 @@ template <typename T, size_t N> struct Trie {
 // Trie manipulation
 const auto nodeinc = [](auto &node) { node++; };
 const auto nodedec = [](auto &node) { node--; };
-const auto nodevis = [](auto &&fn, auto &&fx, auto &node, int j, auto &&x) {
-  return fn(node.first), fx(j, x);
+const auto nodeins = [](auto &node, int i) { node.insert(i); };
+const auto noderem = [](auto &node, int i) { node.erase(i); };
+
+// Trie visiting
+const auto nodevis = [](auto &&fn, auto &&fx, auto &node, int j, auto &&x,
+                        auto &&...args) {
+  return fn(node.first, args...), fx(j, x);
 };
 
 // Bit prefixes

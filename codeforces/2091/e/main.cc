@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2091/submission/327836833
+ * https://codeforces.com/contest/2091/submission/327847588
  *
  * (c) 2025 Diego Sogari
  */
@@ -40,8 +40,8 @@ struct Omega : vector<int> {
 
 void solve(int t) {
   Int n;
-  Omega omega(n);                                      // O(n*log log n)
-  int ans = accumulate(omega.begin(), omega.end(), 0); // O(n)
+  Omega omega(n);                               // O(n*log log n)
+  int ans = reduce(omega.begin(), omega.end()); // O(n)
   println(ans);
 }
 

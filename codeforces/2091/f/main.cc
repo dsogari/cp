@@ -1,4 +1,6 @@
 /**
+ * https://codeforces.com/contest/2091/submission/327922517
+ *
  * (c) 2025 Diego Sogari
  */
 #include <bits/stdc++.h>
@@ -32,14 +34,6 @@ template <typename T> struct String : basic_string<T> {
 using Int = Number<int>;
 using Str = String<char>;
 
-template <typename T> struct Mat : vector<vector<T>> {
-  int n, m;
-  Mat(int n, int m) : vector<vector<T>>(n), n(n), m(m) {
-    ranges::for_each(*this, [m](auto &row) { row.resize(m); });
-  }
-  Mat(int n, int m, T s) : vector<vector<T>>(n, vector<T>(m, s)), n(n), m(m) {}
-};
-
 template <typename T, auto M> struct Mod {
   using V = conditional_t<sizeof(T) <= 4, u64, u128>;
   static V inv(V x, V m) { return x > 1 ? m - inv(m % x, x) * m / x : 1; }
@@ -57,14 +51,39 @@ template <typename T, auto M> struct Mod {
   Mod &operator*=(Mod rhs) { return x = x * V(rhs.x) % M, *this; }
   Mod &operator/=(Mod rhs) { return x = x * inv(rhs.x, M) % M, *this; }
 };
-using Mint = Mod<int, 1000000007>;
+using Mint = Mod<int, 998244353>;
+
+void update_dp(auto &cur, auto &next, auto &hold, int m, int d) { // O(m)
+  Mint sum = 0;
+  for (int j = 0, l = 0, r = 0, e = min(m, d + 1); j < m;) {
+    if (r < m) {
+      sum += cur[r++];
+    }
+    if (r >= e) {
+      next[j] = hold[j] == 'X' ? sum : Mint();
+      if (++j - l > d) {
+        sum -= cur[l++];
+      }
+    }
+  }
+}
 
 void solve(int t) {
   Int n, m, d;
   vector<Str> a(n);
-  Mat<Mint> dp(n, m);
-  // todo
-  auto ans = accumulate(dp[0].begin(), dp[0].end(), Mint()); // O(m)
+  vector<Mint> dp1(m), dp2(m);
+  for (int j = 0; j < m; j++) { // O(m)
+    if (a[n - 1][j] == 'X') {
+      dp1[j] = 1; // Base case: last row
+    }
+  }
+  for (int i = n - 1; i >= 0; i--) { // O(n*m)
+    update_dp(dp1, dp2, a[i], m, d);
+    if (i > 0) {
+      update_dp(dp2, dp1, a[i - 1], m, d - 1);
+    }
+  }
+  auto ans = reduce(dp2.begin(), dp2.end()); // O(m)
   println(ans);
 }
 

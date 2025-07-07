@@ -6,6 +6,11 @@
 #include "utils.h"
 
 /**
+ * Ceil division of integers
+ */
+constexpr int ceildiv(int x, int y) { return (x + y - 1) / y; } // O(1)
+
+/**
  * Element-wise assigment sum of static array
  */
 template <typename T, size_t N>

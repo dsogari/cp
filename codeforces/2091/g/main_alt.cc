@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2091/submission/328111806
+ * https://codeforces.com/contest/2091/submission/328128964
  *
  * (c) 2025 Diego Sogari
  */
@@ -28,26 +28,26 @@ using Int = Number<int>;
 
 void solve(int t) {
   Int s, k;
-  queue<array<int, 3>> q;
-  set<array<int, 2>> vis;
-  q.push({0, k, 0});
-  while (q.size()) { // O(k^2*log k)
-    auto [l, k, m] = q.front();
-    q.pop();
-    if ((s - l) % k <= m) {
-      return println(k);
-    }
-    if (k == 2) {
-      return println(1);
-    }
-    for (int i = 0; i <= m; i++, l++) {
-      int ll = (l + 1) % (k - 1);
-      if (vis.insert({ll, k - 2}).second) {
-        int cnt = 2 * ((s - l) / k - 1) + (ll < l); // remainders mod k-2
-        q.push({ll, k - 2, min(k - 2, cnt)});
+  map<int, int> dp1 = {{0, 0}}, dp2;
+  for (; k > 1; k -= 2) { // O(k^2*log k)
+    while (dp1.size()) {
+      auto [l, m] = *dp1.begin();
+      dp1.erase(dp1.begin());
+      if ((s - l) % k <= m) {
+        return println(k);
+      }
+      for (int i = 0; i <= m; i++) {
+        int ll = (l + i + 1) % (k - 1);
+        if (!dp2.contains(ll)) {
+          int cnt = 2 * ((s - l - i) / k - 1); // remainders mod k-2
+          dp2.emplace(ll, min(k - 2, cnt + (ll < l + i + 1)));
+        }
       }
     }
+    swap(dp1, dp2);
+    dp2.clear();
   }
+  println(1);
 }
 
 int main() {

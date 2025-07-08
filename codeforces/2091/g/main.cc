@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2091/submission/328088238
+ * https://codeforces.com/contest/2091/submission/328111806
  *
  * (c) 2025 Diego Sogari
  */
@@ -29,26 +29,21 @@ using Int = Number<int>;
 void solve(int t) {
   Int s, k;
   queue<array<int, 3>> q;
-  set<array<int, 3>> vis;
+  set<array<int, 2>> vis;
   q.push({0, k, 0});
   while (q.size()) {
     auto [l, k, m] = q.front();
     q.pop();
-    if (k <= 1) {
+    if ((s - l) % k <= m) {
+      return println(k);
+    } else if (k == 2) {
       return println(1);
     }
-    auto d = div(s - l, k);
-    if (d.rem <= m) {
-      return println(k);
-    }
     for (int i = 0; i <= m; i++, l++) {
-      auto d = div(s - l, k);
-      int cnt = 2 * (d.quot - 1) + 1; // available remainders mod k-2
-      int inc = (s - l - d.rem) / (k - 1) < k - 1; // whether cannot return to 0
-      int inc2 = l + inc >= k - 1;                 // whether can go back past 0
-      array<int, 3> next = {(l + inc) % (k - 1), k - 2, cnt - inc + inc2};
-      if (vis.insert(next).second) {
-        q.push(next);
+      int ll = (l + 1) % (k - 1);
+      if (vis.insert({ll, k - 2}).second) {
+        int cnt = 2 * ((s - l) / k - 1) + (ll < l); // remainders mod k-2
+        q.push({ll, k - 2, min(k - 2, cnt)});
       }
     }
   }

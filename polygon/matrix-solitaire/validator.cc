@@ -21,9 +21,17 @@ int main(int argc, char *argv[]) {
     inf.ensuref(m % 2 == 0, "Integer parameter [m] equals %d, but must be even",
                 m);
     auto A = n * m / 2;
+    vector<int> vis(A + 1);
     for (int k = 0; k < n; k++) {
-      inf.readInts(m, 1, A, "a");
+      auto a = inf.readInts(m, 1, A, "a");
       inf.readEoln();
+      for (auto &&x : a) {
+        ++vis[x];
+      }
+    }
+    for (int x = 1; x <= A; x++) {
+      inf.ensuref(vis[x] == 2,
+                  "Integer element [a] equals %d, must occur exactly twice", x);
     }
   }
   inf.readEof();

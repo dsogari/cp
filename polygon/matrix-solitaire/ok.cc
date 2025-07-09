@@ -35,49 +35,45 @@ template <typename T> struct Mat : vector<vector<T>> {
 void solve(int t) {
   Int n, m;
   Mat<Int> a(n, m);
-  vector<array<int, 2>> row(n * m / 2 + 1);
-  vector<deque<int>> b(n);
+  vector<array<int, 2>> row(n * m / 2 + 1), b(n);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      b[i].push_back(a[i][j]);
       auto &[r1, r2] = row[a[i][j]];
       r1 = exchange(r2, i);
     }
+    b[i] = {0, m - 1}; // left and right indices
   }
   int cnt = 0;
   for (bool ok = true; ok;) {
     ok = false;
     for (int i = 0; i < n; i++) {
-      if (b[i].size()) {
-        auto x = b[i].front();
-        auto r = row[x][i == row[x][0]];
-        assert(b[r].size());
-        if (i != r && x == b[r].front()) {
-          b[i].pop_front();
-          b[r].pop_front();
-          ok = true;
-          cnt++;
-        } else if (x == b[r].back()) {
-          b[i].pop_front();
-          b[r].pop_back();
-          ok = true;
-          cnt++;
+      bool ok2 = true;
+      while (ok2) {
+        ok2 = false;
+        auto &[l, r] = b[i];
+        if (l <= r) {
+          auto x = a[i][l];
+          auto i2 = row[x][i == row[x][0]];
+          auto &[l2, r2] = b[i2];
+          if (i2 != i && x == a[i2][l2]) {
+            l++, l2++, cnt++;
+            ok = ok2 = true;
+          } else if (x == a[i2][r2]) {
+            l++, r2--, cnt++;
+            ok = ok2 = true;
+          }
         }
-      }
-      if (b[i].size()) {
-        auto x = b[i].back();
-        auto r = row[x][i == row[x][0]];
-        assert(b[r].size());
-        if (i != r && x == b[r].back()) {
-          b[i].pop_back();
-          b[r].pop_back();
-          ok = true;
-          cnt++;
-        } else if (x == b[r].front()) {
-          b[i].pop_back();
-          b[r].pop_front();
-          ok = true;
-          cnt++;
+        if (l <= r) {
+          auto x = a[i][r];
+          auto i2 = row[x][i == row[x][0]];
+          auto &[l2, r2] = b[i2];
+          if (i2 != i && x == a[i2][r2]) {
+            r--, r2--, cnt++;
+            ok = ok2 = true;
+          } else if (x == a[i2][l2]) {
+            r--, l2++, cnt++;
+            ok = ok2 = true;
+          }
         }
       }
     }

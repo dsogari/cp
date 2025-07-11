@@ -6,7 +6,7 @@
 #include "point.h"
 
 /**
- * Convex Hull
+ * Polygon
  */
 template <typename T> struct Polygon : vector<Point<T>> {
   using vector<Point<T>>::vector;

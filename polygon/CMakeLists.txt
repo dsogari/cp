@@ -1,5 +1,6 @@
 include_directories(../testlib)
 subdirs(absecutive)
+subdirs(good-riddance)
 subdirs(inc-match-two)
 subdirs(jumping-to-conclusions)
 subdirs(matrix-solitaire)

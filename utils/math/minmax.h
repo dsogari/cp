@@ -6,10 +6,16 @@
 #include "utils.h"
 
 /**
- * Minimum/Maximum Heap
+ * Maximum Heap
  */
-template <typename T> using MaxHeap = priority_queue<T>;
-template <typename T> using MinHeap = priority_queue<T, vector<T>, greater<T>>;
+template <typename T, typename F = less<T>>
+using MaxHeap = priority_queue<T, F>;
+
+/**
+ * Minimum Heap
+ */
+template <typename T, typename F = greater<T>>
+using MinHeap = priority_queue<T, vector<T>, F>;
 
 /**
  * Minimum Queue (not preserving elements)

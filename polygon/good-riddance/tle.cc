@@ -30,9 +30,6 @@ struct Iota : vector<int> {
   Iota(int n, auto &&f, int s = 0) : Iota(n, s) { ranges::sort(*this, f); }
 };
 
-template <typename T, typename F = greater<T>>
-using MinHeap = priority_queue<T, vector<T>, F>;
-
 void solve(int t) {
   Int n, k;
   vector<Int> a(n);
@@ -51,31 +48,26 @@ void solve(int t) {
     }
   }
   auto f = [&](int i) { return a[i] - cost[i][0] - cost[i][1]; };
-  MinHeap<pair<i64, int>> s;
+  set<pair<i64, int>> s;
   for (int i = 0; i < n; i++) { // O(n*log n)
     s.emplace(f(i), i);
   }
   i64 ans = 0;
-  vector<bool> vis(n);
   Iota left(n, -1), right(n, 1);
   while (s.size()) { // O(n*log n)
-    auto [x, i] = s.top();
-    s.pop();
-    if (vis[i] || x != f(i)) {
-      continue; // element was erased or updated
-    }
-    vis[i] = true;
+    auto [x, i] = *s.begin();
+    s.erase(s.begin());
     ans += a[i];
     int l = left[i], r = right[i];
     i64 lc = 0, rc = 0;
     for (int c = 0; c < k; c++) {
       if (l >= 0) {
-        vis[l] = true; // erase
+        s.erase({f(l), l});
         lc = cost[l][0];
         l = left[l];
       }
       if (r < n) {
-        vis[r] = true; // erase
+        s.erase({f(r), r});
         rc = cost[r][1];
         r = right[r];
       }
@@ -88,13 +80,15 @@ void solve(int t) {
     }
     for (int c = 0; c < k; c++) {
       if (l >= 0) {
-        cost[l][1] = rc; // update
+        s.erase({f(l), l});
+        cost[l][1] = rc;
         s.emplace(f(l), l);
         rc += a[l];
         l = left[l];
       }
       if (r < n) {
-        cost[r][0] = lc; // update
+        s.erase({f(r), r});
+        cost[r][0] = lc;
         s.emplace(f(r), r);
         lc += a[r];
         r = right[r];

@@ -8,54 +8,53 @@
 #include "debug.h"
 init();
 
-struct Seg {
-  int x;
-  Seg(int a = 0) : x(a) {}
-  Seg operator+(const Seg &other) const { return max(x, other.x); }
-  Seg operator+(const Lazy<int> &rhs) const {
-    return rhs.set ? rhs.val : x + rhs.val;
-  }
-};
-
 void solve(int t) {
   srand(time(0));
   Int n, m, mx;
   vector<array<int, 4>> q(m);
   for (int i = 0; i < m; i++) {
-    q[i] = {rand() % 3, rand() % n, rand() % n, rand() % mx};
-    if (q[i][1] > q[i][2]) {
-      swap(q[i][1], q[i][2]); // [l, r]
-    }
+    auto [l, r] = minmax({rand() % n, rand() % n});
+    q[i] = {rand() % 4, l, r, rand() % mx};
   }
-  Pref1D<Seg> pref(n);
+  vector<int> pref(n);
   PushSegTree<Seg, Lazy<int>> st(n);
   for (int i = 0; i < n; i++) {
-    st[i] = pref[i] = rand() % mx;
+    st[i] = {pref[i] = rand() % mx};
   }
-  st.build();
-  assert(pref.full().x == st.full().x);
+  st.update();
+  assert(*ranges::max_element(pref) == st.full().x);
   chrono::duration<double, milli> ms;
-  auto upd = [&](int l, int r, int x, bool set) {
+  auto upd = [&](int l, int r, int x, int op) {
     for (int i = l; i <= r; i++) {
-      pref[i] = set ? x : pref[i].x + x;
+      pref[i] = op == 0 ? x : op == 1 ? pref[i] + x : x + i;
     }
     auto t0 = now();
-    st.update(l, r, {x, set});
+    if (op == 2) {
+      st.push(l, r);
+      for (int i = l; i <= r; i++) {
+        st[i] = {x + i};
+        st.lazy[i + n] = {}; // discard lazy values
+      }
+      st.update(l, r);
+    } else {
+      st.update(l, r, {x, !op});
+    }
     ms += now() - t0;
   };
   auto chk = [&](int l, int r) {
     auto t0 = now();
     auto ans = st.query(l, r);
     ms += now() - t0;
-    assert(pref.query(l, r).x == ans.x);
+    auto ans2 = reduce(pref.begin() + l, pref.begin() + r + 1, 0, imax<int>);
+    assert(ans2 == ans.x);
   };
   for (auto [op, l, r, x] : q) {
-    op <= 1 ? upd(l, r, x, op) : chk(l, r);
+    op <= 2 ? upd(l, r, x, op) : chk(l, r);
   }
   st.push();
-  assert(pref.full().x == st.full().x);
+  assert(*ranges::max_element(pref) == st.full().x);
   for (int i = 0; i < n; i++) {
-    assert(pref[i].x == st.get(i).x);
+    assert(pref[i] == st.get(i).x);
   }
   println("OK", ms.count(), "ms");
 }

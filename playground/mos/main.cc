@@ -2,7 +2,6 @@
  * (c) 2024 Diego Sogari
  */
 #include "math/order.h"
-#include "math/prefix.h"
 #include "tree/mos.h"
 
 #include "debug.h"
@@ -13,19 +12,16 @@ void solve(int t) {
   Int n, m, mx;
   vector<array<int, 2>> q(m);
   for (int i = 0; i < m; i++) {
-    q[i] = {rand() % n, rand() % n};
-    if (q[i][0] > q[i][1]) {
-      swap(q[i][0], q[i][1]); // [l, r]
-    }
+    auto [l, r] = minmax({rand() % n, rand() % n});
+    q[i] = {l, r};
   }
-  vector<int> ans(m), ans1(m);
-  Pref1D<int> pref(n);
+  vector<int> ans(m), ans1(m), pref(n);
   for (int i = 0; i < n; i++) {
     pref[i] = rand() % mx;
   }
   for (int i = 0; i < m; i++) {
     auto [l, r] = q[i];
-    ans[i] = pref.query(l, r);
+    ans[i] = reduce(pref.begin() + l, pref.begin() + r + 1);
   }
   int acc = 0;
   auto add = [&](int i) { acc += pref[i]; };

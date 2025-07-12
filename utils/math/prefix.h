@@ -6,28 +6,19 @@
 #include "matrix.h"
 
 /**
- * Compute prefix array
- */
-template <typename T, typename F = plus<T>>
-void make_pref(vector<T> &a, F f = {}) {
-  for (int i = 1; i < a.size(); i++) {
-    a[i] = f(a[i - 1], a[i]);
-  }
-}
-
-/**
  * Prefix Array (lazy)
  */
 template <typename T> struct Pref1D : vector<T> {
-  int n;
-  Pref1D(int n, T val = {}) : vector<T>(n, val), n(n) {}
-  T full() const { return query(0, n - 1); }
-  T query(int l, int r) const { // O(n)
-    T ans = (*this)[l];
-    for (int i = l + 1; i <= r; i++) {
-      ans = ans + (*this)[i];
+  Pref1D(int n) : vector<T>(n + 1) {}
+  void update(int l, int r, T val) { // [l,r] O(1)
+    (*this)[l] += val;
+    (*this)[r + 1] -= val;
+  }
+  void visit(auto &&f) { // O(n)
+    T sum = {};
+    for (int i = 0; i < this->size() - 1; i++) {
+      f(i, sum += (*this)[i]);
     }
-    return ans;
   }
 };
 

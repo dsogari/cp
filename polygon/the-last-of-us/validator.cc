@@ -3,7 +3,7 @@
  */
 #include "testlib.h"
 
-constexpr int T = 10'000;
+constexpr int T = 1'000;
 constexpr int N = 200;
 constexpr int A = 1'000'000'000;
 

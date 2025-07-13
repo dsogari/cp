@@ -29,21 +29,19 @@ void solve(int t) {
   Int n, k;
   vector<Int> a(n);
   if (k == 0) {
-    auto ans = reduce(a.begin(), a.end(), i64(0));
+    auto ans = reduce(a.begin(), a.end(), i64(0)); // O(n)
     return println(ans);
   }
   i64 ans = LLONG_MAX;
-  for (int l = 0; l < n; ++l) { // O(n^3/k)
-    vector<i64> dp(n + k + 1, LLONG_MAX);
-    dp[l] = 0;
-    for (int s = l, b = k + 1; s < n; s += k + 1, b += 2 * k + 1) {
+  for (int l = 0, m = 2 * k + 1; l < n; l++) { // O(n^3/k)
+    vector<i64> dp(n + k + 1);
+    for (int s = l, w = m; s < n; s += k + 1, w += m) {
       vector<i64> ndp(n + k + 1, LLONG_MAX);
-      for (int r = s; r < n; ++r) {
-        dp[r + 1] = min(dp[r + 1], dp[r]);      // skipping ai
-        auto x = ndp[r + 1 + k] = dp[r] + a[r]; // picking ai
-        if (max({n - k, n - l, r + 1}) <= b) {
-          ans = min(ans, x); // considering ai as the last one
-        }
+      for (int r = s; r < n; r++) {
+        ndp[r + k + 1] = min(ndp[r + k], dp[r] + a[r]); // skip or pick ai
+      }
+      if (max({+n, n - l + k, s + 1 + k}) <= w) {
+        ans = min(ans, ndp[min(w, n + k)]); // consider ai as the last one
       }
       swap(dp, ndp);
     }

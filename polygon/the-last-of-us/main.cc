@@ -40,8 +40,9 @@ void solve(int t) {
       for (int r = s; r < n; r++) {
         ndp[r + k + 1] = min(ndp[r + k], dp[r] + a[r]); // skip or pick ai
       }
-      if (max({+n, n - l + k, s + 1 + k}) <= w) {
+      if (max(+n, n - l + k) <= w) {
         ans = min(ans, ndp[min(w, n + k)]); // consider ai as the last one
+        break;                              // no need for more removals
       }
       swap(dp, ndp);
     }

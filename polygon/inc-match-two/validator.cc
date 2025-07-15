@@ -3,8 +3,8 @@
  */
 #include "testlib.h"
 
-constexpr int T = 1'000;
-constexpr int N = 1'000;
+constexpr int T = 10'000;
+constexpr int N = 51;
 
 int main(int argc, char *argv[]) {
   registerValidation(argc, argv);

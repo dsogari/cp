@@ -35,8 +35,9 @@ const greater<char> gt;
 void solve(int t) {
   Str s;
   if (s.size() % 2) {
-    auto it = ranges::max_element(s);
-    if ((is_sorted(s.begin(), it) && is_sorted(next(it), s.end(), gt)) ||
+    auto it = ranges::max_element(s.begin() + 1, s.end());
+    if (it == s.end() || // input consists of a single element
+        (is_sorted(s.begin(), it) && is_sorted(next(it), s.end(), gt)) ||
         (*it == 'z' && (it - s.begin()) % 2 && is_sorted(s.begin(), it, gt) &&
          is_sorted(next(it), s.end()))) {
       return println("NO"); // either there are no valleys or there is a single

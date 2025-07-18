@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2126/submission/329554360
+ * https://codeforces.com/contest/2126/submission/329644344
  *
  * (c) 2025 Diego Sogari
  */
@@ -49,34 +49,26 @@ void solve(int t) {
   map<array<int, 2>, i64> memo;
   vector<array<int, 2>> par(n + 1);
   i64 ans = 0;
-  auto dfs = [&](auto &dfs, int u, int p) -> void {
+  auto dfs = [&](auto &dfs, int u, int p, int c) -> void {
+    par[u] = {p, c};
+    memo[{p, a[u - 1]}] += c;
+    ans += c * (a[p - 1] != a[u - 1]);
     for (auto &&[v, c] : g[u]) {
       if (v != p) {
-        par[v] = {u, c};
-        memo[{u, a[v - 1]}] += c;
-        if (a[u - 1] != a[v - 1]) {
-          ans += c;
-        }
-        dfs(dfs, v, u);
+        dfs(dfs, v, u, c);
       }
     }
   };
-  dfs(dfs, 1, 1);
+  dfs(dfs, 1, 1, 0);
   for (auto &&[v, x] : b) {
-    if (a[v - 1] != x) {
+    auto &y = a[v - 1];
+    if (y != x) {
       auto [p, c] = par[v];
-      if (p) {
-        if (a[p - 1] == a[v - 1]) {
-          ans += c;
-        }
-        if (a[p - 1] == x) {
-          ans -= c;
-        }
-        memo[{p, a[v - 1]}] -= c;
-        memo[{p, x}] += c;
-      }
-      ans += memo[{v, a[v - 1]}] - memo[{v, x}];
-      a[v - 1] = x;
+      memo[{p, y}] -= c;
+      memo[{p, x}] += c;
+      ans += memo[{v, y}] - memo[{v, x}];
+      ans += c * ((a[p - 1] == y) - (a[p - 1] == x));
+      y = x;
     }
     println(ans);
   }

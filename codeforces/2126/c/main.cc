@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2126/submission/329397514
+ * https://codeforces.com/contest/2126/submission/329644415
  *
  * (c) 2025 Diego Sogari
  */
@@ -32,13 +32,11 @@ void solve(int t) {
   auto x = a[k - 1];
   ranges::sort(a);
   int i = ranges::upper_bound(a, x) - a.begin();
-  for (int l = 0; i < n; i++) {
-    auto d = a[i] - x;
-    if (d > x - l) {
+  for (int l = 0; i < n; x = a[i], i++) {
+    if (a[i] - x > x - l) {
       return println("NO");
     }
-    l += d;
-    x = a[i];
+    l += a[i] - x;
   }
   println("YES");
 }

@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/1985/submission/283681873
+ * https://codeforces.com/contest/1985/submission/329768228
  *
  * (c) 2024 Diego Sogari
  */
@@ -16,34 +16,40 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
-using Int = Num<int>;
 
-struct DSU {
-  vector<int> par, siz;
-  DSU(int n) : par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
-  int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(1)
-  int merge(int a, int b) { // O(1) amortized
-    a = find(a), b = find(b);
-    if (a != b) {
-      if (siz[a] < siz[b]) {
-        swap(a, b);
-      }
-      siz[a] += siz[b];
-      par[b] = a;
-    }
-    return a;
-  }
+template <typename T> struct String : basic_string<T> {
+  using basic_string<T>::basic_string;
+  String() { cin >> *this; }
 };
 
-struct Str : string {
-  Str() { cin >> *this; }
+using Int = Number<int>;
+using Str = String<char>;
+
+struct DSU {
+  int cnt; // number of disjoint sets
+  vector<int> par, siz;
+  DSU(int n) : cnt(n), par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
+  int size(int u) { return siz[find(u)]; }                            // O(1)
+  int find(int u) { return u == par[u] ? u : par[u] = find(par[u]); } // O(1)
+  int merge(int u, int v) { // O(1) amortized
+    u = find(u), v = find(v);
+    if (u != v) {
+      if (siz[u] < siz[v]) {
+        swap(u, v);
+      }
+      siz[u] += exchange(siz[v], 0);
+      par[v] = u;
+      cnt--;
+    }
+    return u;
+  }
 };
 
 void solve(int t) {

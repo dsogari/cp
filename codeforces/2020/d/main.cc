@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2020/submission/302852590
+ * https://codeforces.com/contest/2020/submission/329768362
  *
  * Graph; DP; DSU
  *
@@ -18,31 +18,34 @@ init();
 
 void println(auto &&...args) { ((cout << args << ' '), ...) << endl; }
 
-template <typename T> struct Num {
+template <typename T> struct Number {
   T x;
-  Num() { cin >> x; }
-  Num(T a) : x(a) {}
+  Number() { cin >> x; }
+  Number(T a) : x(a) {}
   operator T &() { return x; }
   operator T() const { return x; }
 };
-using Int = Num<int>;
+
+using Int = Number<int>;
 
 struct DSU {
+  int cnt; // number of disjoint sets
   vector<int> par, siz;
-  DSU(int n) : par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
-  int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(1)
-  int merge(int a, int b) { // O(1) amortized
-    a = find(a), b = find(b);
-    if (a != b) {
-      if (siz[a] < siz[b]) {
-        swap(a, b);
+  DSU(int n) : cnt(n), par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
+  int size(int u) { return siz[find(u)]; }                            // O(1)
+  int find(int u) { return u == par[u] ? u : par[u] = find(par[u]); } // O(1)
+  int merge(int u, int v) { // O(1) amortized
+    u = find(u), v = find(v);
+    if (u != v) {
+      if (siz[u] < siz[v]) {
+        swap(u, v);
       }
-      siz[a] += exchange(siz[b], 0);
-      par[b] = a;
+      siz[u] += exchange(siz[v], 0);
+      par[v] = u;
+      cnt--;
     }
-    return a;
+    return u;
   }
-  int count() const { return siz.size() - ranges::count(siz, 0); } // O(n)
 };
 
 void solve(int t) {
@@ -67,8 +70,7 @@ void solve(int t) {
       }
     }
   }
-  int ans = dsu.count();
-  println(ans);
+  println(dsu.cnt);
 }
 
 int main() {

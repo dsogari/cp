@@ -1,5 +1,5 @@
 /**
- * https://codeforces.com/contest/2060/submission/301916091
+ * https://codeforces.com/contest/2060/submission/329768432
  *
  * Graph theory; DSU; DFS; greedy
  *
@@ -28,39 +28,41 @@ template <typename T> struct Num {
 using Int = Num<int>;
 
 struct DSU {
+  int cnt; // number of disjoint sets
   vector<int> par, siz;
-  DSU(int n) : par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
-  int find(int v) { return v == par[v] ? v : par[v] = find(par[v]); } // O(1)
-  int merge(int a, int b) { // O(1) amortized
-    a = find(a), b = find(b);
-    if (a != b) {
-      if (siz[a] < siz[b]) {
-        swap(a, b);
+  DSU(int n) : cnt(n), par(n), siz(n, 1) { iota(par.begin(), par.end(), 0); }
+  int size(int u) { return siz[find(u)]; }                            // O(1)
+  int find(int u) { return u == par[u] ? u : par[u] = find(par[u]); } // O(1)
+  int merge(int u, int v) { // O(1) amortized
+    u = find(u), v = find(v);
+    if (u != v) {
+      if (siz[u] < siz[v]) {
+        swap(u, v);
       }
-      siz[a] += exchange(siz[b], 0);
-      par[b] = a;
+      siz[u] += exchange(siz[v], 0);
+      par[v] = u;
+      cnt--;
     }
-    return a;
+    return u;
   }
-  int count() const { return siz.size() - ranges::count(siz, 0); } // O(n)
 };
 
 void solve(int t) {
   Int n, m1, m2;
   vector<array<Int, 2>> f(m1), g(m2);
-  DSU dsu1(n + 1), dsu2(n + 1);
+  DSU inboth(n + 1), ing(n + 1);
   for (auto [u, v] : g) {
-    dsu2.merge(u, v);
+    ing.merge(u, v);
   }
   int ans = 0;
   for (auto [u, v] : f) {
-    if (dsu2.find(u) != dsu2.find(v)) {
-      ans++;
+    if (ing.find(u) != ing.find(v)) {
+      ans++; // edges to be removed
     } else {
-      dsu1.merge(u, v);
+      inboth.merge(u, v);
     }
   }
-  ans += dsu1.count() - dsu2.count();
+  ans += inboth.cnt - ing.cnt; // edges to be added
   println(ans);
 }
 

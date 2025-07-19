@@ -59,8 +59,8 @@ void solve(int t) {
       }
     }
   };
-  dfs(dfs, 1, 1, 0);
-  for (auto &&[v, x] : b) {
+  dfs(dfs, 1, 1, 0);        // O(n log n)
+  for (auto &&[v, x] : b) { // O(q log n)
     auto &y = a[v - 1];
     if (y != x) {
       auto [p, c] = par[v];

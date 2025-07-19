@@ -30,9 +30,9 @@ void solve(int t) {
   Int n, k;
   vector<Int> a(n);
   auto x = a[k - 1];
-  ranges::sort(a);
-  int i = ranges::upper_bound(a, x) - a.begin();
-  for (int l = 0; i < n; x = a[i], i++) {
+  ranges::sort(a);                               // O(n log n)
+  int i = ranges::upper_bound(a, x) - a.begin(); // O(log n)
+  for (int l = 0; i < n; x = a[i], i++) {        // O(n)
     if (a[i] - x > x - l) {
       return println("NO");
     }

@@ -29,9 +29,9 @@ using Int = Number<int>;
 void solve(int t) {
   Int n, k;
   vector<array<Int, 3>> a(n);
-  ranges::sort(a);
+  ranges::sort(a); // O(n log n)
   int x = k;
-  for (auto &&[l, r, c] : a) {
+  for (auto &&[l, r, c] : a) { // O(n)
     if (l <= x && x <= r) {
       x = max(x, +c);
     }

@@ -32,7 +32,7 @@ void solve(int t) {
   if (p[n - 1] != s[0]) {
     return println("NO");
   }
-  for (int i = 1; i < n; i++) {
+  for (int i = 1; i < n; i++) { // O(n log A)
     if (p[i - 1] % p[i] || s[i] % s[i - 1] ||
         (min(p[i], s[i - 1]) < gcd(+p[i - 1], +s[i]))) {
       return println("NO");

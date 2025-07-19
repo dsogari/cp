@@ -29,7 +29,7 @@ using Int = Number<int>;
 void solve(int t) {
   Int x;
   int mx = 10;
-  while (x) {
+  while (x) { // O(log x)
     mx = min(mx, x % 10);
     x /= 10;
   }

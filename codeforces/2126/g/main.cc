@@ -45,14 +45,14 @@ void solve(int t) {
   PaintDSU left(n), right(n);
   Iota idx(n, [&](int i, int j) { return a[i] > a[j]; });
   int ans = 0;
-  auto f = [&](auto &dsu, int i, int inc, int end) {
+  auto f = [&](auto &dsu, int i, int inc, int end) { // O(log n)
     int p = dsu.find(i);
-    ans = max(ans, a[i] - a[p]);
     if (p != end) {
       dsu.merge(p, p + inc);
     }
+    ans = max(ans, a[i] - a[p]);
   };
-  for (auto &&i : idx) {
+  for (auto &&i : idx) { // O(n log n)
     f(left, i, -1, 0);
     f(left, i, -1, 0);
     f(right, i, 1, n - 1);

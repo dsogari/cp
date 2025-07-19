@@ -28,7 +28,7 @@ void solve(int t) {
   Int n, k;
   vector<Int> a(n);
   int ans = 0;
-  for (int i = 0, c = 0; i < n; i++) {
+  for (int i = 0, c = 0; i < n; i++) { // O(n)
     if (a[i] == 1) {
       c = 0;
       continue;
